@@ -50,7 +50,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0134", BankName = "Denizbank"},
             new Bank{BankCode = "0103", BankName = "Fibabanka"},
             new Bank{BankCode = "0111", BankName = "QNB Finansbank", BankService = typeof(QNBFinansbankVirtualPOSService)},
-            new Bank{BankCode = "0062", BankName = "Garanti BBVA"},
+            new Bank{BankCode = "0062", BankName = "Garanti BBVA", BankService = typeof(GarantiBBVAVirtualPOSService)},
             new Bank{BankCode = "0012", BankName = "Halkbank", BankService = typeof(HalkbankVirtualPOSService)},
             new Bank{BankCode = "0123", BankName = "HSBC"},
             new Bank{BankCode = "0099", BankName = "ING Bank", BankService = typeof(INGBankVirtualPOSService)},
