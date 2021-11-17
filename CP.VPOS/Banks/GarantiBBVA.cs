@@ -12,7 +12,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CP.VPOS.Banks
+namespace CP.VPOS.Banks.GarantiBBVA
 {
     internal class GarantiBBVAVirtualPOSService : IVirtualPOSService
     {
@@ -559,7 +559,7 @@ namespace CP.VPOS.Banks
     }
 
 
-    internal static class helper
+    static class helper
     {
         public static string To2Digit(this decimal amount)
         {

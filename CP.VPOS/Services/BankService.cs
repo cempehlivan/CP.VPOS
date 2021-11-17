@@ -1,9 +1,8 @@
 ﻿using CP.VPOS.Banks;
+using CP.VPOS.Banks.GarantiBBVA;
+using CP.VPOS.Banks.YapiKrediBankasi;
 using CP.VPOS.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CP.VPOS.Services
 {
@@ -60,7 +59,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0032", BankName = "Türk Ekonomi Bankası", BankService = typeof(TurkEkonomiBankasiVirtualPOSService)},
             new Bank{BankCode = "0206", BankName = "Türkiye Finans", BankService = typeof(TurkiyeFinansVirtualPOSService)},
             new Bank{BankCode = "0015", BankName = "Vakıfbank"},
-            new Bank{BankCode = "0067", BankName = "Yapı Kredı Bankası"},
+            new Bank{BankCode = "0067", BankName = "Yapı Kredı Bankası", BankService = typeof(YapiKrediBankasiVirtualPOSService)},
             new Bank{BankCode = "0059", BankName = "Şekerbank", BankService = typeof(SekerbankVirtualPOSService)},
             new Bank{BankCode = "0010", BankName = "Ziraat Bankası", BankService = typeof(ZiraatBankasiVirtualPOSService)},
             new Bank{BankCode = "0143", BankName = "Aktif Yatırım Bankası"},
