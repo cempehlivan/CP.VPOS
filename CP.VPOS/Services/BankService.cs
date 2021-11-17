@@ -71,7 +71,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "9995", BankName = "IPara", CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9996", BankName = "PayU", CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9997", BankName = "Iyzico", CollectiveVPOS = true, InstallmentAPI = true},
-            new Bank{BankCode = "9998", BankName = "Cardplus" },
+            new Bank{BankCode = "9998", BankName = "Cardplus", BankService = typeof(CardplusVirtualPOSService) },
             new Bank{BankCode = "9999", BankName = "Paratika", CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
         };
     }
