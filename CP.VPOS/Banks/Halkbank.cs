@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace CP.VPOS.Banks
+﻿
+namespace CP.VPOS.Banks.Halkbank
 {
     internal class HalkbankVirtualPOSService : NestpayVirtualPOSService
     {

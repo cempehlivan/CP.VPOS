@@ -1,5 +1,5 @@
 ﻿
-namespace CP.VPOS.Banks
+namespace CP.VPOS.Banks.Cardplus
 {
     internal class CardplusVirtualPOSService : NestpayVirtualPOSService
     {

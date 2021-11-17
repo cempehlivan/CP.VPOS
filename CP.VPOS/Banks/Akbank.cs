@@ -1,5 +1,5 @@
 ﻿
-namespace CP.VPOS.Banks
+namespace CP.VPOS.Banks.Akbank
 {
     internal class AkbankVirtualPOSService : NestpayVirtualPOSService
     {

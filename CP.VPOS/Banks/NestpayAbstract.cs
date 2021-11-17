@@ -2,8 +2,6 @@
 using CP.VPOS.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using CP.VPOS.Enums;
 using CP.VPOS.Helpers;
 using System.Net;

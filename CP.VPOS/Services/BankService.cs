@@ -1,6 +1,17 @@
-﻿using CP.VPOS.Banks;
+﻿using CP.VPOS.Banks.Akbank;
+using CP.VPOS.Banks.AlternatifBank;
+using CP.VPOS.Banks.Anadolubank;
+using CP.VPOS.Banks.Cardplus;
 using CP.VPOS.Banks.GarantiBBVA;
+using CP.VPOS.Banks.Halkbank;
+using CP.VPOS.Banks.INGBank;
+using CP.VPOS.Banks.IsBankasi;
+using CP.VPOS.Banks.QNBFinansbank;
+using CP.VPOS.Banks.Sekerbank;
+using CP.VPOS.Banks.TurkEkonomiBankasi;
+using CP.VPOS.Banks.TurkiyeFinans;
 using CP.VPOS.Banks.YapiKrediBankasi;
+using CP.VPOS.Banks.ZiraatBankasi;
 using CP.VPOS.Models;
 using System.Collections.Generic;
 
