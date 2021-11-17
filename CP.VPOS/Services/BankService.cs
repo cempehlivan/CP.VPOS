@@ -14,6 +14,8 @@ namespace CP.VPOS.Services
         public static readonly string AlternatifBank = "0124";
         public static readonly string Anadolubank = "0135";
 
+        public static readonly string Halkbank = "0012";
+
         public static readonly List<Bank> allBanks = new List<Bank>()
         {
             new Bank{BankCode = "0046", BankName = "Akbank", BankService = typeof(AkbankVirtualPOSService) },
@@ -24,7 +26,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0103", BankName = "Fibabanka"},
             new Bank{BankCode = "0111", BankName = "QNB Finansbank"},
             new Bank{BankCode = "0062", BankName = "Garanti BBVA"},
-            new Bank{BankCode = "0012", BankName = "Halkbank"},
+            new Bank{BankCode = "0012", BankName = "Halkbank", BankService = typeof(HalkbankVirtualPOSService)},
             new Bank{BankCode = "0123", BankName = "HSBC"},
             new Bank{BankCode = "0099", BankName = "ING Bank"},
             new Bank{BankCode = "0064", BankName = "İş Bankası"},
