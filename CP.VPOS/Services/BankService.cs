@@ -13,8 +13,33 @@ namespace CP.VPOS.Services
         public static readonly string AlbarakaTurk = "0203";
         public static readonly string AlternatifBank = "0124";
         public static readonly string Anadolubank = "0135";
-
+        public static readonly string Denizbank = "0134";
+        public static readonly string Fibabanka = "0103";
+        public static readonly string QNBFinansbank = "0111";
+        public static readonly string GarantiBBVA = "0062";
         public static readonly string Halkbank = "0012";
+        public static readonly string HSBC = "0123";
+        public static readonly string INGBank = "0099";
+        public static readonly string IsBankasi = "0064";
+        public static readonly string KuveytTurk = "0205";
+        public static readonly string Odeabank = "0146";
+        public static readonly string TurkEkonomiBankasi = "0032";
+        public static readonly string TurkiyeFinans = "0206";
+        public static readonly string Vakifbank = "0015";
+        public static readonly string YapiKrediBankasi = "0067";
+        public static readonly string Sekerbank = "0059";
+        public static readonly string ZiraatBankasi = "0010";
+        public static readonly string AktifYatirimBankasi = "0143";
+
+        public static readonly string Hepsipay = "9992";
+        public static readonly string Payten = "9993";
+        public static readonly string PayTR = "9994";
+        public static readonly string IPara = "9995";
+        public static readonly string PayU = "9996";
+        public static readonly string Iyzico = "9997";
+        public static readonly string Cardplus = "9998";
+        public static readonly string Paratika = "9999";
+
 
         public static readonly List<Bank> allBanks = new List<Bank>()
         {
@@ -28,7 +53,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0062", BankName = "Garanti BBVA"},
             new Bank{BankCode = "0012", BankName = "Halkbank", BankService = typeof(HalkbankVirtualPOSService)},
             new Bank{BankCode = "0123", BankName = "HSBC"},
-            new Bank{BankCode = "0099", BankName = "ING Bank"},
+            new Bank{BankCode = "0099", BankName = "ING Bank", BankService = typeof(INGBankVirtualPOSService)},
             new Bank{BankCode = "0064", BankName = "İş Bankası"},
             new Bank{BankCode = "0205", BankName = "Kuveyt Türk"},
             new Bank{BankCode = "0146", BankName = "Odeabank"},
