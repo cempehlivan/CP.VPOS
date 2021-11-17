@@ -62,7 +62,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0015", BankName = "Vakıfbank"},
             new Bank{BankCode = "0067", BankName = "Yapı Kredı Bankası"},
             new Bank{BankCode = "0059", BankName = "Şekerbank", BankService = typeof(SekerbankVirtualPOSService)},
-            new Bank{BankCode = "0010", BankName = "Ziraat Bankası"},
+            new Bank{BankCode = "0010", BankName = "Ziraat Bankası", BankService = typeof(ZiraatBankasiVirtualPOSService)},
             new Bank{BankCode = "0143", BankName = "Aktif Yatırım Bankası"},
 
             new Bank{BankCode = "9992", BankName = "Hepsipay", CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
