@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CP.VPOS", "CP.VPOS\CP.VPOS.csproj", "{0A8AC1EE-FE3F-4B94-91C7-7039022030E0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A8AC1EE-FE3F-4B94-91C7-7039022030E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A8AC1EE-FE3F-4B94-91C7-7039022030E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A8AC1EE-FE3F-4B94-91C7-7039022030E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A8AC1EE-FE3F-4B94-91C7-7039022030E0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7DABC0B3-9676-4DD0-A78F-7D18907AD004}
+	EndGlobalSection
+EndGlobal
