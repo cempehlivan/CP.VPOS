@@ -6,6 +6,7 @@ using CP.VPOS.Banks.GarantiBBVA;
 using CP.VPOS.Banks.Halkbank;
 using CP.VPOS.Banks.INGBank;
 using CP.VPOS.Banks.IsBankasi;
+using CP.VPOS.Banks.Paratika;
 using CP.VPOS.Banks.QNBFinansbank;
 using CP.VPOS.Banks.Sekerbank;
 using CP.VPOS.Banks.TurkEkonomiBankasi;
@@ -82,7 +83,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "9996", BankName = "PayU", CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9997", BankName = "Iyzico", CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9998", BankName = "Cardplus", BankService = typeof(CardplusVirtualPOSService) },
-            new Bank{BankCode = "9999", BankName = "Paratika", CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
+            new Bank{BankCode = "9999", BankName = "Paratika", BankService = typeof(ParatikaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
         };
     }
 }
