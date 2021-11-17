@@ -1,4 +1,5 @@
-﻿using CP.VPOS.Models;
+﻿using CP.VPOS.Banks;
+using CP.VPOS.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,14 @@ namespace CP.VPOS.Services
 {
     public static class BankService
     {
+        public static readonly string Akbank = "0046";
+        public static readonly string AlternatifBank = "0124";
+
         public static readonly List<Bank> allBanks = new List<Bank>()
         {
-            new Bank{BankCode = "0046", BankName = "Akbank" },
+            new Bank{BankCode = "0046", BankName = "Akbank", BankService = typeof(AkbankVirtualPOSService) },
             new Bank{BankCode = "0203", BankName = "Albaraka Türk" },
-            new Bank{BankCode = "0124", BankName = "Alternatif Bank"},
+            new Bank{BankCode = "0124", BankName = "Alternatif Bank", BankService = typeof(AlternatifBankVirtualPOSService)},
             new Bank{BankCode = "0135", BankName = "Anadolubank"},
             new Bank{BankCode = "0134", BankName = "Denizbank"},
             new Bank{BankCode = "0103", BankName = "Fibabanka"},

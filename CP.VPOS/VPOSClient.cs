@@ -3,6 +3,7 @@ using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace CP.VPOS
 {
@@ -162,11 +163,12 @@ namespace CP.VPOS
         {
             IVirtualPOSService virtualPOSService = null;
 
-            switch (bankCode)
-            {
-                default:
-                    break;
-            }
+            var searchBank = Services.BankService.allBanks.FirstOrDefault(s => s.BankCode == bankCode);
+
+            if (searchBank != null)
+                virtualPOSService = (IVirtualPOSService)Activator.CreateInstance(searchBank.BankService);
+            else
+                throw new Exception("Banka entegrasyonu bulunamadı.");
 
             return virtualPOSService;
         }

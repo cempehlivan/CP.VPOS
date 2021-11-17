@@ -6,8 +6,13 @@
 		<Version>$(VersionPrefix)</Version>
 		<Authors>Cem Pehlivan</Authors>
 		<Company>Cem Pehlivan</Company>
-		<Description>Simple Virtual POS</Description>
+		<Description>Sanal POS</Description>
 		<Copyright>Copyright © Cem Pehlivan 2021</Copyright>
+		<PackageProjectUrl>https://github.com/cempehlivan/CP.VPOS</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/cempehlivan/CP.VPOS</RepositoryUrl>
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<FileVersion>1.0.0</FileVersion>
+		<PackageIcon>packageIcon.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -50,6 +55,13 @@
 		<PackageReference Include="System.ComponentModel.Annotations">
 			<Version>5.0.0</Version>
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="packageIcon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>

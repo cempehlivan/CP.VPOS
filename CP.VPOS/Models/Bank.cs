@@ -31,5 +31,6 @@ namespace CP.VPOS.Models
         /// Taksit API'den sorgulanır
         /// </summary>
         public bool InstallmentAPI { get; set; }
+        public Type BankService { get; set; }
     }
 }
