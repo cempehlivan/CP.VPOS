@@ -165,7 +165,7 @@ namespace CP.VPOS
 
             var searchBank = Services.BankService.allBanks.FirstOrDefault(s => s.BankCode == bankCode);
 
-            if (searchBank != null)
+            if (searchBank?.BankService != null)
                 virtualPOSService = (IVirtualPOSService)Activator.CreateInstance(searchBank.BankService);
             else
                 throw new Exception("Banka entegrasyonu bulunamadı.");
