@@ -3,15 +3,15 @@
 	<PropertyGroup>
 		<TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net40;net45;netstandard2.0;netstandard2.1;net50;net60</TargetFrameworks>
 		<TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
-		<Version>$(VersionPrefix)</Version>
+		<Version>1.0.1</Version>
 		<Authors>Cem Pehlivan</Authors>
 		<Company>Cem Pehlivan</Company>
 		<Description>Sanal POS</Description>
 		<Copyright>Copyright © Cem Pehlivan 2021</Copyright>
 		<PackageProjectUrl>https://github.com/cempehlivan/CP.VPOS</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/cempehlivan/CP.VPOS</RepositoryUrl>
-		<AssemblyVersion>1.0.0</AssemblyVersion>
-		<FileVersion>1.0.0</FileVersion>
+		<AssemblyVersion>1.0.1</AssemblyVersion>
+		<FileVersion>1.0.1</FileVersion>
 		<PackageIcon>packageIcon.png</PackageIcon>
 	</PropertyGroup>
 
