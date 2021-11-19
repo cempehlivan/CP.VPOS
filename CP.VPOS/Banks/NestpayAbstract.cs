@@ -250,7 +250,7 @@ namespace CP.VPOS.Banks
             System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(link);
 
             string postdata = "DATA=" + xml.ToString();
-            byte[] postdatabytes = System.Text.Encoding.GetEncoding("ISO-8859-9").GetBytes(postdata);
+            byte[] postdatabytes = System.Text.Encoding.UTF8.GetBytes(postdata);
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = postdatabytes.Length;
@@ -259,7 +259,7 @@ namespace CP.VPOS.Banks
             requeststream.Close();
 
             System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)request.GetResponse();
-            System.IO.StreamReader responsereader = new System.IO.StreamReader(resp.GetResponseStream(), System.Text.Encoding.GetEncoding("ISO-8859-9"));
+            System.IO.StreamReader responsereader = new System.IO.StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8);
             string gelenXml = responsereader.ReadToEnd();
 
             return gelenXml;

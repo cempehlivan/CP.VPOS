@@ -187,7 +187,7 @@ namespace CP.VPOS
         {
             IVirtualPOSService virtualPOSService = null;
 
-            var searchBank = Services.BankService.allBanks.FirstOrDefault(s => s.BankCode == bankCode);
+            var searchBank = Services.BankService.AllBanks.FirstOrDefault(s => s.BankCode == bankCode);
 
             if (searchBank?.BankService != null)
                 virtualPOSService = (IVirtualPOSService)Activator.CreateInstance(searchBank.BankService);

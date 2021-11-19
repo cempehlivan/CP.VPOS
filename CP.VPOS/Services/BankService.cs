@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace CP.VPOS.Services
 {
-    internal static class BankService
+    public static class BankService
     {
         public static readonly string Akbank = "0046";
         public static readonly string AlbarakaTurk = "0203";
