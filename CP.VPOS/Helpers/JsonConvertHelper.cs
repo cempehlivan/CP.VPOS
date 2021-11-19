@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+
 
 namespace CP.VPOS.Helpers
 {

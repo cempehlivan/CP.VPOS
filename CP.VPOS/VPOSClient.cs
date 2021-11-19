@@ -1,9 +1,12 @@
-﻿using CP.VPOS.Helpers;
-using CP.VPOS.Interfaces;
-using CP.VPOS.Models;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using CP.VPOS.Helpers;
+using CP.VPOS.Interfaces;
+using CP.VPOS.Models;
+using CP.VPOS.Services;
+
 
 namespace CP.VPOS
 {
@@ -156,6 +159,27 @@ namespace CP.VPOS
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
             return vPOSService.Refund(request, auth);
+        }
+
+        /// <summary>
+        /// Tüm banka listesi
+        /// </summary>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public static List<Bank> AllBankList(Func<Bank, bool> where)
+        {
+            var banks = BankService.AllBanks
+                .Where(where)
+                .Select(s => new Bank
+                {
+                    BankCode = s.BankCode,
+                    BankName = s.BankName,
+                    CollectiveVPOS = s.CollectiveVPOS,
+                    CommissionAutoAdd = s.CommissionAutoAdd,
+                    InstallmentAPI = s.InstallmentAPI,
+                }).ToList();
+
+            return banks;
         }
 
 

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CP.VPOS.Models
 {
@@ -31,6 +28,10 @@ namespace CP.VPOS.Models
         /// Taksit API'den sorgulanır
         /// </summary>
         public bool InstallmentAPI { get; set; }
+
+        /// <summary>
+        /// Banka API servis
+        /// </summary>
         public Type BankService { get; set; }
     }
 }

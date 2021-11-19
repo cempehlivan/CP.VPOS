@@ -18,7 +18,7 @@ using System.Collections.Generic;
 
 namespace CP.VPOS.Services
 {
-    public static class BankService
+    internal static class BankService
     {
         public static readonly string Akbank = "0046";
         public static readonly string AlbarakaTurk = "0203";
@@ -52,7 +52,7 @@ namespace CP.VPOS.Services
         public static readonly string Paratika = "9999";
 
 
-        public static readonly List<Bank> allBanks = new List<Bank>()
+        internal static readonly List<Bank> AllBanks = new List<Bank>()
         {
             new Bank{BankCode = "0046", BankName = "Akbank", BankService = typeof(AkbankVirtualPOSService) },
             new Bank{BankCode = "0203", BankName = "Albaraka Türk" },
