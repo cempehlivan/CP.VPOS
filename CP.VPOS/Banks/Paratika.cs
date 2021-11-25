@@ -368,9 +368,7 @@ namespace CP.VPOS.Banks.Paratika
         {
             string responseString = "";
 
-            //TODO: SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 kontrol edilecek
-            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
+            ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 

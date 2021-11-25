@@ -298,9 +298,7 @@ $@"<?xml version=""1.0"" encoding=""ISO-8859-9""?>
         private string Request(Dictionary<string, string> param, string link)
         {
             string responseString = "";
-            //TODO: SecurityProtocolType.Tls11 kontrol edilecek
-            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls;
+            ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 

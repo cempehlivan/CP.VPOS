@@ -482,6 +482,7 @@ namespace CP.VPOS.Banks.GarantiBBVA
 
         private string GetSHA1(string SHA1Data)
         {
+#pragma warning disable SYSLIB0021
             using (SHA1CryptoServiceProvider sha = new SHA1CryptoServiceProvider())
             {
                 string HashedPassword = SHA1Data;
@@ -492,6 +493,7 @@ namespace CP.VPOS.Banks.GarantiBBVA
 
                 return GetHexaDecimal(inputbytes);
             }
+#pragma warning restore SYSLIB0021
         }
 
         private string GetHexaDecimal(byte[] bytes)
@@ -510,7 +512,6 @@ namespace CP.VPOS.Banks.GarantiBBVA
             string responseString = "";
 
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 
@@ -534,7 +535,9 @@ namespace CP.VPOS.Banks.GarantiBBVA
 
             var returnSrting = String.Empty;
 
+#pragma warning disable SYSLIB0014
             var request = (HttpWebRequest)WebRequest.Create(Host);
+#pragma warning restore SYSLIB0014
             request.Timeout = 30000;
             request.Method = Method;
 

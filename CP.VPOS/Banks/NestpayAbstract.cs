@@ -211,12 +211,14 @@ namespace CP.VPOS.Banks
 
         private string GetHash(string hashstr)
         {
+#pragma warning disable SYSLIB0021
             using (System.Security.Cryptography.SHA1 sha = new System.Security.Cryptography.SHA1CryptoServiceProvider())
             {
                 byte[] inputbytes = sha.ComputeHash(System.Text.Encoding.GetEncoding("ISO-8859-9").GetBytes(hashstr));
 
                 return Convert.ToBase64String(inputbytes);
             }
+#pragma warning restore SYSLIB0021
         }
 
         private string Request(Dictionary<string, string> param, string link)
@@ -224,7 +226,6 @@ namespace CP.VPOS.Banks
             string responseString = "";
 
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 
@@ -243,12 +244,11 @@ namespace CP.VPOS.Banks
         private string xmlRequest(string xml, string link)
         {
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
-
+#pragma warning disable SYSLIB0014
             System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(link);
-
+#pragma warning restore SYSLIB0014
             string postdata = "DATA=" + xml.ToString();
             byte[] postdatabytes = System.Text.Encoding.UTF8.GetBytes(postdata);
             request.Method = "POST";
