@@ -47,18 +47,6 @@ namespace CP.VPOS.Banks
                 { "Number", request.saleInfo.cardNumber },
                 { "Expires", request.saleInfo.cardExpiryDateYear.ToString().Substring(2) + "/" +request.saleInfo.cardExpiryDateMonth.ToString() },
                 { "Cvv2Val", request.saleInfo.cardCVV },
-
-                //{ "oid", request.orderNumber },
-                //{ "okUrl", request.payment3D.returnURL },
-                //{ "failUrl", request.payment3D.returnURL },
-                //{ "rnd", Helpers.FoundationFn.time().ToString()},
-                //{ "hash", "" },
-                //{ "storetype", "3d_pay" },
-                //{ "lang", "tr" },
-                //{ "installment", request.saleInfo.installment.ToString() },
-                //{ "taksit", request.saleInfo.installment.ToString() },
-                //{ "islemtipi", "Auth" },
-                // { "cardType", "1" }, // setlenecek
             };
 
             string xml = param.toXml();
@@ -120,27 +108,94 @@ namespace CP.VPOS.Banks
 
         public virtual BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return new BINInstallmentQueryResponse { confirm = false };
         }
 
         public virtual AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return new AllInstallmentQueryResponse { confirm = false };
         }
 
         public virtual AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return new AdditionalInstallmentQueryResponse { confirm = false };
         }
 
         public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
         {
-            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
+
+            Dictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "Name", auth.merchantUser },
+                { "Password", auth.merchantPassword },
+                { "ClientId", auth.merchantID },
+                { "Type", "Void" },
+                { "TransId", request.transactionId },
+            };
+
+            string xml = param.toXml();
+
+            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+
+            Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp);
+
+            response.privateResponse = respDic;
+
+            if (respDic.ContainsKey("Response"))
+            {
+                if (respDic["Response"].cpToString() == "Error" || respDic["Response"].cpToString() == "Decline")
+                {
+                    response.statu = ResponseStatu.Error;
+                    response.message = respDic.ContainsKey("ErrMsg") ? respDic["ErrMsg"].cpToString() : "İşlem sırasında bir hata oluştu.";
+                }
+                else if (respDic["Response"].cpToString() == "Approved")
+                {
+                    response.statu = ResponseStatu.Success;
+                    response.message = "İşlem başarıyla tamamlandı";
+                }
+            }
+
+            return response;
         }
 
         public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
         {
-            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
+
+            Dictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "Name", auth.merchantUser },
+                { "Password", auth.merchantPassword },
+                { "ClientId", auth.merchantID },
+                { "Type", "Credit" },
+                { "TransId", request.transactionId },
+                { "Total", request.refundAmount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".") },
+            };
+
+            string xml = param.toXml();
+
+            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+
+            Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp);
+
+            response.privateResponse = respDic;
+
+            if (respDic.ContainsKey("Response"))
+            {
+                if (respDic["Response"].cpToString() == "Error" || respDic["Response"].cpToString() == "Decline")
+                {
+                    response.statu = ResponseStatu.Error;
+                    response.message = respDic.ContainsKey("ErrMsg") ? respDic["ErrMsg"].cpToString() : "İşlem sırasında bir hata oluştu.";
+                }
+                else if (respDic["Response"].cpToString() == "Approved")
+                {
+                    response.statu = ResponseStatu.Success;
+                    response.message = "İşlem başarıyla tamamlandı";
+                }
+            }
+
+            return response;
         }
 
         private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)

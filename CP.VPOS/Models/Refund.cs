@@ -1,4 +1,5 @@
 ﻿using CP.VPOS.Enums;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CP.VPOS.Models
@@ -47,5 +48,9 @@ namespace CP.VPOS.Models
         /// İade edilen tutar
         /// </summary>
         public decimal? refundAmount { get; set; }
+        /// <summary>
+        /// Bankalardan verilen cevapların ham datası
+        /// </summary>
+        public Dictionary<string, object> privateResponse { get; set; }
     }
 }
