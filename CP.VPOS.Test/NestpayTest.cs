@@ -17,14 +17,50 @@ namespace CP.VPOS.Test
             testPlatform = true
         };
 
-        string _transactionId = "";
-        string _orderNumber = "";
-
         [TestMethod]
         public void NestpaySaleTest()
         {
-            _orderNumber = Convert.ToInt32((DateTime.Now - new DateTime(1970, 1, 1)).TotalSeconds).ToString("X");
+            SaleResponse resp = SaleTest();
 
+            Console.WriteLine($"statu: {resp.statu.ToString()}");
+            Console.WriteLine($"message: {resp.message}");
+            Console.WriteLine($"transactionId: {resp.transactionId}");
+
+            Assert.IsTrue(resp.statu == CP.VPOS.Enums.SaleResponseStatu.Success);
+        }
+
+        [TestMethod]
+        public void NestpayCancelTest()
+        {
+            SaleResponse saleResponse = SaleTest();
+
+            if (saleResponse.statu == Enums.SaleResponseStatu.Success)
+            {
+                CancelRequest cancelRequest = new CancelRequest
+                {
+                    customerIPAddress = "1.1.1.1",
+                    orderNumber = saleResponse.orderNumber,
+                    transactionId = saleResponse.transactionId
+                };
+
+                var resp = VPOSClient.Cancel(cancelRequest, _nestpayAkbank);
+
+                Console.WriteLine($"statu: {resp.statu.ToString()}");
+                Console.WriteLine($"message: {resp.message}");
+
+                Assert.IsTrue(resp.statu == Enums.ResponseStatu.Success);
+            }
+            else
+            {
+                Console.WriteLine("Satýþ iþlemi yapýlamadýðý için iptal metodu test edilemedi");
+                Assert.IsTrue(true);
+            }
+        }
+
+
+
+        private SaleResponse SaleTest()
+        {
             CustomerInfo customerInfo = new CustomerInfo
             {
                 taxNumber = "1111111111",
@@ -60,41 +96,12 @@ namespace CP.VPOS.Test
                     confirm = false
                 },
                 customerIPAddress = "1.1.1.1",
-                orderNumber = _orderNumber
+                orderNumber = Convert.ToInt32((DateTime.Now - new DateTime(1970, 1, 1)).TotalSeconds).ToString("X")
             };
 
-            var resp = VPOSClient.Sale(saleRequest, _nestpayAkbank);
+            SaleResponse resp = VPOSClient.Sale(saleRequest, _nestpayAkbank);
 
-            Console.WriteLine($"statu: {resp.statu.ToString()}");
-            Console.WriteLine($"message: {resp.message}");
-            Console.WriteLine($"transactionId: {resp.transactionId}");
-
-            _transactionId = resp.transactionId;
-
-            Assert.IsTrue(resp.statu == CP.VPOS.Enums.SaleResponseStatu.Success);
-        }
-
-        [TestMethod]
-        public void NestpayCancelTest()
-        {
-            if (!string.IsNullOrWhiteSpace(_transactionId))
-            {
-                CancelRequest cancelRequest = new CancelRequest
-                {
-                    customerIPAddress = "1.1.1.1",
-                    orderNumber = _orderNumber,
-                    transactionId = _transactionId
-                };
-
-                var resp = VPOSClient.Cancel(cancelRequest, _nestpayAkbank);
-
-                Console.WriteLine($"statu: {resp.statu.ToString()}");
-                Console.WriteLine($"message: {resp.message}");
-
-                Assert.IsTrue(resp.statu == Enums.ResponseStatu.Success);
-            }
-            else
-                Assert.Fail("Satýþ iþlemi yapýlamadýðý için iptal metodu test edilemedi");
+            return resp;
         }
     }
 }
