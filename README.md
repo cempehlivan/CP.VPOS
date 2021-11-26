@@ -4,23 +4,26 @@
 
 Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 
-## Kullanılabilir Bankalar
-- Akbank
-- Alternatif Bank
-- Anadolubank
-- QNB Finansbank
-- Garanti BBVA
-- Halkbank
-- ING Bank
-- İş Bankası
-- Türk Ekonomi Bankası
-- Türkiye Finans
-- Yapı Kredı Bankası
-- Şekerbank
-- Ziraat Bankası
-- Cardplus
-## Kullanılabilir Ortak POS'lar
-- Paratika
+## Kullanılabilir Sanal POS'lar
+
+| Sanal POS | Satış | Satış 3D | İptal | İade  |
+| --------- | :---: | :------: | :---: | :---: |
+| Akbank | ✔️ | ✔️ | ✔️ | ✔️ |
+| Alternatif Bank | ✔️ | ✔️ | ✔️ | ✔️ |
+| Anadolubank | ✔️ | ✔️ | ✔️ | ✔️ |
+| QNB Finansbank | ✔️ | ✔️ | ✔️ | ✔️ |
+| Garanti BBVA | ✔️ | ✔️ | ❌ | ❌ |
+| Halkbank | ✔️ | ✔️ | ✔️ | ✔️ |
+| ING Bank | ✔️ | ✔️ | ✔️ | ✔️ |
+| İş Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
+| Türk Ekonomi Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
+| Türkiye Finans | ✔️ | ✔️ | ✔️ | ✔️ |
+| Yapı Kredı Bankası | ✔️ | ✔️ | ❌ | ❌ |
+| Şekerbank | ✔️ | ✔️ | ✔️ | ✔️ |
+| Ziraat Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
+| Cardplus | ✔️ | ✔️ | ✔️ | ✔️ |
+| Paratika | ✔️ | ✔️ | ❌ | ❌ |
+
 
 ## NuGet
 [https://www.nuget.org/packages/CP.VPOS](https://www.nuget.org/packages/CP.VPOS)
