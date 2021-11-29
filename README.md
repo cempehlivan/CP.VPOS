@@ -1,6 +1,6 @@
 # CP.VPOS
 
-[![Nuget v2](https://img.shields.io/nuget/v/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) [![CP.VPOS on fuget.org](https://www.fuget.org/packages/CP.VPOS/badge.svg)](https://www.fuget.org/packages/CP.VPOS) ![build](https://img.shields.io/github/workflow/status/cempehlivan/CP.VPOS/.NET)
+[![Nuget v2](https://img.shields.io/nuget/v/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) [![CP.VPOS on fuget.org](https://www.fuget.org/packages/CP.VPOS/badge.svg)](https://www.fuget.org/packages/CP.VPOS) ![build](https://img.shields.io/github/workflow/status/cempehlivan/CP.VPOS/.NET) [![GitHub license](https://img.shields.io/github/license/cempehlivan/CP.VPOS)](https://github.com/cempehlivan/CP.VPOS/blob/master/LICENSE)
 
 Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 
