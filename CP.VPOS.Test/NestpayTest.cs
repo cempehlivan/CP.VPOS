@@ -20,7 +20,7 @@ namespace CP.VPOS.Test
         [TestMethod]
         public void NestpaySaleTest()
         {
-            SaleResponse resp = SaleTest();
+            SaleResponse resp = SaleTestWithNestpay();
 
             Console.WriteLine($"statu: {resp.statu.ToString()}");
             Console.WriteLine($"message: {resp.message}");
@@ -32,7 +32,7 @@ namespace CP.VPOS.Test
         [TestMethod]
         public void NestpayCancelTest()
         {
-            SaleResponse saleResponse = SaleTest();
+            SaleResponse saleResponse = SaleTestWithNestpay();
 
             if (saleResponse.statu == Enums.SaleResponseStatu.Success)
             {
@@ -58,8 +58,7 @@ namespace CP.VPOS.Test
         }
 
 
-
-        private SaleResponse SaleTest()
+        private SaleResponse SaleTestWithNestpay()
         {
             CustomerInfo customerInfo = new CustomerInfo
             {

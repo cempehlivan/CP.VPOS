@@ -233,12 +233,71 @@ namespace CP.VPOS.Banks.Paratika
 
         public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
         {
-            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
+
+            Dictionary<string, string> req = new Dictionary<string, string> {
+                {"ACTION", "VOID" },
+                {"MERCHANTUSER", auth.merchantUser },
+                {"MERCHANTPASSWORD", auth.merchantPassword },
+                {"MERCHANT", auth.merchantID },
+                {"PGTRANID", request.transactionId },
+                {"REFLECTCOMMISSION", "No" },
+            };
+
+            string res = this.Request(req, auth);
+
+            var dic = JsonConvertHelper.Convert<Dictionary<string, object>>(res);
+
+            response.privateResponse = dic;
+
+            if (dic["responseCode"].cpToString() == "00")
+            {
+                response.statu = ResponseStatu.Success;
+                response.message = dic["responseMsg"].cpToString() + " - işlem başarılı";
+            }
+            else
+            {
+                response.statu = ResponseStatu.Error;
+                response.message = dic["responseMsg"].cpToString() + " - " + dic["errorMsg"].cpToString();
+            }
+
+
+            return response;
         }
 
         public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
         {
-            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
+
+            Dictionary<string, string> req = new Dictionary<string, string> {
+                {"ACTION", "REFUND" },
+                {"MERCHANTUSER", auth.merchantUser },
+                {"MERCHANTPASSWORD", auth.merchantPassword },
+                {"MERCHANT", auth.merchantID },
+                {"AMOUNT", request.refundAmount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".") },
+                {"CURRENCY", request.currency.ToString() },
+                {"PGTRANID", request.transactionId },
+                {"REFLECTCOMMISSION", "No" },
+            };
+
+            string res = this.Request(req, auth);
+
+            var dic = JsonConvertHelper.Convert<Dictionary<string, object>>(res);
+
+            response.privateResponse = dic;
+
+            if (dic["responseCode"].cpToString() == "00")
+            {
+                response.statu = ResponseStatu.Success;
+                response.message = dic["responseMsg"].cpToString() + " - işlem başarılı";
+            }
+            else
+            {
+                response.statu = ResponseStatu.Error;
+                response.message = dic["responseMsg"].cpToString() + " - " + dic["errorMsg"].cpToString();
+            }
+
+            return response;
         }
 
         private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)

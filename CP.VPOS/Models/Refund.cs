@@ -30,6 +30,12 @@ namespace CP.VPOS.Models
         [Required(ErrorMessage = "refundAmount alanı zorunludur")]
         [Range(minimum: 0.0001, maximum: 10000000.00, ErrorMessage = "refundAmount alanı sıfırdan büyük olmalıdır")]
         public decimal refundAmount { get; set; }
+
+        /// <summary>
+        /// İade edilecek tutar para birimi
+        /// </summary>
+        [Required(AllowEmptyStrings = false, ErrorMessage = "currency alanı zorunludur")]
+        public Currency? currency { get; set; }
     }
 
     public class RefundResponse
