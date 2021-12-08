@@ -7,6 +7,7 @@ using CP.VPOS.Banks.Halkbank;
 using CP.VPOS.Banks.INGBank;
 using CP.VPOS.Banks.IsBankasi;
 using CP.VPOS.Banks.Paratika;
+using CP.VPOS.Banks.Payten;
 using CP.VPOS.Banks.QNBFinansbank;
 using CP.VPOS.Banks.Sekerbank;
 using CP.VPOS.Banks.TurkEkonomiBankasi;
@@ -77,7 +78,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0143", BankName = "Aktif Yatırım Bankası"},
 
             new Bank{BankCode = "9992", BankName = "Hepsipay", CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
-            new Bank{BankCode = "9993", BankName = "Payten", CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
+            new Bank{BankCode = "9993", BankName = "Payten", BankService = typeof(PaytenVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9994", BankName = "PayTR", CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9995", BankName = "IPara", CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9996", BankName = "PayU", CollectiveVPOS = true, InstallmentAPI = true},

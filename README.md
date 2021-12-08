@@ -24,7 +24,8 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Şekerbank | ✔️ | ✔️ | ✔️ | ✔️ |
 | Ziraat Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
 | Cardplus | ✔️ | ✔️ | ✔️ | ✔️ |
-| Paratika | ✔️ | ✔️ | ❌ | ❌ |
+| Paratika | ✔️ | ✔️ | ✔️ | ✔️ |
+| Payten - MSU | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 ## NuGet
