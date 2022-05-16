@@ -202,6 +202,8 @@ namespace CP.VPOS.Banks
         {
             SaleResponse response = new SaleResponse();
 
+            string installment = request.saleInfo.installment > 1 ? request.saleInfo.installment.ToString() : "";
+
             Dictionary<string, string> param = new Dictionary<string, string>()
             {
                 { "pan", request.saleInfo.cardNumber },
@@ -218,8 +220,8 @@ namespace CP.VPOS.Banks
                 { "storetype", "3d_pay" },
                 { "lang", "tr" },
                 { "currency", ((int)request.saleInfo.currency).ToString() },
-                { "installment", request.saleInfo.installment.ToString() },
-                { "taksit", request.saleInfo.installment.ToString() },
+                { "installment", installment },
+                { "taksit", installment },
                 { "islemtipi", "Auth" },
            
                 // { "cardType", "1" }, // setlenecek
