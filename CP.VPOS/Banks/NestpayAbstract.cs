@@ -247,20 +247,15 @@ namespace CP.VPOS.Banks
             response.privateResponse = form;
             response.orderNumber = request.orderNumber;
 
-            if (form.ContainsKey("PaReq"))
-            {
-                response.statu = SaleResponseStatu.RedirectHTML;
-                response.message = resp;
-            }
-            else if (form.ContainsKey("Response") && (form["Response"].cpToString() == "Error" || form["Response"].cpToString() == "Decline"))
+            if (form?.ContainsKey("Response") == true && (form["Response"].cpToString() == "Error" || form["Response"].cpToString() == "Decline"))
             {
                 response.statu = SaleResponseStatu.Error;
                 response.message = form.ContainsKey("ErrMsg") ? form["ErrMsg"].cpToString() : "İşlem sırasında bir hata oluştu.";
             }
             else
             {
-                response.statu = SaleResponseStatu.Error;
-                response.message = "İşlem sırasında bilinmeyen bir hata oluştu";
+                response.statu = SaleResponseStatu.RedirectHTML;
+                response.message = resp;
             }
 
             return response;
