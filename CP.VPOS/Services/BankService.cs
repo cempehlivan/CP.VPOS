@@ -12,6 +12,7 @@ using CP.VPOS.Banks.QNBFinansbank;
 using CP.VPOS.Banks.Sekerbank;
 using CP.VPOS.Banks.TurkEkonomiBankasi;
 using CP.VPOS.Banks.TurkiyeFinans;
+using CP.VPOS.Banks.Vakifbank;
 using CP.VPOS.Banks.YapiKrediBankasi;
 using CP.VPOS.Banks.ZiraatBankasi;
 using CP.VPOS.Models;
@@ -71,7 +72,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0146", BankName = "Odeabank"},
             new Bank{BankCode = "0032", BankName = "Türk Ekonomi Bankası", BankService = typeof(TurkEkonomiBankasiVirtualPOSService)},
             new Bank{BankCode = "0206", BankName = "Türkiye Finans", BankService = typeof(TurkiyeFinansVirtualPOSService)},
-            new Bank{BankCode = "0015", BankName = "Vakıfbank"},
+            new Bank{BankCode = "0015", BankName = "Vakıfbank", BankService = typeof(VakifbankVirtualPOSService)},
             new Bank{BankCode = "0067", BankName = "Yapı Kredı Bankası", BankService = typeof(YapiKrediBankasiVirtualPOSService)},
             new Bank{BankCode = "0059", BankName = "Şekerbank", BankService = typeof(SekerbankVirtualPOSService)},
             new Bank{BankCode = "0010", BankName = "Ziraat Bankası", BankService = typeof(ZiraatBankasiVirtualPOSService)},

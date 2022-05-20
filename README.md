@@ -18,10 +18,11 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Halkbank | ✔️ | ✔️ | ✔️ | ✔️ |
 | ING Bank | ✔️ | ✔️ | ✔️ | ✔️ |
 | İş Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
+| Şekerbank | ✔️ | ✔️ | ✔️ | ✔️ |
 | Türk Ekonomi Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
 | Türkiye Finans | ✔️ | ✔️ | ✔️ | ✔️ |
+| Vakıfbank | ✔️ | ✔️ | ❌ | ❌ |
 | Yapı Kredı Bankası | ✔️ | ✔️ | ❌ | ❌ |
-| Şekerbank | ✔️ | ✔️ | ✔️ | ✔️ |
 | Ziraat Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
 | Cardplus | ✔️ | ✔️ | ✔️ | ✔️ |
 | Paratika | ✔️ | ✔️ | ✔️ | ✔️ |
