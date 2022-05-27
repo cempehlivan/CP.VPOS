@@ -1,5 +1,5 @@
 # CP.VPOS
-[![Nuget v2](https://img.shields.io/nuget/v/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) [![CP.VPOS on fuget.org](https://www.fuget.org/packages/CP.VPOS/badge.svg)](https://www.fuget.org/packages/CP.VPOS) ![build](https://img.shields.io/github/workflow/status/cempehlivan/CP.VPOS/.NET) [![GitHub license](https://img.shields.io/github/license/cempehlivan/CP.VPOS)](https://github.com/cempehlivan/CP.VPOS/blob/master/LICENSE)
+[![Nuget v2](https://img.shields.io/nuget/v/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) ![build](https://img.shields.io/github/workflow/status/cempehlivan/CP.VPOS/.NET) [![GitHub license](https://img.shields.io/github/license/cempehlivan/CP.VPOS)](https://github.com/cempehlivan/CP.VPOS/blob/master/LICENSE)
 
 ![.net version](https://img.shields.io/badge/.net%20framework-4.0-purple) ![.net version](https://img.shields.io/badge/.net%20framework-4.5-purple) ![.net version](https://img.shields.io/badge/.net%20core-3.1-purple) ![.net version](https://img.shields.io/badge/.net-5.0-purple) ![.net version](https://img.shields.io/badge/.net-6.0-purple)
 

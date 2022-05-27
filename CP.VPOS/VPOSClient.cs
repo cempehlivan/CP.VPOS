@@ -182,6 +182,18 @@ namespace CP.VPOS
             return banks;
         }
 
+        /// <summary>
+        /// Kredi Kartı BIN sorgulama
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public static CreditCardBinQueryResponse CreditCardBinQuery(CreditCardBinQueryRequest request)
+        {
+            request.Validate();
+
+
+            return BinService.GetBinList().FirstOrDefault(s => s.binNumber == request.binNumber);
+        }
 
         private static IVirtualPOSService GetVirtualPOSService(string bankCode)
         {
