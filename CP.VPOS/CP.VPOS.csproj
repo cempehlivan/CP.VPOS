@@ -11,7 +11,7 @@
 		<PackageProjectUrl>https://github.com/cempehlivan/CP.VPOS</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/cempehlivan/CP.VPOS</RepositoryUrl>
 		<AssemblyVersion>1.3.2</AssemblyVersion>
-		<FileVersion>1.3.1</FileVersion>
+		<FileVersion>1.3.2</FileVersion>
 		<PackageIcon>packageIcon.png</PackageIcon>
 		<PackageReleaseNotes>Vakıfbank Sanal POS ödeme sistemi eklendi.</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
