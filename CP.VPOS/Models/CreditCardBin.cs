@@ -26,6 +26,10 @@ namespace CP.VPOS.Models
         /// </summary>
         public CreditCardType cardType { get; set; }
         /// <summary>
+        /// Kart markası
+        /// </summary>
+        public CreditCardBrand cardBrand { get; set; }
+        /// <summary>
         /// Ticari kart
         /// </summary>
         public bool commercialCard { get; set; }
