@@ -23,8 +23,3 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Pack
-      run: dotnet pack -c Release -o ./packages
-    - name: Push
-      if: ${{ startsWith(github.event.head_commit.message, 'version update') }}
-      run: dotnet nuget push ./packages/CP.VPOS.*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
