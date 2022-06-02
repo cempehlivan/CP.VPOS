@@ -27,6 +27,7 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Cardplus | ✔️ | ✔️ | ✔️ | ✔️ |
 | Paratika | ✔️ | ✔️ | ✔️ | ✔️ |
 | Payten - MSU | ✔️ | ✔️ | ✔️ | ✔️ |
+| Iyzico | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 ## NuGet

@@ -15,6 +15,7 @@ using CP.VPOS.Banks.TurkiyeFinans;
 using CP.VPOS.Banks.Vakifbank;
 using CP.VPOS.Banks.YapiKrediBankasi;
 using CP.VPOS.Banks.ZiraatBankasi;
+using CP.VPOS.Banks.Iyzico;
 using CP.VPOS.Models;
 using System.Collections.Generic;
 
@@ -83,7 +84,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "9994", BankName = "PayTR", CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9995", BankName = "IPara", CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9996", BankName = "PayU", CollectiveVPOS = true, InstallmentAPI = true},
-            new Bank{BankCode = "9997", BankName = "Iyzico", CollectiveVPOS = true, InstallmentAPI = true},
+            new Bank{BankCode = "9997", BankName = "Iyzico", BankService = typeof(IyzicoVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true},
             new Bank{BankCode = "9998", BankName = "Cardplus", BankService = typeof(CardplusVirtualPOSService) },
             new Bank{BankCode = "9999", BankName = "Paratika", BankService = typeof(ParatikaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
         };
