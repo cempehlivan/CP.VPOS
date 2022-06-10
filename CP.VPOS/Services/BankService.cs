@@ -2,6 +2,7 @@
 using CP.VPOS.Banks.AlternatifBank;
 using CP.VPOS.Banks.Anadolubank;
 using CP.VPOS.Banks.Cardplus;
+using CP.VPOS.Banks.Denizbank;
 using CP.VPOS.Banks.GarantiBBVA;
 using CP.VPOS.Banks.Halkbank;
 using CP.VPOS.Banks.INGBank;
@@ -61,7 +62,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0203", BankName = "Albaraka Türk" },
             new Bank{BankCode = "0124", BankName = "Alternatif Bank", BankService = typeof(AlternatifBankVirtualPOSService)},
             new Bank{BankCode = "0135", BankName = "Anadolubank", BankService = typeof(AnadolubankVirtualPOSService)},
-            new Bank{BankCode = "0134", BankName = "Denizbank"},
+            new Bank{BankCode = "0134", BankName = "Denizbank", BankService = typeof(DenizbankVirtualPOSService)},
             new Bank{BankCode = "0103", BankName = "Fibabanka"},
             new Bank{BankCode = "0111", BankName = "QNB Finansbank", BankService = typeof(QNBFinansbankVirtualPOSService)},
             new Bank{BankCode = "0062", BankName = "Garanti BBVA", BankService = typeof(GarantiBBVAVirtualPOSService)},
