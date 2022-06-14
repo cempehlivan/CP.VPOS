@@ -17,6 +17,9 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>sanalpos sanal-pos</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageId>CP.VPOS</PackageId>
+		<Product>CP.VPOS</Product>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
 	<ItemGroup>
