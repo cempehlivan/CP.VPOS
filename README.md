@@ -32,12 +32,60 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 
 ## NuGet
 [https://www.nuget.org/packages/CP.VPOS](https://www.nuget.org/packages/CP.VPOS)
-veya 
+
 Package Manager:
 
 > Install-Package CP.VPOS
 
+Dotnet CLI
+> dotnet add package CP.VPOS
+
+
+# Dökümanlar
+
+## API Bilgilerinin ayarlanması - `VirtualPOSAuth` Class'ı
+
+Alan açıklamaları:
+
+| Alan | Tür | Açıklama |
+| ---- | --- | -------- |
+| `bankCode` | `string` | Hangi banka entegrasyonunun kullanılacağının belirlendiği alandır. Banka kodlarının belirlenmesinde, bankaların global EFT kodları kullanılmıştır. 4 haneli olarak girilmelidir. Örneğin; Akbank global EFT kodu `46` dır. Akbank Sanal POS entegrasyonunu kullanmak için `0046` girilmelidir. Veya [CP.VPOS.Services.BankService](./CP.VPOS/Services/BankService.cs) Enum Class'ı kullanılabilir. Örneğin: `CP.VPOS.Services.BankService.Akbank` |
+| `merchantID` | `string` | Firma kodu |
+| `merchantUser` | `string` | API kullanıcı adı |
+| `merchantPassword` | `string` | API kullanıcı şifre |
+| `merchantStorekey` | `string` | Bazı bankalar için 3D store key |
+| `testPlatform` | `boolean` | Ortam bilgisi. Sanal POS Test ortamı için `true` gönderilmelidir. |
+
+
+Sanal POS bazlı alan açıklamaları:
+
+| Sanal POS | bankCode | merchantID | merchantUser | merchantPassword | merchantStorekey |
+| --------- | -------- | ---------- | ------------ | ---------------- | ---------------- |
+| Akbank | CP.VPOS.Services.BankService.Akbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Alternatif Bank | CP.VPOS.Services.BankService.AlternatifBank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Anadolubank | CP.VPOS.Services.BankService.Anadolubank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| QNB Finansbank | CP.VPOS.Services.BankService.QNBFinansbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Garanti BBVA | CP.VPOS.Services.BankService.GarantiBBVA | Firma Kodu | Terminal No | `PROVAUT` kullanıcısı şifresi | 3D secure anahtarı |
+| Halkbank | CP.VPOS.Services.BankService.Halkbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| ING Bank | CP.VPOS.Services.BankService.INGBank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| İş Bankası | CP.VPOS.Services.BankService.IsBankasi | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Şekerbank | CP.VPOS.Services.BankService.Sekerbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Türk Ekonomi Bankası | CP.VPOS.Services.BankService.TurkEkonomiBankasi | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Türkiye Finans | CP.VPOS.Services.BankService.TurkiyeFinans | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Vakıfbank | CP.VPOS.Services.BankService.Vakifbank | Üye İşyeri Numarası | POS No | Api Şifresi | |
+| Yapı Kredı Bankası | CP.VPOS.Services.BankService.YapiKrediBankasi | Firma Kodu | Terminal No | Pos Net ID | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Ziraat Bankası | CP.VPOS.Services.BankService.ZiraatBankasi | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Cardplus | CP.VPOS.Services.BankService.Cardplus | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Paratika | CP.VPOS.Services.BankService.Paratika | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
+| Payten - MSU | CP.VPOS.Services.BankService.Payten | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
+| Iyzico | CP.VPOS.Services.BankService.Iyzico | Üye İşyeri Numarası | API Anahtarı | Güvenlik Anahtarı | |
+
 ## Satış İşlemi
+
+`payment3D.confirm = false` gönderilmesi halinde 3D'siz çekim işlemi yapılır ve direkt olarak nihai sonucu döner. 
+
+`payment3D.confirm = true` gönderilmesi halinde 3D li  satış işlemi başlatılır. 3D li işlemlerde `payment3D.returnURL` alanına 3D den gelecek olan cevabın iletilmesi istenen URL girilmelidir. Örneğin: `https://localhost/Payment/VirtualPOS3DResponse/0046` Linkin sonuna `0046` eklememin sebebi, 3D cevabının hangi bankadan geldiğini ayrıştırmak içindir. 3D den gelen form request body'sini  `Dictionary<string, object>` e çevirip `VPOSClient.Sale3DResponse` methoduna gönderilmesi gerekmektedir. Bu işlem sonrası nihai sonuç döner.
+
 ```csharp
 VirtualPOSAuth nestpayAkbank = new VirtualPOSAuth
 {
