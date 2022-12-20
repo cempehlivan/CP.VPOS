@@ -1,5 +1,5 @@
 # CP.VPOS
-[![Nuget download](https://img.shields.io/nuget/dt/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) [![Nuget v2](https://img.shields.io/nuget/v/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) ![build](https://img.shields.io/github/workflow/status/cempehlivan/CP.VPOS/.NET) [![GitHub license](https://img.shields.io/github/license/cempehlivan/CP.VPOS)](https://github.com/cempehlivan/CP.VPOS/blob/master/LICENSE)
+[![Nuget download](https://img.shields.io/nuget/dt/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) [![Nuget v2](https://img.shields.io/nuget/v/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) ![build](https://img.shields.io/github/actions/workflow/status/cempehlivan/cp.vpos/dotnet.yml?branch=master) [![GitHub license](https://img.shields.io/github/license/cempehlivan/CP.VPOS)](https://github.com/cempehlivan/CP.VPOS/blob/master/LICENSE)
 
 ![.net version](https://img.shields.io/badge/.net%20framework-4.0-purple) ![.net version](https://img.shields.io/badge/.net%20framework-4.5-purple) ![.net version](https://img.shields.io/badge/.net%20core-3.1-purple) ![.net version](https://img.shields.io/badge/.net-5.0-purple) ![.net version](https://img.shields.io/badge/.net-6.0-purple)
 
