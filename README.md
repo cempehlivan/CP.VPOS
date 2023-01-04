@@ -80,11 +80,10 @@ Sanal POS bazlı alan açıklamaları:
 | Payten - MSU | CP.VPOS.Services.BankService.Payten | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 | Iyzico | CP.VPOS.Services.BankService.Iyzico | Üye İşyeri Numarası | API Anahtarı | Güvenlik Anahtarı | |
 
-## Satış İşlemi
+## 3D'siz Direkt Satış İşlemi
 
 `payment3D.confirm = false` gönderilmesi halinde 3D'siz çekim işlemi yapılır ve direkt olarak nihai sonucu döner. 
 
-`payment3D.confirm = true` gönderilmesi halinde 3D li  satış işlemi başlatılır. 3D li işlemlerde `payment3D.returnURL` alanına 3D den gelecek olan cevabın iletilmesi istenen URL girilmelidir. Örneğin: `https://localhost/Payment/VirtualPOS3DResponse/0046` Linkin sonuna `0046` eklememin sebebi, 3D cevabının hangi bankadan geldiğini ayrıştırmak içindir. 3D den gelen form request body'sini  `Dictionary<string, object>` e çevirip `VPOSClient.Sale3DResponse` methoduna gönderilmesi gerekmektedir. Bu işlem sonrası nihai sonuç döner.
 
 ```csharp
 VirtualPOSAuth nestpayAkbank = new VirtualPOSAuth
@@ -137,4 +136,89 @@ SaleRequest saleRequest = new SaleRequest
 
 
 var resp = VPOSClient.Sale(saleRequest, nestpayAkbank);
+```
+
+## 3D Secure Satış İşlemi
+
+`payment3D.confirm = true` gönderilmesi halinde 3D li  satış işlemi başlatılır. 3D li işlemlerde `payment3D.returnURL` alanına 3D den gelecek olan cevabın iletilmesi istenen URL girilmelidir. Örneğin: `https://localhost/Payment/VirtualPOS3DResponse`. 
+
+`VPOSClient.Sale` metodundan dönen cevaptaki `statu` enum alanı `RedirectURL` veya `RedirectHTML` döner. statu `RedirectURL` ise `message` alanında client'ı yönlendirmeniz gereken url bulunur. statu `RedirectHTML` ise `message` alanında client'ın sayfasında çalıştırmanız gereken HTML bulunur. 
+
+Bu işlem sonrası client, banka 3D doğrulama sayfasına yönlendirilir. Bu sayfadaki işlem sonucunu banka, `payment3D.returnURL` alanında belirttiğimiz url e client'ın browserını kullanarak form post yöntemi ile döner.
+
+3D den gelen form request body'sini  `Dictionary<string, object>` e çevirip `VPOSClient.Sale3DResponse` methoduna gönderilmesi gerekmektedir. Bu işlem sonrası nihai sonuç döner.
+
+```csharp
+VirtualPOSAuth nestpayAkbank = new VirtualPOSAuth
+{
+	bankCode = CP.VPOS.Services.BankService.Akbank,
+	merchantID = "100100000",
+	merchantUser = "AKTESTAPI",
+	merchantPassword = "AKBANK01",
+	merchantStorekey = "123456",
+	testPlatform = true
+};
+
+CustomerInfo customerInfo = new CustomerInfo
+{
+	taxNumber = "1111111111",
+	emailAddress = "test@test.com",
+	name = "cem",
+	surname = "pehlivan",
+	phoneNumber = "1111111111",
+	addressDesc = "adres",
+	cityName = "istanbul",
+	country = CP.VPOS.Enums.Country.TUR,
+	postCode = "34000",
+	taxOffice = "maltepe",
+	townName = "maltepe"
+};
+
+SaleRequest saleRequest = new SaleRequest
+{
+	invoiceInfo = customerInfo,
+	shippingInfo = customerInfo,
+	saleInfo = new SaleInfo
+	{
+		cardNameSurname = "cem test",
+		cardNumber = "4355084355084358",
+		cardExpiryDateMonth = 12,
+		cardExpiryDateYear = 2030,
+		amount = (decimal)100.50,
+		cardCVV = "000",
+		currency = CP.VPOS.Enums.Currency.TRY,
+		installment = 1,
+	},
+	payment3D = new Payment3D
+	{
+		confirm = true,
+		returnURL = "https://localhost/Payment/VirtualPOS3DResponse"
+	},
+	customerIPAddress = "1.1.1.1",
+	orderNumber = Convert.ToInt32((DateTime.Now - new DateTime(1970, 1, 1)).TotalSeconds).ToString("X")
+};
+
+
+var resp = VPOSClient.Sale(saleRequest, nestpayAkbank);
+```
+
+
+### 3D Secure Satış İşlemi 2. Adım
+
+
+```csharp
+
+public class PaymentController
+{
+    public async Task<IActionResult> VirtualPOS3DResponse()
+    {
+        Dictionary<string, object> pairs = Request.Form.Keys.ToDictionary(k => k, v => (object)Request.Form[v]);    
+
+        SaleResponse response = VPOSClient.Sale3DResponse(new Sale3DResponseRequest
+        {
+            responseArray = pairs
+        }, nestpayAkbank);
+    }
+}
+
 ```
