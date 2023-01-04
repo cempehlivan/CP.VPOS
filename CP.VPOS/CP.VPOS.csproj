@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net40;net45;netstandard2.0;netstandard2.1;net50;net60</TargetFrameworks>
+		<TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net40;net45;netstandard2.0;netstandard2.1;net50;net60;net70</TargetFrameworks>
 		<TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
 		<Version>1.4.0</Version>
 		<Authors>Cem Pehlivan</Authors>
 		<Company>Cem Pehlivan</Company>
 		<Description>Sanal POS</Description>
-		<Copyright>Copyright © Cem Pehlivan 2021</Copyright>
+		<Copyright>Copyright © Cem Pehlivan 2021-2023</Copyright>
 		<PackageProjectUrl>https://github.com/cempehlivan/CP.VPOS</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/cempehlivan/CP.VPOS</RepositoryUrl>
 		<AssemblyVersion>1.4.0</AssemblyVersion>
@@ -59,6 +59,12 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net60'">
+		<PackageReference Include="System.ComponentModel.Annotations">
+			<Version>5.0.0</Version>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net70'">
 		<PackageReference Include="System.ComponentModel.Annotations">
 			<Version>5.0.0</Version>
 		</PackageReference>
