@@ -15,6 +15,7 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Anadolubank | ✔️ | ✔️ | ✔️ | ✔️ |
 | Denizbank | ✔️ | ✔️ | ✔️ | ✔️ |
 | QNB Finansbank | ✔️ | ✔️ | ✔️ | ✔️ |
+| Finansbank Nestpay | ✔️ | ✔️ | ✔️ | ✔️ |
 | Garanti BBVA | ✔️ | ✔️ | ❌ | ❌ |
 | Halkbank | ✔️ | ✔️ | ✔️ | ✔️ |
 | ING Bank | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -67,6 +68,7 @@ Sanal POS bazlı alan açıklamaları:
 | Anadolubank | CP.VPOS.Services.BankService.Anadolubank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Denizbank | CP.VPOS.Services.BankService.Denizbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | QNB Finansbank | CP.VPOS.Services.BankService.QNBFinansbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Finansbank Nestpay | CP.VPOS.Services.BankService.FinansbankNestpay | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Garanti BBVA | CP.VPOS.Services.BankService.GarantiBBVA | Firma Kodu | Terminal No | `PROVAUT` kullanıcısı şifresi | 3D secure anahtarı |
 | Halkbank | CP.VPOS.Services.BankService.Halkbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | ING Bank | CP.VPOS.Services.BankService.INGBank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |

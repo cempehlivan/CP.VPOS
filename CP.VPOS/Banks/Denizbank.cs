@@ -74,7 +74,7 @@ namespace CP.VPOS.Banks.Denizbank
             response.privateResponse = dic;
             response.orderNumber = request.orderNumber;
 
-            if (dic.ContainsKey("TransId"))
+            if (dic?.ContainsKey("TransId") == true)
                 response.transactionId = dic["TransId"].cpToString();
 
             return response;
