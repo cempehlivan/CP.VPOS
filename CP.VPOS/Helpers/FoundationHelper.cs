@@ -17,7 +17,7 @@ namespace CP.VPOS.Helpers
             if (formhtml.cpIsNullOrEmpty())
                 return keyValues;
 
-            System.Text.RegularExpressions.MatchCollection match = System.Text.RegularExpressions.Regex.Matches(formhtml, "<input.*name=\"(.*)\".*value=\"(.*)\".*>");
+            System.Text.RegularExpressions.MatchCollection match = System.Text.RegularExpressions.Regex.Matches(formhtml, "<input.*name=\"(.*?)\".*value=\"(.*?)\".*>");
 
             if (match != null && match.Count > 0)
             {
