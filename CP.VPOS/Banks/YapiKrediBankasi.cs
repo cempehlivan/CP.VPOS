@@ -15,10 +15,10 @@ namespace CP.VPOS.Banks.YapiKrediBankasi
     internal class YapiKrediBankasiVirtualPOSService : IVirtualPOSService
     {
         private readonly string _urlAPITest = "https://setmpos.ykb.com/PosnetWebService/XML";
-        private readonly string _urlAPILive = "https://www.posnet.ykb.com/PosnetWebService/XML";
+        private readonly string _urlAPILive = "https://posnet.yapikredi.com.tr/PosnetWebService/XML";
 
         private readonly string _url3Dtest = "https://setmpos.ykb.com/3DSWebService/YKBPaymentService";
-        private readonly string _url3DLive = "https://www.posnet.ykb.com/3DSWebService/YKBPaymentService";
+        private readonly string _url3DLive = "https://posnet.yapikredi.com.tr/3DSWebService/YKBPaymentService";
 
 
         //Panel: https://setmpos.ykb.com/PosnetF1/Login.jsp
