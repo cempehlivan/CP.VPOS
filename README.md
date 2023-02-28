@@ -77,7 +77,7 @@ Sanal POS bazlı alan açıklamaları:
 | Türk Ekonomi Bankası | CP.VPOS.Services.BankService.TurkEkonomiBankasi | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Türkiye Finans | CP.VPOS.Services.BankService.TurkiyeFinans | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Vakıfbank | CP.VPOS.Services.BankService.Vakifbank | Üye İşyeri Numarası | POS No | Api Şifresi | |
-| Yapı Kredı Bankası | CP.VPOS.Services.BankService.YapiKrediBankasi | Firma Kodu | Terminal No | Pos Net ID | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Yapı Kredı Bankası | CP.VPOS.Services.BankService.YapiKrediBankasi | Firma Kodu | Terminal No | Pos Net ID | ENCKEY |
 | Ziraat Bankası | CP.VPOS.Services.BankService.ZiraatBankasi | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Cardplus | CP.VPOS.Services.BankService.Cardplus | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Paratika | CP.VPOS.Services.BankService.Paratika | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
