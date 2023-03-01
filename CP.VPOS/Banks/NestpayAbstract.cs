@@ -45,7 +45,7 @@ namespace CP.VPOS.Banks
                 { "Total", request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".") },
                 { "Currency", ((int)request.saleInfo.currency).ToString() },
                 { "Number", request.saleInfo.cardNumber },
-                { "Expires", request.saleInfo.cardExpiryDateYear.ToString().Substring(2) + "/" +request.saleInfo.cardExpiryDateMonth.ToString() },
+                { "Expires", request.saleInfo.cardExpiryDateMonth.ToString("00") + "/" +request.saleInfo.cardExpiryDateYear.ToString() },
                 { "Cvv2Val", request.saleInfo.cardCVV },
             };
 
@@ -59,7 +59,7 @@ namespace CP.VPOS.Banks
 
             if (respDic.ContainsKey("Response"))
             {
-                if (respDic["Response"].cpToString() == "Error" || respDic["Response"].cpToString() == "Decline")
+                if (respDic["Response"].cpToString() == "Error" || respDic["Response"].cpToString() == "Decline" || respDic["Response"].cpToString() == "Declined")
                 {
                     response.statu = SaleResponseStatu.Error;
                     response.message = respDic.ContainsKey("ErrMsg") ? respDic["ErrMsg"].cpToString() : "İşlem sırasında bir hata oluştu.";
