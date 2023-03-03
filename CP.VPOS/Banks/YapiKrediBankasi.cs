@@ -5,6 +5,7 @@ using CP.VPOS.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -306,7 +307,18 @@ $@"<?xml version=""1.0"" encoding=""ISO-8859-9""?>
             using (var ykbRequest = new FormUrlEncodedContent(param))
             {
                 var response = client.PostAsync(link, ykbRequest).Result;
-                responseString = response.Content.ReadAsStringAsync().Result;
+                
+                try
+                {
+                    responseString = response.Content.ReadAsStringAsync().Result;
+                }
+                catch
+                {
+                    using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result, Encoding.UTF8))
+                    {
+                        responseString = reader.ReadToEnd();
+                    }
+                }
             }
 
             return responseString;
