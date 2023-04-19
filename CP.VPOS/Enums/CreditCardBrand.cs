@@ -10,5 +10,6 @@ namespace CP.VPOS.Enums
         Amex = 3,
         Discover = 4,
         Unionpay = 5,
+        JCB = 6,
     }
 }

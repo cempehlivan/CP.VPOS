@@ -1,4 +1,5 @@
 ﻿using CP.VPOS.Enums;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CP.VPOS.Models
@@ -33,6 +34,14 @@ namespace CP.VPOS.Models
         /// Ticari kart
         /// </summary>
         public bool commercialCard { get; set; }
+        /// <summary>
+        /// Kart program
+        /// </summary>
+        public CreditCardProgram cardProgram { get; set; }
+        /// <summary>
+        /// Taksit yapabilen bankalar
+        /// </summary>
+        public List<string> banksWithInstallments { get; set; }
     }
 }
 

@@ -191,8 +191,33 @@ namespace CP.VPOS
         {
             request.Validate();
 
+            List<CreditCardBinQueryResponse> binList = BinService.GetBinList();
 
-            return BinService.GetBinList().FirstOrDefault(s => s.binNumber == request.binNumber);
+            CreditCardBinQueryResponse _binDetail = binList.FirstOrDefault(s => s.binNumber == request.binNumber);
+
+            CreditCardBinQueryResponse binDetail = null;
+
+            if (_binDetail != null)
+            {
+                binDetail = _binDetail.DeepClone();
+
+                if ((int)binDetail.cardProgram >= 0)
+                    binDetail.banksWithInstallments = binList.Where(s => s.cardProgram == binDetail.cardProgram).GroupBy(s => s.bankCode).OrderByDescending(s=> s.Count()).Select(s => s.Key).ToList();
+
+                binDetail.banksWithInstallments = binDetail.banksWithInstallments ?? new List<string>();
+
+                if (!binDetail.banksWithInstallments.Any(s => s == binDetail.bankCode))
+                    binDetail.banksWithInstallments.Add(binDetail.bankCode);
+
+
+                if(binDetail.banksWithInstallments.IndexOf(binDetail.bankCode) != 0)
+                {
+                    binDetail.banksWithInstallments.Remove(binDetail.bankCode);
+                    binDetail.banksWithInstallments.Insert(0, binDetail.bankCode);
+                }
+            }
+
+            return binDetail;
         }
 
         private static IVirtualPOSService GetVirtualPOSService(string bankCode)

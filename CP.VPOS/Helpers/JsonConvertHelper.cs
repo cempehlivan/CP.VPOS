@@ -77,5 +77,12 @@ namespace CP.VPOS.Helpers
             string json = sw.ToString();
             return json.Replace("\r", "");
         }
+
+        internal static T DeepClone<T>(this T obj) where T : class
+        {
+            if (obj == null) return (T)null;
+
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj));
+        }
     }
 }
