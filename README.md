@@ -30,6 +30,7 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Paratika | ✔️ | ✔️ | ✔️ | ✔️ |
 | Payten - MSU | ✔️ | ✔️ | ✔️ | ✔️ |
 | Iyzico | ✔️ | ✔️ | ✔️ | ✔️ |
+| Sipay | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 ## NuGet
@@ -83,6 +84,7 @@ Sanal POS bazlı alan açıklamaları:
 | Paratika | CP.VPOS.Services.BankService.Paratika | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 | Payten - MSU | CP.VPOS.Services.BankService.Payten | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 | Iyzico | CP.VPOS.Services.BankService.Iyzico | Üye İşyeri Numarası | API Anahtarı | Güvenlik Anahtarı | |
+| Sipay | CP.VPOS.Services.BankService.Sipay | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 
 ## 3D'siz Direkt Satış İşlemi
 
