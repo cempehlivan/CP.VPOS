@@ -228,7 +228,7 @@ namespace CP.VPOS.Banks.Paratika
 
         public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)

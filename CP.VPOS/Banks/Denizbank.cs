@@ -267,17 +267,17 @@ namespace CP.VPOS.Banks.Denizbank
 
         public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         private string SHA1Base64(string text)
