@@ -20,6 +20,7 @@
 		<PackageId>CP.VPOS</PackageId>
 		<Product>CP.VPOS</Product>
 		<RepositoryType>git</RepositoryType>
+		<NoWarn>$(NoWarn);CS8981;NETSDK1138</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
