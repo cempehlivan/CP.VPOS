@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace CP.VPOS.Banks.Denizbank
@@ -281,12 +282,14 @@ namespace CP.VPOS.Banks.Denizbank
 
         private string SHA1Base64(string text)
         {
-            System.Security.Cryptography.SHA1 sha = new System.Security.Cryptography.SHA1CryptoServiceProvider();
-            byte[] bytes = Encoding.UTF8.GetBytes(text);
-            byte[] hashingbytes = sha.ComputeHash(bytes);
-            string hash = Convert.ToBase64String(hashingbytes);
+            using (var sha = SHA1.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(text);
+                byte[] hashingbytes = sha.ComputeHash(bytes);
+                string hash = Convert.ToBase64String(hashingbytes);
 
-            return hash;
+                return hash;
+            }
         }
 
         private string Request(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null)
