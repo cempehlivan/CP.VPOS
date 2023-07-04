@@ -7117,7 +7117,95 @@ namespace CP.VPOS.Services
     ""cardBrand"": 5,
     ""commercialCard"": false,
     ""cardProgram"": 3
-  }
+  },
+    {
+    ""binNumber"": ""736659"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""736660"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""736656"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""736657"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""736655"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""016101"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""016102"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""016170"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""083701"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 1,
+    ""cardBrand"": 2,
+    ""commercialCard"": true,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""083700"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 1,
+    ""cardBrand"": 2,
+    ""commercialCard"": true,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""083703"",
+    ""bankCode"": ""0067"",
+    ""cardType"": 1,
+    ""cardBrand"": 2,
+    ""commercialCard"": true,
+    ""cardProgram"": -1
+    }
 ]";
 
         private static List<CreditCardBinQueryResponse> dataList = null;
