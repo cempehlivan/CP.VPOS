@@ -15,7 +15,7 @@ namespace CP.VPOS.Models
         public string BIN { get; set; }
 
         /// <summary>
-        /// Kart tan çekilmek istenen tutar
+        /// Karttan çekilmek istenen tutar
         /// </summary>
         [Required(ErrorMessage = "Tutar alanı zorunludur")]
         [Range(minimum: 0.0001, maximum: 10000000.00, ErrorMessage = "Tutar alanı sıfırdan büyük olmalıdır")]
