@@ -32,28 +32,30 @@ namespace CP.VPOS
             #region Adres Max Length
             int city_town_length = 25;
 
-            request.invoiceInfo.cityName = request.invoiceInfo.cityName.getMaxLength(city_town_length);
-            request.invoiceInfo.townName = request.invoiceInfo.townName.getMaxLength(city_town_length);
-            request.invoiceInfo.addressDesc = request.invoiceInfo.addressDesc.getMaxLength(200);
-            request.invoiceInfo.postCode = request.invoiceInfo.postCode.getMaxLength(10);
-            request.invoiceInfo.emailAddress = request.invoiceInfo.emailAddress.getMaxLength(100);
-            request.invoiceInfo.phoneNumber = request.invoiceInfo.phoneNumber.getMaxLength(20);
-            request.invoiceInfo.name = request.invoiceInfo.name.getMaxLength(50);
-            request.invoiceInfo.surname = request.invoiceInfo.surname.getMaxLength(50);
-            request.invoiceInfo.taxNumber = request.invoiceInfo.taxNumber.getMaxLength(20);
-            request.invoiceInfo.taxOffice = request.invoiceInfo.taxOffice.getMaxLength(50);
+            request.invoiceInfo.cityName = request.invoiceInfo.cityName.clearString().getMaxLength(city_town_length);
+            request.invoiceInfo.townName = request.invoiceInfo.townName.clearString().getMaxLength(city_town_length);
+            request.invoiceInfo.addressDesc = request.invoiceInfo.addressDesc.clearString().getMaxLength(200);
+            request.invoiceInfo.postCode = request.invoiceInfo.postCode.clearString().getMaxLength(10);
+            request.invoiceInfo.emailAddress = request.invoiceInfo.emailAddress.clearString().getMaxLength(100);
+            request.invoiceInfo.phoneNumber = request.invoiceInfo.phoneNumber.clearString().getMaxLength(20);
+            request.invoiceInfo.name = request.invoiceInfo.name.clearString().getMaxLength(50);
+            request.invoiceInfo.surname = request.invoiceInfo.surname.clearString().getMaxLength(50);
+            request.invoiceInfo.taxNumber = request.invoiceInfo.taxNumber.clearString().getMaxLength(20);
+            request.invoiceInfo.taxOffice = request.invoiceInfo.taxOffice.clearString().getMaxLength(50);
 
-            request.shippingInfo.cityName = request.shippingInfo.cityName.getMaxLength(city_town_length);
-            request.shippingInfo.townName = request.shippingInfo.townName.getMaxLength(city_town_length);
-            request.shippingInfo.addressDesc = request.shippingInfo.addressDesc.getMaxLength(200);
-            request.shippingInfo.postCode = request.shippingInfo.postCode.getMaxLength(10);
-            request.shippingInfo.emailAddress = request.shippingInfo.emailAddress.getMaxLength(100);
-            request.shippingInfo.phoneNumber = request.shippingInfo.phoneNumber.getMaxLength(20);
-            request.shippingInfo.name = request.shippingInfo.name.getMaxLength(50);
-            request.shippingInfo.surname = request.shippingInfo.surname.getMaxLength(50);
-            request.shippingInfo.taxNumber = request.shippingInfo.taxNumber.getMaxLength(20);
-            request.shippingInfo.taxOffice = request.shippingInfo.taxOffice.getMaxLength(50);
+            request.shippingInfo.cityName = request.shippingInfo.cityName.clearString().getMaxLength(city_town_length);
+            request.shippingInfo.townName = request.shippingInfo.townName.clearString().getMaxLength(city_town_length);
+            request.shippingInfo.addressDesc = request.shippingInfo.addressDesc.clearString().getMaxLength(200);
+            request.shippingInfo.postCode = request.shippingInfo.postCode.clearString().getMaxLength(10);
+            request.shippingInfo.emailAddress = request.shippingInfo.emailAddress.clearString().getMaxLength(100);
+            request.shippingInfo.phoneNumber = request.shippingInfo.phoneNumber.clearString().getMaxLength(20);
+            request.shippingInfo.name = request.shippingInfo.name.clearString().getMaxLength(50);
+            request.shippingInfo.surname = request.shippingInfo.surname.clearString().getMaxLength(50);
+            request.shippingInfo.taxNumber = request.shippingInfo.taxNumber.clearString().getMaxLength(20);
+            request.shippingInfo.taxOffice = request.shippingInfo.taxOffice.clearString().getMaxLength(50);
             #endregion
+
+            request.saleInfo.cardNameSurname = request.saleInfo.cardNameSurname.clearString();
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 

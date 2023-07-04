@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.RegularExpressions;
+
 
 namespace CP.VPOS.Helpers
 {
@@ -12,6 +14,17 @@ namespace CP.VPOS.Helpers
                 return text;
 
             return text.Substring(0, maxLength);
+        }
+
+        internal static string clearString(this string text)
+        {
+            if (!string.IsNullOrEmpty(text))
+            {
+                text = text.Trim();
+                text = Regex.Replace(text, @"\s+", " ");
+            }
+
+            return text;
         }
 
         #region ConvertTo
