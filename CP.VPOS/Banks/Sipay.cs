@@ -397,7 +397,7 @@ namespace CP.VPOS.Banks.Sipay
 
         public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            BINInstallmentQueryResponse response = new BINInstallmentQueryResponse { confirm = false, installmentList = new List<installment>() };
+            BINInstallmentQueryResponse response = new BINInstallmentQueryResponse();
 
             SipayTokenModel _token = null;
 
@@ -423,12 +423,46 @@ namespace CP.VPOS.Banks.Sipay
 
             string responseStr = Request(req, link, _token);
 
-            Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
+            try
+            {
+                Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
+                if (responseDic?.ContainsKey("status_code") == true && responseDic["status_code"].cpToString() == "100")
+                {
+                    response.confirm = true;
 
+                    if (responseDic?.ContainsKey("data") == true)
+                    {
+                        List<Dictionary<string, object>> keyValuePairs = JsonConvertHelper.Convert<List<Dictionary<string, object>>>(JsonConvertHelper.Json<object>(responseDic["data"]));
 
+                        if (keyValuePairs?.Any() == true)
+                        {
+                            response.installmentList = new List<installment>();
 
+                            foreach (var item in keyValuePairs)
+                            {
+                                int installments_number = item["installments_number"].cpToInt();
+                                decimal payable_amount = item["payable_amount"].cpToDecimal();
+                                float commissionRate = 0;
 
+                                if (installments_number > 1)
+                                {
+                                    if (payable_amount > request.amount)
+                                        commissionRate = ((((decimal)100 * payable_amount) / request.amount) - (decimal)100).cpToSingle();
+
+                                    response.installmentList.Add(new
+                                    installment
+                                    {
+                                        count = installments_number,
+                                        customerCostCommissionRate = commissionRate
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
 
 
             return response;
