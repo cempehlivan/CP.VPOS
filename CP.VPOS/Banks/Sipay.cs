@@ -11,7 +11,6 @@ using CP.VPOS.Enums;
 using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
-using Newtonsoft.Json.Linq;
 
 namespace CP.VPOS.Banks.Sipay
 {
@@ -50,6 +49,15 @@ namespace CP.VPOS.Banks.Sipay
             string totalStr = request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".");
             string installmentStr = request.saleInfo.installment.ToString();
 
+            string name = request.invoiceInfo?.name;
+            string surname = request.invoiceInfo?.surname;
+
+            if (string.IsNullOrWhiteSpace(name))
+                name = "[boş]";
+
+            if (string.IsNullOrWhiteSpace(surname))
+                surname = "[boş]";
+
             Dictionary<string, object> req = new Dictionary<string, object> {
                 {"cc_holder_name", request.saleInfo.cardNameSurname },
                 {"cc_no", request.saleInfo.cardNumber},
@@ -60,8 +68,8 @@ namespace CP.VPOS.Banks.Sipay
                 {"installments_number", installmentStr },
                 {"invoice_id", request.orderNumber },
                 {"invoice_description", $"{request.orderNumber} nolu sipariş ödemesi" },
-                {"name", request.saleInfo.cardNameSurname },
-                {"surname", request.saleInfo.cardNameSurname },
+                {"name", name },
+                {"surname", surname },
                 {"total", totalStr },
                 {"merchant_key", auth.merchantStorekey },
                 {"transaction_type", "Auth" },
@@ -150,6 +158,17 @@ namespace CP.VPOS.Banks.Sipay
             string totalStr = request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".");
             string installmentStr = request.saleInfo.installment.ToString();
 
+
+            string name = request.invoiceInfo?.name;
+            string surname = request.invoiceInfo?.surname;
+
+            if (string.IsNullOrWhiteSpace(name))
+                name = "[boş]";
+
+            if (string.IsNullOrWhiteSpace(surname))
+                surname = "[boş]";
+
+
             Dictionary<string, object> req = new Dictionary<string, object> {
                 {"cc_holder_name", request.saleInfo.cardNameSurname },
                 {"cc_no", request.saleInfo.cardNumber},
@@ -160,8 +179,8 @@ namespace CP.VPOS.Banks.Sipay
                 {"installments_number", installmentStr },
                 {"invoice_id", request.orderNumber },
                 {"invoice_description", $"{request.orderNumber} nolu sipariş ödemesi" },
-                {"name", request.saleInfo.cardNameSurname },
-                {"surname", request.saleInfo.cardNameSurname },
+                {"name", name },
+                {"surname", surname },
                 {"total", totalStr },
                 {"merchant_key", auth.merchantStorekey },
                 {"transaction_type", "Auth" },
@@ -304,7 +323,7 @@ namespace CP.VPOS.Banks.Sipay
                 response.statu = ResponseStatu.Error;
                 response.message = "İşlem iade edilemedi";
             }
-            
+
             return response;
         }
 
@@ -386,7 +405,7 @@ namespace CP.VPOS.Banks.Sipay
             {
                 _token = GetTokenModel(auth);
             }
-            catch (Exception ex)
+            catch
             {
                 return response;
             }
@@ -551,35 +570,40 @@ namespace CP.VPOS.Banks.Sipay
         private string Encryptor(string textToEncrypt, string strKey, string strIV)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes(textToEncrypt);
-            var aesProvider = new AesCryptoServiceProvider();
 
-            aesProvider.BlockSize = 128;
-            aesProvider.KeySize = 256;
-            aesProvider.Key = Encoding.UTF8.GetBytes(strKey);
-            aesProvider.IV = Encoding.UTF8.GetBytes(strIV);
-            aesProvider.Padding = PaddingMode.PKCS7;
-            aesProvider.Mode = CipherMode.CBC;
+            using (var aesProvider = Aes.Create())
+            {
+                aesProvider.BlockSize = 128;
+                aesProvider.KeySize = 256;
+                aesProvider.Key = Encoding.UTF8.GetBytes(strKey);
+                aesProvider.IV = Encoding.UTF8.GetBytes(strIV);
+                aesProvider.Padding = PaddingMode.PKCS7;
+                aesProvider.Mode = CipherMode.CBC;
 
-            var cryptoTransform = aesProvider.CreateEncryptor(aesProvider.Key, aesProvider.IV);
-            var encryptedBytes = cryptoTransform.TransformFinalBlock(plainTextBytes, 0, plainTextBytes.Length);
-            return Convert.ToBase64String(encryptedBytes);
+                var cryptoTransform = aesProvider.CreateEncryptor(aesProvider.Key, aesProvider.IV);
+                var encryptedBytes = cryptoTransform.TransformFinalBlock(plainTextBytes, 0, plainTextBytes.Length);
+
+                return Convert.ToBase64String(encryptedBytes);
+            }
         }
 
         private string Decryptor(string textToDecrypt, string strKey, string strIv)
         {
             var encryptedBytes = Convert.FromBase64String(textToDecrypt);
 
-            var aesProvider = new AesCryptoServiceProvider();
-            aesProvider.BlockSize = 128;
-            aesProvider.KeySize = 256;
-            aesProvider.Key = Encoding.ASCII.GetBytes(strKey);
-            aesProvider.IV = Encoding.ASCII.GetBytes(strIv);
-            aesProvider.Padding = PaddingMode.PKCS7;
-            aesProvider.Mode = CipherMode.CBC;
+            using (var aesProvider = Aes.Create())
+            {
+                aesProvider.BlockSize = 128;
+                aesProvider.KeySize = 256;
+                aesProvider.Key = Encoding.ASCII.GetBytes(strKey);
+                aesProvider.IV = Encoding.ASCII.GetBytes(strIv);
+                aesProvider.Padding = PaddingMode.PKCS7;
+                aesProvider.Mode = CipherMode.CBC;
 
-            var cryptoTransform = aesProvider.CreateDecryptor(aesProvider.Key, aesProvider.IV);
-            var decryptedBytes = cryptoTransform.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
-            return Encoding.ASCII.GetString(decryptedBytes);
+                var cryptoTransform = aesProvider.CreateDecryptor(aesProvider.Key, aesProvider.IV);
+                var decryptedBytes = cryptoTransform.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+                return Encoding.ASCII.GetString(decryptedBytes);
+            }
         }
 
     }
