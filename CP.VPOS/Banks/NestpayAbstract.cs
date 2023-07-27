@@ -7,6 +7,8 @@ using CP.VPOS.Helpers;
 using System.Net;
 using System.Net.Http;
 using System.Globalization;
+using System.Linq;
+using System.Security.Cryptography;
 
 namespace CP.VPOS.Banks
 {
@@ -216,29 +218,20 @@ namespace CP.VPOS.Banks
                 { "okUrl", request.payment3D.returnURL },
                 { "failUrl", request.payment3D.returnURL },
                 { "rnd", Helpers.FoundationHelper.time().ToString()},
-                { "hash", "" },
                 { "storetype", "3d_pay" },
                 { "lang", "tr" },
                 { "currency", ((int)request.saleInfo.currency).ToString() },
                 { "installment", installment },
                 { "taksit", installment },
                 { "islemtipi", "Auth" },
-           
-                // { "cardType", "1" }, // setlenecek
+                { "hashAlgorithm", "ver3" }
             };
 
-            string hash = this.GetHash(param["clientid"].cpToString()
-                                     + param["oid"].cpToString()
-                                     + param["amount"].cpToString()
-                                     + param["okUrl"].cpToString()
-                                     + param["failUrl"].cpToString()
-                                     + param["islemtipi"].cpToString()
-                                     + param["installment"].cpToString()
-                                     + param["rnd"].cpToString()
-                                     + auth.merchantStorekey
-                                    );
+            string hash = string.Join("|", param.OrderBy(s=> s.Key).Select(s=> s.Value.Replace("|", "\\|").Replace("\\", "\\\\") )) + "|" + auth.merchantStorekey;
 
-            param["hash"] = hash;
+            hash = this.GetHash(hash);
+
+            param.Add("hash", hash);
 
             string resp = this.Request(param, (auth.testPlatform ? _url3Dtest : _url3DLive));
 
@@ -263,14 +256,12 @@ namespace CP.VPOS.Banks
 
         private string GetHash(string hashstr)
         {
-#pragma warning disable SYSLIB0021
-            using (System.Security.Cryptography.SHA1 sha = new System.Security.Cryptography.SHA1CryptoServiceProvider())
+            using (var sha = SHA512.Create())
             {
-                byte[] inputbytes = sha.ComputeHash(System.Text.Encoding.GetEncoding("ISO-8859-9").GetBytes(hashstr));
+                byte[] inputbytes = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(hashstr));
 
                 return Convert.ToBase64String(inputbytes);
             }
-#pragma warning restore SYSLIB0021
         }
 
         private string Request(Dictionary<string, string> param, string link)
