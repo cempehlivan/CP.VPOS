@@ -106,5 +106,10 @@ namespace CP.VPOS.Models
         /// Yapı kredi bankası için bu alan zorunludur
         /// </summary>
         public Currency? currency { get; set; }
+
+        /// <summary>
+        /// Yapı kredi bankası için bu alan zorunludur
+        /// </summary>
+        public decimal? amount { get; set; }
     }
 }

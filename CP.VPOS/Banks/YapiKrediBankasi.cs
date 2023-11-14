@@ -104,7 +104,10 @@ namespace CP.VPOS.Banks.YapiKrediBankasi
             SaleResponse response = new SaleResponse();
 
             string firstHash = HASH(auth.merchantStorekey + ';' + auth.merchantUser);
-            string mac = HASH(request.responseArray["Xid"].ToString() + ';' + request.responseArray["Amount"].ToString() + ';' + request.currency.ToYKBCurrency() + ';' + auth.merchantID + ';' + firstHash);
+
+            string amount = request.amount != null && request.amount > 0 ? Convert.ToDecimal(request.amount).To2Digit() : request.responseArray["Amount"].ToString();
+
+            string mac = HASH(request.responseArray["Xid"].ToString() + ';' + amount + ';' + request.currency.ToYKBCurrency() + ';' + auth.merchantID + ';' + firstHash);
 
 
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>
