@@ -4,6 +4,7 @@
 Build/Temp/
 Doc/doc.shfbproj_*
 TestResults/
+CP.VPOS.Test/PrivateTest.cs
 AppPackages/
 BenchmarkDotNet.Artifacts/
 *.suo

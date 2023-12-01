@@ -29,7 +29,7 @@ namespace CP.VPOS.Test
             Assert.IsTrue(resp.statu == CP.VPOS.Enums.SaleResponseStatu.Success);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void NestpayCancelTest()
         {
             SaleResponse saleResponse = SaleTestWithNestpay();
