@@ -222,6 +222,35 @@ namespace CP.VPOS
             return binDetail;
         }
 
+        /// <summary>
+        /// Tüm Kart Bilgileri Listesi
+        /// </summary>
+        public static List<CreditCardBinQueryResponse> AllCreditCardBinList()
+        {
+            List<CreditCardBinQueryResponse> binList = BinService.GetBinList().DeepClone();
+
+            foreach (CreditCardBinQueryResponse binDetail in binList)
+            {
+                if ((int)binDetail.cardProgram >= 0)
+                    binDetail.banksWithInstallments = binList.Where(s => s.cardProgram == binDetail.cardProgram).GroupBy(s => s.bankCode).OrderByDescending(s => s.Count()).Select(s => s.Key).ToList();
+
+                binDetail.banksWithInstallments = binDetail.banksWithInstallments ?? new List<string>();
+
+                if (!binDetail.banksWithInstallments.Any(s => s == binDetail.bankCode))
+                    binDetail.banksWithInstallments.Add(binDetail.bankCode);
+
+
+                if (binDetail.banksWithInstallments.IndexOf(binDetail.bankCode) != 0)
+                {
+                    binDetail.banksWithInstallments.Remove(binDetail.bankCode);
+                    binDetail.banksWithInstallments.Insert(0, binDetail.bankCode);
+                }
+            }
+
+
+            return binList;
+        }
+
         private static IVirtualPOSService GetVirtualPOSService(string bankCode)
         {
             IVirtualPOSService virtualPOSService = null;
