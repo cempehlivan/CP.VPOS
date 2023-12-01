@@ -1763,7 +1763,7 @@ namespace CP.VPOS.Services
     ""bankCode"": ""0010"",
     ""cardType"": 0,
     ""cardBrand"": 0,
-    ""commercialCard"": false,
+    ""commercialCard"": true,
     ""cardProgram"": 2
   },
   {
@@ -5483,7 +5483,7 @@ namespace CP.VPOS.Services
     ""bankCode"": ""0010"",
     ""cardType"": 0,
     ""cardBrand"": 2,
-    ""commercialCard"": false,
+    ""commercialCard"": true,
     ""cardProgram"": 2
   },
   {
@@ -5793,7 +5793,7 @@ namespace CP.VPOS.Services
   {
     ""binNumber"": ""439561"",
     ""bankCode"": ""0010"",
-    ""cardType"": 1,
+    ""cardType"": 0,
     ""cardBrand"": 0,
     ""commercialCard"": false,
     ""cardProgram"": 2
@@ -6033,7 +6033,7 @@ namespace CP.VPOS.Services
   {
     ""binNumber"": ""487148"",
     ""bankCode"": ""0010"",
-    ""cardType"": 1,
+    ""cardType"": 0,
     ""cardBrand"": 0,
     ""commercialCard"": false,
     ""cardProgram"": -1
@@ -6041,9 +6041,9 @@ namespace CP.VPOS.Services
   {
     ""binNumber"": ""487149"",
     ""bankCode"": ""0010"",
-    ""cardType"": 1,
+    ""cardType"": 0,
     ""cardBrand"": 0,
-    ""commercialCard"": false,
+    ""commercialCard"": true,
     ""cardProgram"": -1
   },
   {
@@ -6203,7 +6203,7 @@ namespace CP.VPOS.Services
     ""bankCode"": ""0010"",
     ""cardType"": 1,
     ""cardBrand"": 1,
-    ""commercialCard"": false,
+    ""commercialCard"": true,
     ""cardProgram"": 2
   },
   {
@@ -6289,9 +6289,9 @@ namespace CP.VPOS.Services
   {
     ""binNumber"": ""535735"",
     ""bankCode"": ""0010"",
-    ""cardType"": 1,
+    ""cardType"": 0,
     ""cardBrand"": 1,
-    ""commercialCard"": false,
+    ""commercialCard"": true,
     ""cardProgram"": 2
   },
   {
@@ -6329,7 +6329,7 @@ namespace CP.VPOS.Services
   {
     ""binNumber"": ""537470"",
     ""bankCode"": ""0010"",
-    ""cardType"": 1,
+    ""cardType"": 0,
     ""cardBrand"": 1,
     ""commercialCard"": false,
     ""cardProgram"": 2
@@ -6401,7 +6401,7 @@ namespace CP.VPOS.Services
   {
     ""binNumber"": ""542941"",
     ""bankCode"": ""0010"",
-    ""cardType"": 1,
+    ""cardType"": 0,
     ""cardBrand"": 1,
     ""commercialCard"": false,
     ""cardProgram"": 2
@@ -6641,8 +6641,8 @@ namespace CP.VPOS.Services
   {
     ""binNumber"": ""650083"",
     ""bankCode"": ""0010"",
-    ""cardType"": 1,
-    ""cardBrand"": 1,
+    ""cardType"": 0,
+    ""cardBrand"": 2,
     ""commercialCard"": false,
     ""cardProgram"": 2
   },
@@ -6666,7 +6666,7 @@ namespace CP.VPOS.Services
     ""binNumber"": ""650268"",
     ""bankCode"": ""0010"",
     ""cardType"": 1,
-    ""cardBrand"": 1,
+    ""cardBrand"": 2,
     ""commercialCard"": false,
     ""cardProgram"": 2
   },
@@ -7202,6 +7202,54 @@ namespace CP.VPOS.Services
     ""binNumber"": ""083703"",
     ""bankCode"": ""0067"",
     ""cardType"": 1,
+    ""cardBrand"": 2,
+    ""commercialCard"": true,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""527749"",
+    ""bankCode"": ""0010"",
+    ""cardType"": 1,
+    ""cardBrand"": 1,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""557844"",
+    ""bankCode"": ""0010"",
+    ""cardType"": 1,
+    ""cardBrand"": 1,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""525339"",
+    ""bankCode"": ""0010"",
+    ""cardType"": 1,
+    ""cardBrand"": 1,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""979286"",
+    ""bankCode"": ""0010"",
+    ""cardType"": 0,
+    ""cardBrand"": 2,
+    ""commercialCard"": false,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""650846"",
+    ""bankCode"": ""0010"",
+    ""cardType"": 1,
+    ""cardBrand"": 2,
+    ""commercialCard"": true,
+    ""cardProgram"": -1
+    },
+    {
+    ""binNumber"": ""650847"",
+    ""bankCode"": ""0010"",
+    ""cardType"": 0,
     ""cardBrand"": 2,
     ""commercialCard"": true,
     ""cardProgram"": -1
