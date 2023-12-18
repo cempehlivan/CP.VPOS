@@ -1,4 +1,5 @@
-﻿using CP.VPOS.Banks.Akbank;
+﻿using CP.VPOS.Models;
+using CP.VPOS.Banks.Akbank;
 using CP.VPOS.Banks.AlternatifBank;
 using CP.VPOS.Banks.Anadolubank;
 using CP.VPOS.Banks.Cardplus;
@@ -18,7 +19,7 @@ using CP.VPOS.Banks.YapiKrediBankasi;
 using CP.VPOS.Banks.ZiraatBankasi;
 using CP.VPOS.Banks.Iyzico;
 using CP.VPOS.Banks.Sipay;
-using CP.VPOS.Models;
+using CP.VPOS.Banks.QNBpay;
 using System.Collections.Generic;
 
 namespace CP.VPOS.Services
@@ -48,6 +49,7 @@ namespace CP.VPOS.Services
         public static readonly string ZiraatBankasi = "0010";
         public static readonly string AktifYatirimBankasi = "0143";
 
+        public static readonly string QNBpay = "9990";
         public static readonly string Sipay = "9991";
         public static readonly string Hepsipay = "9992";
         public static readonly string Payten = "9993";
@@ -84,6 +86,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0010", BankName = "Ziraat Bankası", BankService = typeof(ZiraatBankasiVirtualPOSService)},
             new Bank{BankCode = "0143", BankName = "Aktif Yatırım Bankası"},
 
+            new Bank{BankCode = "9990", BankName = "QNBpay", BankService = typeof(QNBpayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9991", BankName = "Sipay", BankService = typeof(SipayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9992", BankName = "Hepsipay", CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9993", BankName = "Payten", BankService = typeof(PaytenVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},

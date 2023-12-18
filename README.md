@@ -1,7 +1,7 @@
 # CP.VPOS
 [![Nuget download](https://img.shields.io/nuget/dt/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) [![Nuget v2](https://img.shields.io/nuget/v/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) ![build](https://img.shields.io/github/actions/workflow/status/cempehlivan/cp.vpos/dotnet.yml?branch=master) [![GitHub license](https://img.shields.io/github/license/cempehlivan/CP.VPOS)](https://github.com/cempehlivan/CP.VPOS/blob/master/LICENSE)
 
-![.net version](https://img.shields.io/badge/.net%20framework-4.0-purple) ![.net version](https://img.shields.io/badge/.net%20framework-4.5-purple) ![.net version](https://img.shields.io/badge/.net%20core-3.1-purple) ![.net version](https://img.shields.io/badge/.net-5.0-purple) ![.net version](https://img.shields.io/badge/.net-6.0-purple) ![.net version](https://img.shields.io/badge/.net-7.0-purple) ![.net version](https://img.shields.io/badge/.net-8.0-purple) ![.net maui](https://img.shields.io/badge/.net-MAUI-purple)
+![.net version](https://img.shields.io/badge/.net%20framework-4.0--4.8-purple) ![.net version](https://img.shields.io/badge/.net%20core-3.1-purple) ![.net version](https://img.shields.io/badge/.net-5.0-purple) ![.net version](https://img.shields.io/badge/.net-6.0-purple) ![.net version](https://img.shields.io/badge/.net-7.0-purple) ![.net version](https://img.shields.io/badge/.net-8.0-purple) ![.net maui](https://img.shields.io/badge/.net-MAUI-purple)
 
 
 Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
@@ -31,6 +31,7 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Payten - MSU | ✔️ | ✔️ | ✔️ | ✔️ |
 | Iyzico | ✔️ | ✔️ | ✔️ | ✔️ |
 | Sipay | ✔️ | ✔️ | ✔️ | ✔️ |
+| QNBpay | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 ## NuGet
@@ -85,6 +86,7 @@ Sanal POS bazlı alan açıklamaları:
 | Payten - MSU | CP.VPOS.Services.BankService.Payten | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 | Iyzico | CP.VPOS.Services.BankService.Iyzico | Üye İşyeri Numarası | API Anahtarı | Güvenlik Anahtarı | |
 | Sipay | CP.VPOS.Services.BankService.Sipay | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
+| QNBpay | CP.VPOS.Services.BankService.QNBpay | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 
 ## 3D'siz Direkt Satış İşlemi
 
