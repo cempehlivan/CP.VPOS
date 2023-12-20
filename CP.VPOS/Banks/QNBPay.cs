@@ -104,24 +104,27 @@ namespace CP.VPOS.Banks.QNBpay
             {
                 string transactionId = "";
 
+                Dictionary<string, object> dataObj = null;
+
                 try
                 {
                     if (responseDic.ContainsKey("data"))
-                    {
-                        var dataObj = JsonConvertHelper.Convert<Dictionary<string, object>>(JsonConvertHelper.Json(responseDic["data"]));
-
-                        if (dataObj?.ContainsKey("auth_code") == true)
-                            transactionId = dataObj["auth_code"].cpToString();
-                    }
+                        dataObj = JsonConvertHelper.Convert<Dictionary<string, object>>(JsonConvertHelper.Json(responseDic["data"]));
                 }
                 catch { }
 
 
-                response.statu = SaleResponseStatu.Success;
-                response.message = "İşlem başarılı";
-                response.transactionId = transactionId;
+                if (dataObj?.ContainsKey("auth_code") == true)
+                    transactionId = dataObj["auth_code"].cpToString();
 
-                return response;
+                if (dataObj?.ContainsKey("payment_status") == true && dataObj["payment_status"].cpToString() == "1")
+                {
+                    response.statu = SaleResponseStatu.Success;
+                    response.message = "İşlem başarılı";
+                    response.transactionId = transactionId;
+
+                    return response;
+                }
             }
 
             string errorMsg = "İşlem sırasında bir hata oluştu";
@@ -251,7 +254,7 @@ namespace CP.VPOS.Banks.QNBpay
                 response.statu = SaleResponseStatu.Error;
                 response.message = "Hash doğrulanamadı, ödeme onaylanmadı.";
             }
-            else if (request?.responseArray?.ContainsKey("status_code") == true && request.responseArray["status_code"].cpToString() == "100")
+            else if (request?.responseArray?.ContainsKey("payment_status") == true && request.responseArray["payment_status"].cpToString() == "1")
             {
                 response.statu = SaleResponseStatu.Success;
                 response.message = "İşlem başarılı";
