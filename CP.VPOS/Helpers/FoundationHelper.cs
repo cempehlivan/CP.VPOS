@@ -101,10 +101,15 @@ namespace CP.VPOS.Helpers
 
             foreach (System.Xml.XmlNode sub in xmlNode.ChildNodes)
             {
+                string keyName = sub.LocalName;
+
+                if (keyValuePairs.ContainsKey(keyName))
+                    keyName = $"{keyName}||{DateTime.Now.Ticks}";
+
                 if (sub.ChildNodes.Count > 1 || sub.FirstChild?.HasChildNodes == true)
-                    keyValuePairs.Add(sub.LocalName, sub.getChildDictionary());
+                    keyValuePairs.Add(keyName, sub.getChildDictionary());
                 else
-                    keyValuePairs.Add(sub.LocalName, sub.InnerText.cpToString());
+                    keyValuePairs.Add(keyName, sub.InnerText.cpToString());
             }
 
             return keyValuePairs;
