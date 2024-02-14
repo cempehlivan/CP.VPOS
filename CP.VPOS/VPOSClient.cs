@@ -195,7 +195,10 @@ namespace CP.VPOS
 
             List<CreditCardBinQueryResponse> binList = BinService.GetBinList();
 
-            CreditCardBinQueryResponse _binDetail = binList.FirstOrDefault(s => s.binNumber == request.binNumber);
+            CreditCardBinQueryResponse _binDetail = binList.FirstOrDefault(s => s.binNumber == request.binNumber.Substring(0, 6));
+
+            if (_binDetail == null && request.binNumber.Length > 6)
+                _binDetail = binList.FirstOrDefault(s => s.binNumber == request.binNumber);
 
             CreditCardBinQueryResponse binDetail = null;
 
@@ -204,7 +207,7 @@ namespace CP.VPOS
                 binDetail = _binDetail.DeepClone();
 
                 if ((int)binDetail.cardProgram >= 0)
-                    binDetail.banksWithInstallments = binList.Where(s => s.cardProgram == binDetail.cardProgram).GroupBy(s => s.bankCode).OrderByDescending(s=> s.Count()).Select(s => s.Key).ToList();
+                    binDetail.banksWithInstallments = binList.Where(s => s.cardProgram == binDetail.cardProgram).GroupBy(s => s.bankCode).OrderByDescending(s => s.Count()).Select(s => s.Key).ToList();
 
                 binDetail.banksWithInstallments = binDetail.banksWithInstallments ?? new List<string>();
 
@@ -212,7 +215,7 @@ namespace CP.VPOS
                     binDetail.banksWithInstallments.Add(binDetail.bankCode);
 
 
-                if(binDetail.banksWithInstallments.IndexOf(binDetail.bankCode) != 0)
+                if (binDetail.banksWithInstallments.IndexOf(binDetail.bankCode) != 0)
                 {
                     binDetail.banksWithInstallments.Remove(binDetail.bankCode);
                     binDetail.banksWithInstallments.Insert(0, binDetail.bankCode);

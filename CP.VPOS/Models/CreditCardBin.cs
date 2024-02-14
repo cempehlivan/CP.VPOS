@@ -7,7 +7,7 @@ namespace CP.VPOS.Models
     public class CreditCardBinQueryRequest : ModelValidation
     {
         [Required(ErrorMessage = "binNumber alanı zorunludur")]
-        [StringLength(maximumLength: 6, MinimumLength = 6, ErrorMessage = "binNumber alanı kart numarasının ilk 6 hanesi olması gerekmektedir")]
+        [StringLength(maximumLength: 8, MinimumLength = 6, ErrorMessage = "binNumber alanı kart numarasının ilk 6 veya 8 hanesi olması gerekmektedir")]
         [RegularExpression(pattern: "[0-9]+", ErrorMessage = "binNumber alanı sadece rakamlardan oluşmalıdır")]
         public string binNumber { get; set; }
     }

@@ -7,10 +7,10 @@ namespace CP.VPOS.Models
     public class BINInstallmentQueryRequest : ModelValidation
     {
         /// <summary>
-        /// Kart BIN numarası, kartın ilk 6 hanesi
+        /// Kart BIN numarası, kartın ilk 8 hanesi
         /// </summary>
         [Required(ErrorMessage = "BIN alanı zorunludur")]
-        [StringLength(maximumLength: 6, MinimumLength = 6, ErrorMessage = "Kart BIN numarası 6 haneli olmalıdır")]
+        [StringLength(maximumLength: 8, MinimumLength = 6, ErrorMessage = "Kart BIN numarası 6 veya 8 haneli olmalıdır")]
         [RegularExpression(pattern: "[0-9]+", ErrorMessage = "cardNumber alanı sadece rakamlardan oluşmalıdır")]
         public string BIN { get; set; }
 
