@@ -206,7 +206,7 @@ namespace CP.VPOS
             {
                 binDetail = _binDetail.DeepClone();
 
-                if ((int)binDetail.cardProgram >= 0)
+                if ((int)binDetail.cardProgram >= 0 && binDetail.cardType == Enums.CreditCardType.Credit)
                     binDetail.banksWithInstallments = binList.Where(s => s.cardProgram == binDetail.cardProgram).GroupBy(s => s.bankCode).OrderByDescending(s => s.Count()).Select(s => s.Key).ToList();
 
                 binDetail.banksWithInstallments = binDetail.banksWithInstallments ?? new List<string>();
@@ -234,7 +234,7 @@ namespace CP.VPOS
 
             foreach (CreditCardBinQueryResponse binDetail in binList)
             {
-                if ((int)binDetail.cardProgram >= 0)
+                if ((int)binDetail.cardProgram >= 0 && binDetail.cardType == Enums.CreditCardType.Credit)
                     binDetail.banksWithInstallments = binList.Where(s => s.cardProgram == binDetail.cardProgram).GroupBy(s => s.bankCode).OrderByDescending(s => s.Count()).Select(s => s.Key).ToList();
 
                 binDetail.banksWithInstallments = binDetail.banksWithInstallments ?? new List<string>();
