@@ -32,6 +32,7 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Iyzico | ✔️ | ✔️ | ✔️ | ✔️ |
 | Sipay | ✔️ | ✔️ | ✔️ | ✔️ |
 | QNBpay | ✔️ | ✔️ | ✔️ | ✔️ |
+| ParamPos | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 ## NuGet
@@ -87,6 +88,7 @@ Sanal POS bazlı alan açıklamaları:
 | Iyzico | CP.VPOS.Services.BankService.Iyzico | Üye İşyeri Numarası | API Anahtarı | Güvenlik Anahtarı | |
 | Sipay | CP.VPOS.Services.BankService.Sipay | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | QNBpay | CP.VPOS.Services.BankService.QNBpay | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
+| ParamPos | CP.VPOS.Services.BankService.ParamPos | Terminal No (Client Code) | Kullanıcı Adı | Şifre | Anahtar (Guid) |
 
 ## 3D'siz Direkt Satış İşlemi
 
