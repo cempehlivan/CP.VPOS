@@ -270,10 +270,6 @@ namespace CP.VPOS.Banks.ParamPos
             }
             catch
             {
-
-            }
-            finally
-            {
                 installments = null;
             }
 
