@@ -29,8 +29,22 @@ namespace CP.VPOS.Banks.ParamPos
             };
 
             int _installment = request.saleInfo.installment > 1 ? request.saleInfo.installment : 1;
+
+            var installmentList = BINInstallmentQuery(new BINInstallmentQueryRequest { BIN = request.saleInfo.cardNumber.Substring(0,8) }, auth);
+
+            decimal _decAmountTotal = request.saleInfo.amount;
+
+            if(installmentList?.confirm == true)
+            {
+                var installmentDetail = installmentList.installmentList?.FirstOrDefault(s => s.count == _installment);
+
+                if(installmentDetail?.customerCostCommissionRate > 0)
+                    _decAmountTotal = request.saleInfo.amount + ((request.saleInfo.amount * installmentDetail.customerCostCommissionRate.cpToDecimal()) / 100);
+            }
+
+
             string _amount = request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "");
-            string _amountTotal = request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "");
+            string _amountTotal = _decAmountTotal.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "");
 
             string hashParam = auth.merchantID + auth.merchantStorekey + _installment.ToString() + _amount + _amountTotal + request.orderNumber;
 
@@ -244,6 +258,32 @@ namespace CP.VPOS.Banks.ParamPos
         }
 
 
+        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        {
+            List<installment> installments = null;
+
+            try
+            {
+                string sanalpos_ID = GetBINSanalPOS_ID(request.BIN, auth);
+
+                installments = GetInstallmentTableBySanalPOS_ID(sanalpos_ID, auth);
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+                installments = null;
+            }
+
+            return new BINInstallmentQueryResponse
+            {
+                confirm = installments?.Count > 0,
+                installmentList = installments?.Count > 0 ? installments : null
+            };
+        }
+
         public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
             return null;
@@ -254,14 +294,92 @@ namespace CP.VPOS.Banks.ParamPos
             return null;
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+
+        private string GetBINSanalPOS_ID(string binNumber, VirtualPOSAuth auth)
         {
-            return null;
+            string sanalpos_ID = "";
+
+            string xml = $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:tur=""https://turkpos.com.tr/"">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tur:BIN_SanalPos>
+         <tur:G>
+            <tur:CLIENT_CODE>{auth.merchantID}</tur:CLIENT_CODE>
+            <tur:CLIENT_USERNAME>{auth.merchantUser}</tur:CLIENT_USERNAME>
+            <tur:CLIENT_PASSWORD>{auth.merchantPassword}</tur:CLIENT_PASSWORD>
+         </tur:G>
+         <tur:BIN>{binNumber}</tur:BIN>
+      </tur:BIN_SanalPos>
+   </soapenv:Body>
+</soapenv:Envelope>";
+
+            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='BIN_SanalPosResponse']/*[local-name()='BIN_SanalPosResult']/*[local-name()='DT_Bilgi']/*[local-name()='diffgram']/*[local-name()='NewDataSet']/*[local-name()='Temp']");
+
+            if (respDic?.ContainsKey("SanalPOS_ID") == true)
+                sanalpos_ID = respDic["SanalPOS_ID"].cpToString();
+
+            return sanalpos_ID;
         }
 
 
+        private List<installment> GetInstallmentTableBySanalPOS_ID(string sanalpos_ID, VirtualPOSAuth auth)
+        {
+            List<installment> installments = new List<installment>();
+
+            string xml = $@"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:tur=""https://turkpos.com.tr/"">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tur:TP_Ozel_Oran_SK_Liste>
+        <tur:G>
+            <tur:CLIENT_CODE>{auth.merchantID}</tur:CLIENT_CODE>
+            <tur:CLIENT_USERNAME>{auth.merchantUser}</tur:CLIENT_USERNAME>
+            <tur:CLIENT_PASSWORD>{auth.merchantPassword}</tur:CLIENT_PASSWORD>
+         </tur:G>
+         <tur:GUID>{auth.merchantStorekey}</tur:GUID>
+      </tur:TP_Ozel_Oran_SK_Liste>
+   </soapenv:Body>
+</soapenv:Envelope>";
+
+            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+
+            Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='TP_Ozel_Oran_SK_ListeResponse']/*[local-name()='TP_Ozel_Oran_SK_ListeResult']/*[local-name()='DT_Bilgi']/*[local-name()='diffgram']/*[local-name()='NewDataSet']");
+
+            if (respDic?.Count > 0)
+            {
+                foreach (KeyValuePair<string, object> item in respDic)
+                {
+                    if (item.Value is Dictionary<string, object>)
+                    {
+                        Dictionary<string, object> pos = item.Value as Dictionary<string, object>;
+
+                        if (pos?.ContainsKey("SanalPOS_ID") != true || pos["SanalPOS_ID"].cpToString() != sanalpos_ID)
+                            continue;
+
+                        for (int i = 1; i <= 12; i++)
+                        {
+                            string installment_key = $"MO_{i.ToString("00")}";
+
+                            if (pos?.ContainsKey(installment_key) == true && float.TryParse(pos[installment_key].cpToString(), NumberStyles.Float, CultureInfo.GetCultureInfo("en-US"), out float comissionRate))
+                            {
+                                if (comissionRate >= 0)
+                                {
+                                    installments.Add(new installment
+                                    {
+                                        count = i,
+                                        customerCostCommissionRate = comissionRate
+                                    });
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
 
 
+            return installments;
+        }
 
         private string GetHash(string str, string link)
         {
