@@ -16,7 +16,7 @@ namespace CP.VPOS.Banks.IQmoney
 {
     internal class IQmoneyVirtualPOSService : IVirtualPOSService
     {
-        private readonly string _urlAPITest = "https://provisioning.iqmoneytr.com/ccpayment/api";
+        private readonly string _urlAPITest = "https://provisioning.iqmoneytr.com/ccpayment";
         private readonly string _urlAPILive = "https://app.iqmoneytr.com/ccpayment";
 
         public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
@@ -448,7 +448,7 @@ namespace CP.VPOS.Banks.IQmoney
                                 decimal payable_amount = item["payable_amount"].cpToDecimal();
                                 float commissionRate = 0;
 
-                                if (installments_number > 1)
+                                if (installments_number > 0)
                                 {
                                     if (payable_amount > request.amount)
                                         commissionRate = ((((decimal)100 * payable_amount) / request.amount) - (decimal)100).cpToSingle();
