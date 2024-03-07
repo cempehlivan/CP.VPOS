@@ -448,7 +448,7 @@ namespace CP.VPOS.Banks.PayBull
                                 decimal payable_amount = item["payable_amount"].cpToDecimal();
                                 float commissionRate = 0;
 
-                                if (installments_number > 1)
+                                if (installments_number > 0)
                                 {
                                     if (payable_amount > request.amount)
                                         commissionRate = ((((decimal)100 * payable_amount) / request.amount) - (decimal)100).cpToSingle();
