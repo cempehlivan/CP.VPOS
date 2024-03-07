@@ -16,8 +16,8 @@ namespace CP.VPOS.Banks.PayBull
 {
     internal class PayBullVirtualPOSService : IVirtualPOSService
     {
-        private readonly string _urlAPITest = "https://test.paybull.com.tr/ccpayment";
-        private readonly string _urlAPILive = "https://app.paybull.com.tr/ccpayment";
+        private readonly string _urlAPITest = "https://test.paybull.com/ccpayment";
+        private readonly string _urlAPILive = "https://app.paybull.com/ccpayment";
 
         public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
         {
