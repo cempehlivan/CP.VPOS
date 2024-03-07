@@ -23,6 +23,7 @@ using CP.VPOS.Banks.QNBpay;
 using CP.VPOS.Banks.ParamPos;
 using CP.VPOS.Banks.PayBull;
 using CP.VPOS.Banks.Parolapara;
+using CP.VPOS.Banks.IQmoney;
 using System.Collections.Generic;
 
 namespace CP.VPOS.Services
