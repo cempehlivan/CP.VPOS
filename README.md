@@ -33,6 +33,9 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Sipay | ✔️ | ✔️ | ✔️ | ✔️ |
 | QNBpay | ✔️ | ✔️ | ✔️ | ✔️ |
 | ParamPos | ✔️ | ✔️ | ✔️ | ✔️ |
+| PayBull | ✔️ | ✔️ | ✔️ | ✔️ |
+| Parolapara | ✔️ | ✔️ | ✔️ | ✔️ |
+| IQmoney | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 ## NuGet
@@ -89,6 +92,9 @@ Sanal POS bazlı alan açıklamaları:
 | Sipay | CP.VPOS.Services.BankService.Sipay | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | QNBpay | CP.VPOS.Services.BankService.QNBpay | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | ParamPos | CP.VPOS.Services.BankService.ParamPos | Terminal No (Client Code) | Kullanıcı Adı | Şifre | Anahtar (Guid) |
+| PayBull | CP.VPOS.Services.BankService.PayBull | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
+| Parolapara | CP.VPOS.Services.BankService.Parolapara | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
+| IQmoney | CP.VPOS.Services.BankService.IQmoney | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 
 ## 3D'siz Direkt Satış İşlemi
 
