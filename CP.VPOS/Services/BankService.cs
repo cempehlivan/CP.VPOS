@@ -22,6 +22,7 @@ using CP.VPOS.Banks.Sipay;
 using CP.VPOS.Banks.QNBpay;
 using CP.VPOS.Banks.ParamPos;
 using CP.VPOS.Banks.PayBull;
+using CP.VPOS.Banks.Parolapara;
 using System.Collections.Generic;
 
 namespace CP.VPOS.Services
