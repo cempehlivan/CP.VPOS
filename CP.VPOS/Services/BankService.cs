@@ -21,6 +21,7 @@ using CP.VPOS.Banks.Iyzico;
 using CP.VPOS.Banks.Sipay;
 using CP.VPOS.Banks.QNBpay;
 using CP.VPOS.Banks.ParamPos;
+using CP.VPOS.Banks.PayBull;
 using System.Collections.Generic;
 
 namespace CP.VPOS.Services
