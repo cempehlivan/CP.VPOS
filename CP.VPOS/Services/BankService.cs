@@ -50,6 +50,9 @@ namespace CP.VPOS.Services
         public static readonly string ZiraatBankasi = "0010";
         public static readonly string AktifYatirimBankasi = "0143";
 
+        public static readonly string IQmoney = "9986";
+        public static readonly string Parolapara = "9987";
+        public static readonly string PayBull = "9988";
         public static readonly string ParamPos = "9989";
         public static readonly string QNBpay = "9990";
         public static readonly string Sipay = "9991";
@@ -88,6 +91,9 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0010", BankName = "Ziraat Bankası", BankService = typeof(ZiraatBankasiVirtualPOSService)},
             new Bank{BankCode = "0143", BankName = "Aktif Yatırım Bankası"},
 
+            new Bank{BankCode = "9986", BankName = "IQmoney", BankService = typeof(IQmoneyVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
+            new Bank{BankCode = "9987", BankName = "Parolapara", BankService = typeof(ParolaparaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
+            new Bank{BankCode = "9988", BankName = "PayBull", BankService = typeof(PayBullVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9989", BankName = "ParamPos", BankService = typeof(ParamPosVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9990", BankName = "QNBpay", BankService = typeof(QNBpayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9991", BankName = "Sipay", BankService = typeof(SipayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
