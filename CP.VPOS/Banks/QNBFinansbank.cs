@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -326,7 +327,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
             }
         }
 
-        private string Request(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null)
+        private string Request2(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null)
         {
             string responseString = "";
 
@@ -344,6 +345,36 @@ namespace CP.VPOS.Banks.QNBFinansbank
             }
 
             return responseString;
+        }
+
+
+        private string Request(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null)
+        {
+            string requueststring = string.Join("&", param.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+
+            link = link ?? (auth.testPlatform ? _urlAPITest : _urlAPILive);
+
+            ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            System.Net.ServicePointManager.Expect100Continue = false;
+#pragma warning disable SYSLIB0014
+            System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(link);
+#pragma warning restore SYSLIB0014
+            string postdata = requueststring.ToString();
+            byte[] postdatabytes = System.Text.Encoding.UTF8.GetBytes(postdata);
+            request.Method = "POST";
+            //request.Accept = "application/x-www-form-urlencoded";
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentLength = postdatabytes.Length;
+            System.IO.Stream requeststream = request.GetRequestStream();
+            requeststream.Write(postdatabytes, 0, postdatabytes.Length);
+            requeststream.Close();
+
+            System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)request.GetResponse();
+            System.IO.StreamReader responsereader = new System.IO.StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8);
+            string gelenresp = responsereader.ReadToEnd();
+
+            return gelenresp;
         }
 
         private string getUserMessage(string ErrorCode)
