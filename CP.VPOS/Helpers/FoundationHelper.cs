@@ -104,7 +104,7 @@ namespace CP.VPOS.Helpers
                 string keyName = sub.LocalName;
 
                 if (keyValuePairs.ContainsKey(keyName))
-                    keyName = $"{keyName}||{DateTime.Now.Ticks}";
+                    keyName = $"{keyName}||{Guid.NewGuid()}";
 
                 if (sub.ChildNodes.Count > 1 || sub.FirstChild?.HasChildNodes == true)
                     keyValuePairs.Add(keyName, sub.getChildDictionary());
