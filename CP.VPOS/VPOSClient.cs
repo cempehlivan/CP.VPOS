@@ -6,6 +6,7 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using CP.VPOS.Services;
+using Newtonsoft.Json.Linq;
 
 
 namespace CP.VPOS
@@ -75,6 +76,28 @@ namespace CP.VPOS
             {
                 if (request.currency == null)
                     throw new ValidationException("currency alanı Yapı Kredi bankası için zorunludur");
+            }
+
+            try
+            {
+                Dictionary<string, object> _responseArray = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(Newtonsoft.Json.JsonConvert.SerializeObject(request.responseArray));
+
+                foreach (KeyValuePair<string, object> item in _responseArray)
+                {
+                    if (item.Value != null && item.Value.GetType().Name == "JArray")
+                    {
+                        JArray jArray = item.Value as JArray;
+
+                        _responseArray[item.Key] = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(Newtonsoft.Json.JsonConvert.SerializeObject(jArray.First));
+                    }
+                }
+
+
+                request.responseArray = _responseArray;
+            }
+            catch
+            {
+
             }
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
