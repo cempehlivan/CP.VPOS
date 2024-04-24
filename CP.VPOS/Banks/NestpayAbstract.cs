@@ -91,16 +91,23 @@ namespace CP.VPOS.Banks
 
             if (request.responseArray.ContainsKey("Response"))
             {
-                if (request.responseArray["Response"].cpToString() == "Error" || request.responseArray["Response"].cpToString() == "Decline")
-                {
-                    response.statu = SaleResponseStatu.Error;
-                    response.message = request.responseArray.ContainsKey("ErrMsg") ? request.responseArray["ErrMsg"].cpToString() : "İşlem sırasında bir hata oluştu.";
-                }
-                else if (request.responseArray["Response"].cpToString() == "Approved")
+                if (request.responseArray["Response"].cpToString() == "Approved")
                 {
                     response.statu = SaleResponseStatu.Success;
                     response.message = "İşlem başarıyla tamamlandı";
                     response.transactionId = request.responseArray.ContainsKey("TransId") ? request.responseArray["TransId"].cpToString() : "";
+                }
+                else
+                {
+                    string errMsg = "İşlem sırasında bir hata oluştu.";
+
+                    if (request.responseArray.ContainsKey("ErrMsg") && string.IsNullOrWhiteSpace(request.responseArray["ErrMsg"].cpToString()) == false)
+                        errMsg = request.responseArray["ErrMsg"].cpToString();
+                    else if (request.responseArray.ContainsKey("mdStatus") && request.responseArray["mdStatus"].cpToString() == "0")
+                        errMsg = "3D doğrulaması başarısız.";
+
+                    response.statu = SaleResponseStatu.Error;
+                    response.message = errMsg;
                 }
             }
 
@@ -227,7 +234,7 @@ namespace CP.VPOS.Banks
                 { "hashAlgorithm", "ver3" }
             };
 
-            string hash = string.Join("|", param.OrderBy(s=> s.Key).Select(s=> s.Value.Replace("|", "\\|").Replace("\\", "\\\\") )) + "|" + auth.merchantStorekey;
+            string hash = string.Join("|", param.OrderBy(s => s.Key).Select(s => s.Value.Replace("|", "\\|").Replace("\\", "\\\\"))) + "|" + auth.merchantStorekey;
 
             hash = this.GetHash(hash);
 
