@@ -4,7 +4,30 @@
 ![.net version](https://img.shields.io/badge/.net%20framework-4.0--4.8-purple) ![.net version](https://img.shields.io/badge/.net%20core-3.1-purple) ![.net version](https://img.shields.io/badge/.net-5.0-purple) ![.net version](https://img.shields.io/badge/.net-6.0-purple) ![.net version](https://img.shields.io/badge/.net-7.0-purple) ![.net version](https://img.shields.io/badge/.net-8.0-purple) ![.net maui](https://img.shields.io/badge/.net-MAUI-purple)
 
 
-Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
+## CP.VPOS: Sanal Pos Entegrasyonlarını Basitleştirin
+
+CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir kod tabanı ile kullanmayı mümkün kılan .NET kütüphanesidir. Bu sayede geliştiriciler, her banka için ayrı ayrı kod yazmak zorunda kalmadan, tüm sanal pos işlemlerini tek bir kütüphane üzerinden gerçekleştirebilirler.
+
+## Kütüphanenin Özellikleri
+
++ **Tek Kod Tabanı:** Farklı bankaların sanal pos entegrasyonları için ayrı ayrı kod yazmaya gerek kalmadan, tek bir kod tabanı ile tüm işlemleri gerçekleştirebilirsiniz.
++ **Basitleştirilmiş İşlem Akışı:** Sanal pos işlemleri için gerekli tüm adımlar kütüphane tarafından otomatik olarak halledilir. Bu sayede kod yazma süreci oldukça basitleşir.
++ **3D Güvenli Ödeme Desteği:** 3D Güvenli Ödeme işlemleri için gerekli tüm adımlar kütüphane tarafından desteklenir.
++ **Geniş Banka Kapsamı:** Akbank, Alternatif Bank, Anadolubank, Denizbank, QNB Finansbank, Finansbank Nestpay, Garanti BBVA, Halkbank, ING Bank, İş Bankası, Şekerbank, TEB, Türkiye Finans, Vakıfbank, Yapı Kredi ve Ziraat Bankası gibi birçok banka ile birlikte, Iyzico ve Sipay gibi ödeme kuruluşlarının da sanal pos entegrasyonları kütüphanede yer alır.
+
+
+## Kütüphaneyi Nasıl Kullanabilirsiniz?
+CP.VPOS kütüphanesini NuGet paket yöneticisi aracılığıyla projenize ekleyebilirsiniz. Kütüphanenin kullanımıyla ilgili aşağıda bulunan kod örneklerine göz atabilirsiniz.
+
+[https://www.nuget.org/packages/CP.VPOS](https://www.nuget.org/packages/CP.VPOS)
+
+Package Manager:
+
+> Install-Package CP.VPOS
+
+Dotnet CLI
+> dotnet add package CP.VPOS
+
 
 ## Kullanılabilir Sanal POS'lar
 
@@ -37,16 +60,6 @@ Bu projenin amacı, tüm sanal posları tek bir codebase ile kullanmak.
 | Parolapara | ✔️ | ✔️ | ✔️ | ✔️ |
 | IQmoney | ✔️ | ✔️ | ✔️ | ✔️ |
 
-
-## NuGet
-[https://www.nuget.org/packages/CP.VPOS](https://www.nuget.org/packages/CP.VPOS)
-
-Package Manager:
-
-> Install-Package CP.VPOS
-
-Dotnet CLI
-> dotnet add package CP.VPOS
 
 
 # Dökümanlar
