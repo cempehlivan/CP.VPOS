@@ -82,9 +82,9 @@ namespace CP.VPOS.Test
                 saleInfo = new SaleInfo
                 {
                     cardNameSurname = "cem test",
-                    cardNumber = "4355084355084358",
+                    cardNumber = "5571135571135575",
                     cardExpiryDateMonth = 12,
-                    cardExpiryDateYear = 2030,
+                    cardExpiryDateYear = 2026,
                     amount = (decimal)100.50,
                     cardCVV = "000",
                     currency = CP.VPOS.Enums.Currency.TRY,

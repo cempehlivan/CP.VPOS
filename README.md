@@ -31,6 +31,8 @@ Dotnet CLI
 
 ## Kullanılabilir Sanal POS'lar
 
+![ss](https://raw.githubusercontent.com/cempehlivan/CP.VPOS/master/bankalar.png)
+
 | Sanal POS | Satış | Satış 3D | İptal | İade  |
 | --------- | :---: | :------: | :---: | :---: |
 | Akbank | ✔️ | ✔️ | ✔️ | ✔️ |
