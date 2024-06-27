@@ -15,10 +15,10 @@ namespace CP.VPOS.Banks.GarantiBBVA
 {
     internal class GarantiBBVAVirtualPOSService : IVirtualPOSService
     {
-        private readonly string _urlAPITest = "https://sanalposprovtest.garanti.com.tr/VPServlet";
+        private readonly string _urlAPITest = "https://sanalposprovtest.garantibbva.com.tr/VPServlet";
         private readonly string _urlAPILive = "https://sanalposprov.garanti.com.tr/VPServlet";
 
-        private readonly string _url3Dtest = "https://sanalposprovtest.garanti.com.tr/servlet/gt3dengine";
+        private readonly string _url3Dtest = "https://sanalposprovtest.garantibbva.com.tr/servlet/gt3dengine";
         private readonly string _url3DLive = "https://sanalposprov.garanti.com.tr/servlet/gt3dengine";
 
         /*
