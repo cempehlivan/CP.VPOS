@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CP.VPOS.Enums;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CP.VPOS.Models
@@ -11,9 +12,14 @@ namespace CP.VPOS.Models
         [Required(ErrorMessage = "Tutar alanı zorunludur")]
         [Range(minimum: 0.0001, maximum: 10000000.00, ErrorMessage = "Tutar alanı sıfırdan büyük olmalıdır")]
         public decimal amount { get; set; }
-    }
 
-    public class AllInstallmentQueryResponse
+        /// <summary>
+        /// Para birimi
+        /// </summary>
+		public Currency? currency { get; set; }
+	}
+
+	public class AllInstallmentQueryResponse
     {
         /// <summary>
         /// İşlem Durumu
@@ -33,6 +39,11 @@ namespace CP.VPOS.Models
         /// Ödeme sistemi banka eft kodu
         /// </summary>
         public string bankCode { get; set; }
+
+        /// <summary>
+        /// Kredi kartı programı
+        /// </summary>
+        public CreditCardProgram cardProgram { get; set; }
 
         /// <summary>
         /// Taksit sayısı

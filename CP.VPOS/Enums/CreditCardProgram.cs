@@ -15,6 +15,7 @@ namespace CP.VPOS.Enums
         Paraf = 8,
         ShopAndFly = 9,
         Wings = 10,
-        World = 11
-    }
+        World = 11,
+		Advantage = 12
+	}
 }
