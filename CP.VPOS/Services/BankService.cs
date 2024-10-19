@@ -24,6 +24,7 @@ using CP.VPOS.Banks.ParamPos;
 using CP.VPOS.Banks.PayBull;
 using CP.VPOS.Banks.Parolapara;
 using CP.VPOS.Banks.IQmoney;
+using CP.VPOS.Banks.Ahlpay;
 using System.Collections.Generic;
 
 namespace CP.VPOS.Services
@@ -53,6 +54,7 @@ namespace CP.VPOS.Services
         public static readonly string ZiraatBankasi = "0010";
         public static readonly string AktifYatirimBankasi = "0143";
 
+        public static readonly string Ahlpay = "9985";
         public static readonly string IQmoney = "9986";
         public static readonly string Parolapara = "9987";
         public static readonly string PayBull = "9988";
@@ -94,6 +96,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0010", BankName = "Ziraat Bankası", BankService = typeof(ZiraatBankasiVirtualPOSService)},
             new Bank{BankCode = "0143", BankName = "Aktif Yatırım Bankası"},
 
+            new Bank{BankCode = "9985", BankName = "Ahlpay", BankService = typeof(AhlpayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9986", BankName = "IQmoney", BankService = typeof(IQmoneyVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9987", BankName = "Parolapara", BankService = typeof(ParolaparaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9988", BankName = "PayBull", BankService = typeof(PayBullVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
