@@ -61,6 +61,7 @@ Dotnet CLI
 | PayBull | ✔️ | ✔️ | ✔️ | ✔️ |
 | Parolapara | ✔️ | ✔️ | ✔️ | ✔️ |
 | IQmoney | ✔️ | ✔️ | ✔️ | ✔️ |
+| Ahlpay | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 
@@ -110,6 +111,7 @@ Sanal POS bazlı alan açıklamaları:
 | PayBull | CP.VPOS.Services.BankService.PayBull | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | Parolapara | CP.VPOS.Services.BankService.Parolapara | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | IQmoney | CP.VPOS.Services.BankService.IQmoney | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
+| Ahlpay | CP.VPOS.Services.BankService.Ahlpay | member Id | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | Üye işyeri API Key (hashPassword) |
 
 ## 3D'siz Direkt Satış İşlemi
 
