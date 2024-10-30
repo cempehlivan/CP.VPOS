@@ -245,7 +245,12 @@ public class PaymentController
 {
     public async Task<IActionResult> VirtualPOS3DResponse()
     {
-        Dictionary<string, object> pairs = Request.Form.Keys.ToDictionary(k => k, v => (object)Request.Form[v]);    
+        Dictionary<string, object>? pairs = null;
+
+        if (Request.Method == "GET")
+            pairs = Request.Query.Keys.ToDictionary(k => k, v => (object)Request.Query[v]);
+        else
+            pairs = Request.Form.Keys.ToDictionary(k => k, v => (object)Request.Form[v]);   
 
         SaleResponse response = VPOSClient.Sale3DResponse(new Sale3DResponseRequest
         {
