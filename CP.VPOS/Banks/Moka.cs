@@ -11,6 +11,8 @@ using CP.VPOS.Enums;
 using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CP.VPOS.Banks.Moka
 {
@@ -320,7 +322,7 @@ namespace CP.VPOS.Banks.Moka
 
         public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
         {
-            RefundResponse response = new RefundResponse(); 
+            RefundResponse response = new RefundResponse();
 
             request.currency = request.currency ?? Currency.TRY;
             request.customerIPAddress = string.IsNullOrWhiteSpace(request.customerIPAddress) ? "1.1.1.1" : request.customerIPAddress;
@@ -398,17 +400,82 @@ namespace CP.VPOS.Banks.Moka
 
         public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
+
+            return response;
         }
 
         public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            BINInstallmentQueryResponse response = new BINInstallmentQueryResponse { confirm = false, installmentList = new List<installment>() };
+
+            for (int i = 2; i <= 12; i++)
+            {
+                if (GetIsInstallment(request, auth, i))
+                {
+                    response.installmentList.Add(new installment
+                    {
+                        count = i,
+                        customerCostCommissionRate = 0
+                    });
+                }
+            }
+
+            if (response.installmentList.Any())
+                response.confirm = true;
+
+            return response;
         }
 
         public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
             return new AdditionalInstallmentQueryResponse { confirm = false };
+        }
+
+        private bool GetIsInstallment(BINInstallmentQueryRequest request, VirtualPOSAuth auth, int installmentCount)
+        {
+            request.currency = request.currency ?? Currency.TRY;
+
+            string _currency = request.currency == Currency.TRY ? "TL" : request.currency.ToString();
+
+
+            string checkKey = GetCheckKey(auth);
+
+            Dictionary<string, object> req = new Dictionary<string, object>
+            {
+                { "PaymentDealerAuthentication", new Dictionary<string, string>
+                    {
+                        { "DealerCode", auth.merchantID },
+                        { "Username", auth.merchantUser },
+                        { "Password", auth.merchantPassword },
+                        { "CheckKey", checkKey },
+                    }
+                },
+                { "PaymentDealerRequest", new Dictionary<string, object>
+                {
+                        { "BinNumber", request.BIN },
+                        { "Currency", _currency },
+                        { "OrderAmount", request.amount },
+                        { "InstallmentNumber", installmentCount },
+                        { "GroupRevenueRate", 0 },
+                        { "GroupRevenueAmount", 0 },
+                        { "IsThreeD", 1 },
+                    }
+                }
+            };
+
+            string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/PaymentDealer/DoCalcPaymentAmount";
+
+            string responseStr = Request(req, link);
+
+            JObject jobj = JObject.Parse(responseStr);
+
+            string creditType = jobj.SelectToken("$.Data.BankCard.CreditType").cpToString();
+
+            if (creditType == "CreditCard")
+                return true;
+
+            return false;
         }
 
         private string ErrorMessageHandler(string resultCode)
