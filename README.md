@@ -62,6 +62,7 @@ Dotnet CLI
 | Parolapara | ✔️ | ✔️ | ✔️ | ✔️ |
 | IQmoney | ✔️ | ✔️ | ✔️ | ✔️ |
 | Ahlpay | ✔️ | ✔️ | ✔️ | ✔️ |
+| Moka | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 
@@ -112,6 +113,7 @@ Sanal POS bazlı alan açıklamaları:
 | Parolapara | CP.VPOS.Services.BankService.Parolapara | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | IQmoney | CP.VPOS.Services.BankService.IQmoney | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | Ahlpay | CP.VPOS.Services.BankService.Ahlpay | member Id | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | Üye işyeri API Key (hashPassword) |
+| Moka | CP.VPOS.Services.BankService.Moka | Bayi Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 
 ## 3D'siz Direkt Satış İşlemi
 
