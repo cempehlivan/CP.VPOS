@@ -2,6 +2,7 @@
 using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
+using CP.VPOS.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -183,6 +184,8 @@ namespace CP.VPOS.Banks.Payten
 
                 List<Dictionary<string, object>> paymentSystemList = JsonConvertHelper.Convert<List<Dictionary<string, object>>>(JsonConvertHelper.Json<object>(dic["paymentSystemList"]));
 
+                List<CreditCardBinQueryResponse> binList = BinService.GetBinList();
+
                 if (paymentSystemList != null && paymentSystemList.Any())
                 {
                     response.installmentList = new List<AllInstallment>();
@@ -192,19 +195,32 @@ namespace CP.VPOS.Banks.Payten
                         if (paymentSystem["status"].cpToString() != "OK")
                             continue;
 
-                        List<Dictionary<string, object>> installmentList = JsonConvertHelper.Convert<List<Dictionary<string, object>>>(JsonConvertHelper.Json<object>(paymentSystem["installmentList"]));
+                        string bankCode = "";
 
-                        foreach (var installmentt in installmentList)
+                        if (paymentSystem?.ContainsKey("eftCode") == true && paymentSystem["eftCode"].cpToString() != "")
+                            bankCode = paymentSystem["eftCode"].cpToString();
+                        else
+                            continue;
+
+                        List<CreditCardProgram> bankCreditCardBrandList = binList.Where(s => s.bankCode == bankCode && s.cardType == CreditCardType.Credit && s.cardProgram != CreditCardProgram.Unknown).GroupBy(s=> s.cardProgram).Select(s => s.Key).ToList();
+
+                        foreach(CreditCardProgram brand in bankCreditCardBrandList)
                         {
-                            if (installmentt["status"].cpToString() != "OK")
-                                continue;
+                            List<Dictionary<string, object>> installmentList = JsonConvertHelper.Convert<List<Dictionary<string, object>>>(JsonConvertHelper.Json<object>(paymentSystem["installmentList"]));
 
-                            response.installmentList.Add(new AllInstallment
+                            foreach (var installmentt in installmentList)
                             {
-                                bankCode = paymentSystem["eftCode"].cpToString(),
-                                count = installmentt["count"].cpToInt(),
-                                customerCostCommissionRate = installmentt["interestRate"].cpToSingle()
-                            });
+                                if (installmentt["status"].cpToString() != "OK")
+                                    continue;
+
+                                response.installmentList.Add(new AllInstallment
+                                {
+                                    bankCode = "9993",
+                                    cardProgram = brand,
+                                    count = installmentt["count"].cpToInt(),
+                                    customerCostCommissionRate = installmentt["interestRate"].cpToSingle()
+                                });
+                            }
                         }
                     }
                 }
