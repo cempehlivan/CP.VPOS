@@ -76,6 +76,7 @@ namespace CP.VPOS.Services
         internal static readonly List<Bank> AllBanks = new List<Bank>()
         {
             new Bank{BankCode = "0046", BankName = "Akbank", BankService = typeof(AkbankVirtualPOSService) },
+            new Bank{BankCode = "9046", BankName = "Akbank Nestpay", BankService = typeof(AkbankNestpayVirtualPOSService) },
             new Bank{BankCode = "0203", BankName = "Albaraka Türk" },
             new Bank{BankCode = "0124", BankName = "Alternatif Bank", BankService = typeof(AlternatifBankVirtualPOSService)},
             new Bank{BankCode = "0135", BankName = "Anadolubank", BankService = typeof(AnadolubankVirtualPOSService)},
