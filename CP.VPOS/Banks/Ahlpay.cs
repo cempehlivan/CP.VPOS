@@ -262,7 +262,7 @@ namespace CP.VPOS.Banks.Ahlpay
             {
                 _token = GetTokenModel(auth);
             }
-            catch (Exception ex)
+            catch
             {
                 return response;
             }
@@ -329,7 +329,7 @@ namespace CP.VPOS.Banks.Ahlpay
             {
                 _token = GetTokenModel(auth);
             }
-            catch (Exception ex)
+            catch
             {
                 return response;
             }
@@ -392,7 +392,7 @@ namespace CP.VPOS.Banks.Ahlpay
             //{
             //    _token = GetTokenModel(auth);
             //}
-            //catch (Exception ex)
+            //catch
             //{
             //    return response;
             //}
@@ -410,7 +410,7 @@ namespace CP.VPOS.Banks.Ahlpay
             {
                 _token = GetTokenModel(auth);
             }
-            catch (Exception ex)
+            catch
             {
                 return response;
             }
