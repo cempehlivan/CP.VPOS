@@ -91,8 +91,8 @@ Sanal POS bazlı alan açıklamaları:
 
 | Sanal POS | bankCode | merchantID | merchantUser | merchantPassword | merchantStorekey |
 | --------- | -------- | ---------- | ------------ | ---------------- | ---------------- |
-| Akbank | CP.VPOS.Services.BankService.Akbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
-| Akbank Nestpay | CP.VPOS.Services.BankService.AkbankNestpay | İş Yeri No | Güvenli İşyeri Numarası (merchantSafeId) | Terminal Safe ID | Güvenlik Anahtarı (Secret Key) |
+| Akbank | CP.VPOS.Services.BankService.Akbank | İş Yeri No | Güvenli İşyeri Numarası (merchantSafeId) | Terminal Safe ID | Güvenlik Anahtarı (Secret Key) |
+| Akbank Nestpay | CP.VPOS.Services.BankService.AkbankNestpay | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Alternatif Bank | CP.VPOS.Services.BankService.AlternatifBank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Anadolubank | CP.VPOS.Services.BankService.Anadolubank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Denizbank | CP.VPOS.Services.BankService.Denizbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
