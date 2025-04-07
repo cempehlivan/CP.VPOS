@@ -33,6 +33,7 @@ namespace CP.VPOS.Services
     public static class BankService
     {
         public static readonly string Akbank = "0046";
+        public static readonly string AkbankNestpay = "9046";
         public static readonly string AlbarakaTurk = "0203";
         public static readonly string AlternatifBank = "0124";
         public static readonly string Anadolubank = "0135";

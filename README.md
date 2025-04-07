@@ -16,6 +16,10 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **Geniş Banka Kapsamı:** Akbank, Alternatif Bank, Anadolubank, Denizbank, QNB Finansbank, Finansbank Nestpay, Garanti BBVA, Halkbank, ING Bank, İş Bankası, Şekerbank, TEB, Türkiye Finans, Vakıfbank, Yapı Kredi ve Ziraat Bankası gibi birçok banka ile birlikte, Iyzico ve Sipay gibi ödeme kuruluşlarının da sanal pos entegrasyonları kütüphanede yer alır.
 
 
+## Sürüm Notları
+### v2.0.0
+ - Akbank yeni sanal pos altyapısı geliştirmesi yapıldı. Akbank aşamalı olarak sanal pos müşterilerini nestpay üzerinden kendi altyapsını geçiriyor. Halihazırda akbank kullananlar bu versiyona geçmeden önce yeni altyapı için erişim bilgilerini bankadan talep etmeliler veya eski (Nestpay) entegrasyonunu kullanmak isteyenler `CP.VPOS.Services.BankService.AkbankNestpay` veya `9046` kodu ile Nestpay üzerinden kullanabilirler.
+
 ## Kütüphaneyi Nasıl Kullanabilirsiniz?
 CP.VPOS kütüphanesini NuGet paket yöneticisi aracılığıyla projenize ekleyebilirsiniz. Kütüphanenin kullanımıyla ilgili aşağıda bulunan kod örneklerine göz atabilirsiniz.
 
@@ -36,6 +40,7 @@ Dotnet CLI
 | Sanal POS | Satış | Satış 3D | İptal | İade  |
 | --------- | :---: | :------: | :---: | :---: |
 | Akbank | ✔️ | ✔️ | ✔️ | ✔️ |
+| Akbank Nestpay | ✔️ | ✔️ | ✔️ | ✔️ |
 | Alternatif Bank | ✔️ | ✔️ | ✔️ | ✔️ |
 | Anadolubank | ✔️ | ✔️ | ✔️ | ✔️ |
 | Denizbank | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -87,6 +92,7 @@ Sanal POS bazlı alan açıklamaları:
 | Sanal POS | bankCode | merchantID | merchantUser | merchantPassword | merchantStorekey |
 | --------- | -------- | ---------- | ------------ | ---------------- | ---------------- |
 | Akbank | CP.VPOS.Services.BankService.Akbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| Akbank Nestpay | CP.VPOS.Services.BankService.AkbankNestpay | İş Yeri No | Güvenli İşyeri Numarası (merchantSafeId) | Terminal Safe ID | Güvenlik Anahtarı (Secret Key) |
 | Alternatif Bank | CP.VPOS.Services.BankService.AlternatifBank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Anadolubank | CP.VPOS.Services.BankService.Anadolubank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Denizbank | CP.VPOS.Services.BankService.Denizbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
