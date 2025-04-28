@@ -17,6 +17,8 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 
 
 ## Sürüm Notları
+### v2.0.1
+ - QNBpay, Paybull, Parolapara, IQmoney sanal poslarında tüm taksit seçenekleri sorgulama `AllInstallmentQuery` bug fix
 ### v2.0.0
  - Akbank yeni sanal pos altyapısı geliştirmesi yapıldı. Akbank aşamalı olarak sanal pos müşterilerini nestpay üzerinden kendi altyapsını geçiriyor. Halihazırda akbank kullananlar bu versiyona geçmeden önce yeni altyapı için erişim bilgilerini bankadan talep etmeliler veya eski (Nestpay) entegrasyonunu kullanmak isteyenler `CP.VPOS.Services.BankService.AkbankNestpay` veya `9046` kodu ile Nestpay üzerinden kullanabilirler.
 
