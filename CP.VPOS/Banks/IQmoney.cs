@@ -440,10 +440,10 @@ namespace CP.VPOS.Banks.IQmoney
 								foreach (Dictionary<string, object> installmentModel in installmentList)
 								{
 
-									if (installmentModel?.ContainsKey("user_commission_percentage") == true && installmentModel["user_commission_percentage"].cpToString() != "x" && installmentModel.ContainsKey("getpos_card_program") == true && installmentModel["getpos_card_program"].cpToString() != "")
+									if (installmentModel?.ContainsKey("user_commission_percentage") == true && installmentModel["user_commission_percentage"].cpToString() != "x" && installmentModel.ContainsKey("card_program") == true && installmentModel["card_program"].cpToString() != "")
 									{
 										CreditCardProgram creditCardProgram = CreditCardProgram.Unknown;
-										string getpos_card_program = installmentModel["getpos_card_program"].cpToString();
+										string getpos_card_program = installmentModel["card_program"].cpToString();
 										float user_commission_percentage = installmentModel["user_commission_percentage"].cpToSingle();
 
 										switch (getpos_card_program)
