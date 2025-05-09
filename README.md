@@ -129,14 +129,14 @@ Sanal POS bazlı alan açıklamaları:
 
 
 ```csharp
-VirtualPOSAuth nestpayAkbank = new VirtualPOSAuth
+VirtualPOSAuth _qnbPayTest = new VirtualPOSAuth
 {
-	bankCode = CP.VPOS.Services.BankService.Akbank,
-	merchantID = "100100000",
-	merchantUser = "AKTESTAPI",
-	merchantPassword = "AKBANK01",
-	merchantStorekey = "123456",
-	testPlatform = true
+    bankCode = CP.VPOS.Services.BankService.QNBpay,
+    merchantID = "20158",
+    merchantUser = "07fb70f9d8de575f32baa6518e38c5d6",
+    merchantPassword = "61d97b2cac247069495be4b16f8604db",
+    merchantStorekey = "$2y$10$N9IJkgazXMUwCzpn7NJrZePy3v.dIFOQUyW4yGfT3eWry6m.KxanK",
+    testPlatform = true
 };
 
 CustomerInfo customerInfo = new CustomerInfo
@@ -160,12 +160,12 @@ SaleRequest saleRequest = new SaleRequest
 	shippingInfo = customerInfo,
 	saleInfo = new SaleInfo
 	{
-		cardNameSurname = "cem test",
-		cardNumber = "4355084355084358",
-		cardExpiryDateMonth = 12,
-		cardExpiryDateYear = 2030,
-		amount = (decimal)100.50,
-		cardCVV = "000",
+		cardNameSurname = "test kart",
+		cardNumber = "4022780520669303",
+		cardExpiryDateMonth = 1,
+		cardExpiryDateYear = 2050,
+		cardCVV = "988",
+		amount = (decimal)10,
 		currency = CP.VPOS.Enums.Currency.TRY,
 		installment = 1,
 	},
@@ -178,7 +178,7 @@ SaleRequest saleRequest = new SaleRequest
 };
 
 
-var resp = VPOSClient.Sale(saleRequest, nestpayAkbank);
+var resp = VPOSClient.Sale(saleRequest, _qnbPayTest);
 ```
 
 ## 3D Secure Satış İşlemi
@@ -192,14 +192,14 @@ Bu işlem sonrası client, banka 3D doğrulama sayfasına yönlendirilir. Bu say
 3D den gelen form request body'sini  `Dictionary<string, object>` e çevirip `VPOSClient.Sale3DResponse` methoduna gönderilmesi gerekmektedir. Bu işlem sonrası nihai sonuç döner.
 
 ```csharp
-VirtualPOSAuth nestpayAkbank = new VirtualPOSAuth
+VirtualPOSAuth _qnbPayTest = new VirtualPOSAuth
 {
-	bankCode = CP.VPOS.Services.BankService.Akbank,
-	merchantID = "100100000",
-	merchantUser = "AKTESTAPI",
-	merchantPassword = "AKBANK01",
-	merchantStorekey = "123456",
-	testPlatform = true
+    bankCode = CP.VPOS.Services.BankService.QNBpay,
+    merchantID = "20158",
+    merchantUser = "07fb70f9d8de575f32baa6518e38c5d6",
+    merchantPassword = "61d97b2cac247069495be4b16f8604db",
+    merchantStorekey = "$2y$10$N9IJkgazXMUwCzpn7NJrZePy3v.dIFOQUyW4yGfT3eWry6m.KxanK",
+    testPlatform = true
 };
 
 CustomerInfo customerInfo = new CustomerInfo
@@ -223,12 +223,12 @@ SaleRequest saleRequest = new SaleRequest
 	shippingInfo = customerInfo,
 	saleInfo = new SaleInfo
 	{
-		cardNameSurname = "cem test",
-		cardNumber = "4355084355084358",
-		cardExpiryDateMonth = 12,
-		cardExpiryDateYear = 2030,
-		amount = (decimal)100.50,
-		cardCVV = "000",
+		cardNameSurname = "test kart",
+		cardNumber = "4022780520669303",
+		cardExpiryDateMonth = 1,
+		cardExpiryDateYear = 2050,
+		cardCVV = "988",
+		amount = (decimal)10,
 		currency = CP.VPOS.Enums.Currency.TRY,
 		installment = 1,
 	},
@@ -242,7 +242,7 @@ SaleRequest saleRequest = new SaleRequest
 };
 
 
-var resp = VPOSClient.Sale(saleRequest, nestpayAkbank);
+var resp = VPOSClient.Sale(saleRequest, _qnbPayTest);
 ```
 
 
@@ -265,7 +265,7 @@ public class PaymentController
         SaleResponse response = VPOSClient.Sale3DResponse(new Sale3DResponseRequest
         {
             responseArray = pairs
-        }, nestpayAkbank);
+        }, _qnbPayTest);
     }
 }
 
