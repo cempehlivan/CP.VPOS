@@ -26,6 +26,7 @@ using CP.VPOS.Banks.Parolapara;
 using CP.VPOS.Banks.IQmoney;
 using CP.VPOS.Banks.Ahlpay;
 using CP.VPOS.Banks.Moka;
+using CP.VPOS.Banks.Vepara;
 using System.Collections.Generic;
 
 namespace CP.VPOS.Services
@@ -56,6 +57,7 @@ namespace CP.VPOS.Services
         public static readonly string ZiraatBankasi = "0010";
         public static readonly string AktifYatirimBankasi = "0143";
 
+        public static readonly string Vepara = "9983";
         public static readonly string Moka = "9984";
         public static readonly string Ahlpay = "9985";
         public static readonly string IQmoney = "9986";
@@ -100,6 +102,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0010", BankName = "Ziraat Bankası", BankService = typeof(ZiraatBankasiVirtualPOSService)},
             new Bank{BankCode = "0143", BankName = "Aktif Yatırım Bankası"},
 
+            new Bank{BankCode = "9983", BankName = "Vepara", BankService = typeof(VeparaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9984", BankName = "Moka", BankService = typeof(MokaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9985", BankName = "Ahlpay", BankService = typeof(AhlpayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9986", BankName = "IQmoney", BankService = typeof(IQmoneyVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
