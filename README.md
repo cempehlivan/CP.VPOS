@@ -1,7 +1,6 @@
 # CP.VPOS
 [![Nuget download](https://img.shields.io/nuget/dt/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) [![Nuget v2](https://img.shields.io/nuget/v/CP.VPOS)](https://www.nuget.org/packages/CP.VPOS) ![build](https://img.shields.io/github/actions/workflow/status/cempehlivan/cp.vpos/dotnet.yml?branch=master) [![GitHub license](https://img.shields.io/github/license/cempehlivan/CP.VPOS)](https://github.com/cempehlivan/CP.VPOS/blob/master/LICENSE)
 
-![.net version](https://img.shields.io/badge/.net%20framework-4.0--4.8-purple) ![.net version](https://img.shields.io/badge/.net%20core-3.1-purple) ![.net version](https://img.shields.io/badge/.net-5.0-purple) ![.net version](https://img.shields.io/badge/.net-6.0-purple) ![.net version](https://img.shields.io/badge/.net-7.0-purple) ![.net version](https://img.shields.io/badge/.net-8.0-purple) ![.net maui](https://img.shields.io/badge/.net-MAUI-purple)
 
 
 ## CP.VPOS: Sanal Pos Entegrasyonlarını Basitleştirin
@@ -14,9 +13,11 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **Basitleştirilmiş İşlem Akışı:** Sanal pos işlemleri için gerekli tüm adımlar kütüphane tarafından otomatik olarak halledilir. Bu sayede kod yazma süreci oldukça basitleşir.
 + **3D Güvenli Ödeme Desteği:** 3D Güvenli Ödeme işlemleri için gerekli tüm adımlar kütüphane tarafından desteklenir.
 + **Geniş Banka Kapsamı:** Akbank, Alternatif Bank, Anadolubank, Denizbank, QNB Finansbank, Finansbank Nestpay, Garanti BBVA, Halkbank, ING Bank, İş Bankası, Şekerbank, TEB, Türkiye Finans, Vakıfbank, Yapı Kredi ve Ziraat Bankası gibi birçok banka ile birlikte, Iyzico ve Sipay gibi ödeme kuruluşlarının da sanal pos entegrasyonları kütüphanede yer alır.
-
++ **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v2.1.0
+ - Vepara sanal pos entegrasyonu eklendi.
 ### v2.0.1
  - QNBpay, Paybull, Parolapara, IQmoney sanal poslarında tüm taksit seçenekleri sorgulama `AllInstallmentQuery` bug fix
 ### v2.0.0
@@ -70,10 +71,13 @@ Dotnet CLI
 | IQmoney | ✔️ | ✔️ | ✔️ | ✔️ |
 | Ahlpay | ✔️ | ✔️ | ✔️ | ✔️ |
 | Moka | ✔️ | ✔️ | ✔️ | ✔️ |
+| Vepara | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 
-# Dökümanlar
+# Dokümanlar
+
+Detaylı dokümanlara [https://www.vpos.com.tr/docs](https://www.vpos.com.tr/docs) adresinden ulaşabilirsiniz.
 
 ## API Bilgilerinin ayarlanması - `VirtualPOSAuth` Class'ı
 
@@ -122,6 +126,7 @@ Sanal POS bazlı alan açıklamaları:
 | IQmoney | CP.VPOS.Services.BankService.IQmoney | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | Ahlpay | CP.VPOS.Services.BankService.Ahlpay | member Id | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | Üye işyeri API Key (hashPassword) |
 | Moka | CP.VPOS.Services.BankService.Moka | Bayi Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
+| Vepara | CP.VPOS.Services.BankService.Vepara | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 
 ## 3D'siz Direkt Satış İşlemi
 
