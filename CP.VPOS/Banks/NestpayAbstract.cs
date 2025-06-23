@@ -44,7 +44,7 @@ namespace CP.VPOS.Banks
                 { "Password", auth.merchantPassword },
                 { "ClientId", auth.merchantID },
                 { "Type", "Auth" },
-                { "oid", request.orderNumber },
+                { "OrderId", request.orderNumber },
                 { "Total", request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".") },
                 { "Currency", ((int)request.saleInfo.currency).ToString() },
                 { "Number", request.saleInfo.cardNumber },
