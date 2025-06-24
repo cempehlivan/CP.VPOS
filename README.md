@@ -16,6 +16,8 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v2.1.1
+ - Nestpay bankalarında 3D'siz işlemlere sipariş numarası eklendi.
 ### v2.1.0
  - Vepara sanal pos entegrasyonu eklendi.
 ### v2.0.1
