@@ -225,7 +225,7 @@ namespace CP.VPOS.Banks
                 { "okUrl", request.payment3D.returnURL },
                 { "failUrl", request.payment3D.returnURL },
                 { "rnd", Helpers.FoundationHelper.time().ToString()},
-                { "storetype", "3d_pay" },
+                { "storetype", auth.storeType },
                 { "lang", "tr" },
                 { "currency", ((int)request.saleInfo.currency).ToString() },
                 { "installment", installment },

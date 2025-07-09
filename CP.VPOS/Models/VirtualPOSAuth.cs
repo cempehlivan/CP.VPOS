@@ -35,6 +35,11 @@ namespace CP.VPOS.Models
         public string merchantStorekey { get; set; }
 
         /// <summary>
+        /// Ödeme yöntemi,3D,3D_PAY,3D_PAY_HOSTING gibi yöntemler belirlenebilir. Boş geçilmesi halinde varsayılan 3D_PAY'dir
+        /// </summary>
+        public string storeType { get; set; } = "3d_pay";
+
+        /// <summary>
         /// Test ortamı ise true gönderilmelidir.
         /// </summary>
         public bool testPlatform { get; set; }
