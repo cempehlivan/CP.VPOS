@@ -16,6 +16,8 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v2.2.0
+ - ZiraatPay ve VakıfPayS sanal pos entegrasyonları eklendi.
 ### v2.1.1
  - Nestpay bankalarında 3D'siz işlemlere sipariş numarası eklendi.
 ### v2.1.0
@@ -74,6 +76,8 @@ Dotnet CLI
 | Ahlpay | ✔️ | ✔️ | ✔️ | ✔️ |
 | Moka | ✔️ | ✔️ | ✔️ | ✔️ |
 | Vepara | ✔️ | ✔️ | ✔️ | ✔️ |
+| ZiraatPay | ✔️ | ✔️ | ✔️ | ✔️ |
+| VakıfPayS | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 
@@ -129,6 +133,10 @@ Sanal POS bazlı alan açıklamaları:
 | Ahlpay | CP.VPOS.Services.BankService.Ahlpay | member Id | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | Üye işyeri API Key (hashPassword) |
 | Moka | CP.VPOS.Services.BankService.Moka | Bayi Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 | Vepara | CP.VPOS.Services.BankService.Vepara | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
+| ZiraatPay | CP.VPOS.Services.BankService.ZiraatPay | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
+| VakıfPayS | CP.VPOS.Services.BankService.VakifPayS | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
+
+
 
 ## 3D'siz Direkt Satış İşlemi
 
