@@ -16,6 +16,8 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v2.2.1
+ - İş bankası test ortamı api adresleri güncellendi.
 ### v2.2.0
  - ZiraatPay ve VakıfPayS sanal pos entegrasyonları eklendi.
 ### v2.1.1
