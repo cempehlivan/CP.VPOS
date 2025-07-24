@@ -20,10 +20,16 @@ namespace CP.VPOS.Banks
         private static string _url3Dtest = "https://entegrasyon.asseco-see.com.tr/fim/est3Dgate";
         private static string _url3DLive = "";
 
-        public NestpayVirtualPOSService(string urlAPILive, string url3DLive)
+        public NestpayVirtualPOSService(string urlAPILive, string url3DLive, string urlAPITest = "", string url3DTest = "")
         {
             _urlAPILive = urlAPILive;
             _url3DLive = url3DLive;
+
+            if (!string.IsNullOrWhiteSpace(urlAPITest))
+                _urlAPITest = urlAPITest;
+
+            if (!string.IsNullOrWhiteSpace(url3DTest))
+                _url3Dtest = url3DTest;
         }
 
         public virtual SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
