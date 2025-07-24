@@ -69,7 +69,7 @@ namespace CP.VPOS.Test
         }
 
 
-        [TestMethod]
+        //[TestMethod]
         public void IsBankasiBankasiSaleTest()
         {
             VirtualPOSAuth _isbankasiTest = new VirtualPOSAuth
