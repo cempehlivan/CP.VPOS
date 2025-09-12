@@ -205,7 +205,7 @@ namespace CP.VPOS.Banks
 
                     if (transStat == "S")
                         response.transactionStatu = SaleQueryTransactionStatu.Paid;
-                    else if (transStat == "C")
+                    else if (transStat == "V")
                         response.transactionStatu = SaleQueryTransactionStatu.Voided;
                 }
             }
