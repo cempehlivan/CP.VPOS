@@ -519,6 +519,7 @@ namespace CP.VPOS.Banks.Akbank
 
         private string getRandomNumberBase16(int length)
         {
+#pragma warning disable SYSLIB0023
             byte[] data = new byte[length];
             using (var crypto = new RNGCryptoServiceProvider())
             {
@@ -530,22 +531,8 @@ namespace CP.VPOS.Banks.Akbank
                 result.Append((b % 16).ToString("X"));
             }
             return result.ToString();
+#pragma warning restore SYSLIB0023
         }
 
     }
-
-    #region Akbank Nestpay
-    internal class AkbankNestpayVirtualPOSService : NestpayVirtualPOSService
-    {
-        private static readonly string _urlAPILive = "https://www.sanalakpos.com/fim/api";
-        private static readonly string _url3DLive = "https://www.sanalakpos.com/fim/est3Dgate";
-
-        //test panel: https://entegrasyon.asseco-see.com.tr/akbank/report/user.login
-
-        public AkbankNestpayVirtualPOSService() : base(_urlAPILive, _url3DLive)
-        {
-
-        }
-    }
-    #endregion
 }
