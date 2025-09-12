@@ -47,6 +47,11 @@ namespace CP.VPOS.Models
         public DateTime? transactionDate { get; set; }
 
         /// <summary>
+        /// İşlem son durumu
+        /// </summary>
+        public SaleQueryTransactionStatu? transactionStatu { get; set; }
+
+        /// <summary>
         /// Karttan çekilen tutar
         /// </summary>
         public decimal? amount { get; set; }

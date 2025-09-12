@@ -168,8 +168,8 @@ namespace CP.VPOS.Banks
             {
                 if (respDic["Response"].cpToString() == "Approved")
                 {
-                    response.statu = SaleQueryResponseStatu.Success;
-                    response.message = "İşlem başarıyla tamamlandı";
+                    response.statu = SaleQueryResponseStatu.Found;
+                    response.message = "İşlem bulundu";
                     response.transactionId = respDic.ContainsKey("TransId") ? respDic["TransId"].cpToString() : "";
                 }
                 else
@@ -197,6 +197,16 @@ namespace CP.VPOS.Banks
 
                     if (DateTime.TryParseExact(transactionDateStr, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
                         response.transactionDate = result;
+                }
+
+                if (extraRespDic?.ContainsKey("TRANS_STAT") == true)
+                {
+                    string transStat = extraRespDic["TRANS_STAT"].cpToString();
+
+                    if (transStat == "S")
+                        response.transactionStatu = SaleQueryTransactionStatu.Paid;
+                    else if (transStat == "C")
+                        response.transactionStatu = SaleQueryTransactionStatu.Voided;
                 }
             }
 
