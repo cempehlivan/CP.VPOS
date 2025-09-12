@@ -558,6 +558,11 @@ namespace CP.VPOS.Banks.GarantiBBVA
 
             return returnSrting;
         }
+
+        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        {
+            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+        }
     }
 
 

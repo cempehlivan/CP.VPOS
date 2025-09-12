@@ -277,6 +277,22 @@ namespace CP.VPOS
             return binList;
         }
 
+        /// <summary>
+        /// Tekil işlem sorgulama
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="auth"></param>
+        /// <returns></returns>
+        public static SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        {
+            request.Validate();
+            auth.Validate();
+
+            IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
+
+            return vPOSService.SaleQuery(request, auth);
+        }
+
         private static IVirtualPOSService GetVirtualPOSService(string bankCode)
         {
             IVirtualPOSService virtualPOSService = null;

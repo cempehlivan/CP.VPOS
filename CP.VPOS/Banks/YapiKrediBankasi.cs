@@ -350,6 +350,11 @@ $@"<?xml version=""1.0"" encoding=""ISO-8859-9""?>
         {
             return null;
         }
+
+        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        {
+            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+        }
     }
 
     static class helper

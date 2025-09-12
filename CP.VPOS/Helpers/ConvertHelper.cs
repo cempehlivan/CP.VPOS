@@ -533,6 +533,29 @@ namespace CP.VPOS.Helpers
             return string.IsNullOrEmpty(str);
         }
 
+        /// <summary>
+        /// String sayıyı decimal'e çevirir. 
+        /// Son "fractionDigits" kadar haneyi kuruş/ondalık hanesi olarak kabul eder.
+        /// Geçersiz değerlerde null döner.
+        /// </summary>
+        /// <param name="value">Örn: "81000"</param>
+        /// <param name="fractionDigits">Ondalık basamak sayısı (default: 2)</param>
+        /// <returns>Decimal değer veya null</returns>
+        internal static decimal? cpToFlatStringParseDecimal(this string value, int fractionDigits = 2)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            if (!long.TryParse(value, out long number))
+                return null;
+
+            if (fractionDigits < 0 || number < 0)
+                return null;
+
+            decimal divisor = (decimal)Math.Pow(10, fractionDigits);
+
+            return number / divisor;
+        }
         #endregion
     }
 }

@@ -534,5 +534,9 @@ namespace CP.VPOS.Banks.Akbank
 #pragma warning restore SYSLIB0023
         }
 
+        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        {
+            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+        }
     }
 }

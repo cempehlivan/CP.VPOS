@@ -59,5 +59,13 @@ namespace CP.VPOS.Interfaces
         /// <param name="auth"></param>
         /// <returns></returns>
         RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth);
+
+        /// <summary>
+        /// İşlem sorgulama
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="auth"></param>
+        /// <returns></returns>
+        SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth);
     }
 }

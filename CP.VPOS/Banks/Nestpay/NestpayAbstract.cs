@@ -1,13 +1,14 @@
-﻿using CP.VPOS.Models;
+﻿using CP.VPOS.Enums;
+using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
+using CP.VPOS.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using CP.VPOS.Enums;
-using CP.VPOS.Helpers;
-using System.Net;
-using System.Net.Http;
 using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 
 namespace CP.VPOS.Banks
@@ -135,6 +136,71 @@ namespace CP.VPOS.Banks
         public virtual AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
             return new AdditionalInstallmentQueryResponse { confirm = false };
+        }
+
+        public virtual SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        {
+            SaleQueryResponse response = new SaleQueryResponse
+            {
+                statu = SaleQueryResponseStatu.NotFound,
+                message = "Sipariş bulunamadı",
+                orderNumber = request.orderNumber,
+            };
+
+            Dictionary<string, object> param = new Dictionary<string, object>()
+            {
+                { "Name", auth.merchantUser },
+                { "Password", auth.merchantPassword },
+                { "ClientId", auth.merchantID },
+                { "OrderId", request.orderNumber },
+                { "Extra", new Dictionary<string, object>{ { "ORDERSTATUS", "QUERY" }  } }
+            };
+
+            string xml = param.toXml(rootTag: "CC5Request");
+
+            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+
+            Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "CC5Response");
+
+            response.privateResponse = respDic;
+
+            if (respDic.ContainsKey("Response"))
+            {
+                if (respDic["Response"].cpToString() == "Approved")
+                {
+                    response.statu = SaleQueryResponseStatu.Success;
+                    response.message = "İşlem başarıyla tamamlandı";
+                    response.transactionId = respDic.ContainsKey("TransId") ? respDic["TransId"].cpToString() : "";
+                }
+                else
+                {
+                    response.statu = SaleQueryResponseStatu.Error;
+                    response.message = respDic.ContainsKey("ErrMsg") ? respDic["ErrMsg"].cpToString() : "Sipariş bulunamadı";
+                }
+            }
+
+            if (respDic.ContainsKey("Extra") && respDic["Extra"] != null)
+            {
+                Dictionary<string, object> extraRespDic = respDic["Extra"] as Dictionary<string, object>;
+
+                if (extraRespDic?.ContainsKey("CAPTURE_AMT") == true)
+                    response.amount = extraRespDic["CAPTURE_AMT"].cpToString().cpToFlatStringParseDecimal();
+
+                if (extraRespDic?.ContainsKey("CAPTURE_DTTM") == true)
+                {
+                    string transactionDateStr = extraRespDic["CAPTURE_DTTM"].cpToString();
+
+                    int dotIndex = transactionDateStr.IndexOf('.');
+
+                    if (dotIndex > 0)
+                        transactionDateStr = transactionDateStr.Substring(0, dotIndex);
+
+                    if (DateTime.TryParseExact(transactionDateStr, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
+                        response.transactionDate = result;
+                }
+            }
+
+            return response;
         }
 
         public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
