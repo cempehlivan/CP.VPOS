@@ -277,6 +277,7 @@ namespace CP.VPOS
             return binList;
         }
 
+        /* Henüz Tamamlanmadı
         /// <summary>
         /// Tekil işlem sorgulama
         /// </summary>
@@ -292,6 +293,7 @@ namespace CP.VPOS
 
             return vPOSService.SaleQuery(request, auth);
         }
+        */
 
         private static IVirtualPOSService GetVirtualPOSService(string bankCode)
         {
