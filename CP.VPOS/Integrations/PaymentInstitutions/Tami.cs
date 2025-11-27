@@ -463,7 +463,7 @@ namespace CP.VPOS.Banks.Tami
                     responseString = Encoding.UTF8.GetString(responseByte);
                 }
             }
-            catch (Exception ex)
+            catch
             {
 
             }
