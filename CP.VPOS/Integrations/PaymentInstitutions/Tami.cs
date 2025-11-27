@@ -2,6 +2,7 @@
 using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
+using CP.VPOS.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -320,7 +321,43 @@ namespace CP.VPOS.Banks.Tami
 
         public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            // Tami, tüm taksit listesini API üzerinden sağlamamaktadır. Bu nedenle, burada elimizdeki bin listesindeki kart programlarını listeleyip her kart programı için bir kartı tek tek sorguluyoruz.
+            // Destek eklenirse API üzerinden taksit bilgileri de çekilebilir.
+
+            AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
+
+            List<CreditCardBinQueryResponse> binList = BinService.GetBinList();
+
+            var bankCreditCardBrandList = binList.Where(s => s.cardType == CreditCardType.Credit && s.cardProgram != CreditCardProgram.Unknown).GroupBy(s => s.cardProgram).Select(s => new { cardProgram = s.Key, binNumber = s.First().binNumber }).ToList();
+
+            foreach (var brand in bankCreditCardBrandList)
+            {
+                var installmentsInfo = BINInstallmentQuery(new BINInstallmentQueryRequest
+                {
+                    BIN = brand.binNumber,
+                    amount = request.amount,
+                    currency = request.currency ?? Currency.TRY,
+                }, auth);
+
+                if (installmentsInfo.confirm && installmentsInfo.installmentList?.Any() == true)
+                {
+                    foreach (var ins in installmentsInfo.installmentList)
+                    {
+                        response.installmentList.Add(new AllInstallment
+                        {
+                            bankCode = "9980",
+                            cardProgram = brand.cardProgram,
+                            count = ins.count,
+                            customerCostCommissionRate = ins.customerCostCommissionRate,
+                        });
+                    }
+                }
+            }
+
+            if (response.installmentList?.Any() == true)
+                response.confirm = true;
+
+            return response;
         }
 
         public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
@@ -343,15 +380,37 @@ namespace CP.VPOS.Banks.Tami
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
-            if (responseDic?.ContainsKey("success") == true && responseDic["success"].cpToBool() == true && responseDic?.ContainsKey("isInstallment") == true && responseDic["isInstallment"].cpToBool() == true)
+            if (responseDic?.ContainsKey("success") == true && responseDic["success"].cpToBool() == true && responseDic?.ContainsKey("isInstallment") == true && responseDic["isInstallment"].cpToBool() == true && responseDic?.ContainsKey("installments") == true)
             {
-                //TODO: taksit tablosunu doldur
+                List<int> installmentList = JsonConvertHelper.Convert<List<int>>(JsonConvertHelper.Json<object>(responseDic["installments"]));
+
+                if (installmentList?.Any() == true)
+                {
+                    foreach (int installment in installmentList)
+                    {
+                        int installments_number = installment;
+                        decimal payable_amount = request.amount;
+                        float commissionRate = 0;
+
+                        if (installments_number > 1)
+                        {
+                            if (payable_amount > request.amount)
+                                commissionRate = ((((decimal)100 * payable_amount) / request.amount) - (decimal)100).cpToSingle();
+
+                            installments.Add(new installment
+                            {
+                                count = installments_number,
+                                customerCostCommissionRate = commissionRate
+                            });
+                        }
+                    }
+                }
             }
 
             return new BINInstallmentQueryResponse
             {
                 confirm = installments?.Count > 0,
-                installmentList = installments?.Count > 0 ? installments : null
+                installmentList = installments?.Any() == true ? installments : null
             };
         }
 
@@ -466,17 +525,14 @@ namespace CP.VPOS.Banks.Tami
 
         private string Base64UrlNormalizer(string base64Url)
         {
-            // 1 - URL safe karakterleri geri çevir
             string base64 = base64Url.Replace('-', '+').Replace('_', '/');
 
-            // 2 - Pad ekle (Base64 uzunluğu 4'ün katı olmalı)
             switch (base64.Length % 4)
             {
                 case 2: base64 += "=="; break;
                 case 3: base64 += "="; break;
             }
 
-            // 3 - Standart Base64 decode
             return base64;
         }
     }
