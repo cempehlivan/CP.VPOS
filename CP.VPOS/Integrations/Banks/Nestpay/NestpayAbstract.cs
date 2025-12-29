@@ -91,32 +91,58 @@ namespace CP.VPOS.Banks
             SaleResponse response = new SaleResponse
             {
                 statu = SaleResponseStatu.Error,
-                privateResponse = request.responseArray,
                 orderNumber = request.responseArray.ContainsKey("oid") ? request.responseArray["oid"].cpToString() : "",
                 message = "İşlem sırasında bilinmeyen bir hata oluştu"
             };
 
+            response.privateResponse = new Dictionary<string, object>();
 
-            if (request.responseArray.ContainsKey("Response"))
+            response.privateResponse.Add("response_1", request.responseArray);
+
+            if (request.responseArray.ContainsKey("mdStatus") == true && request.responseArray["mdStatus"].cpToString() == "1")
             {
-                if (request.responseArray["Response"].cpToString() == "Approved")
-                {
-                    response.statu = SaleResponseStatu.Success;
-                    response.message = "İşlem başarıyla tamamlandı";
-                    response.transactionId = request.responseArray.ContainsKey("TransId") ? request.responseArray["TransId"].cpToString() : "";
-                }
-                else
-                {
-                    string errMsg = "İşlem sırasında bir hata oluştu.";
 
-                    if (request.responseArray.ContainsKey("ErrMsg") && string.IsNullOrWhiteSpace(request.responseArray["ErrMsg"].cpToString()) == false)
-                        errMsg = request.responseArray["ErrMsg"].cpToString();
-                    else if (request.responseArray.ContainsKey("mdStatus") && request.responseArray["mdStatus"].cpToString() == "0")
-                        errMsg = "3D doğrulaması başarısız.";
+                Dictionary<string, object> param = new Dictionary<string, object>()
+                {
+                    { "Name", auth.merchantUser },
+                    { "Password", auth.merchantPassword },
+                    { "ClientId", auth.merchantID },
+                    { "IPAddress", request.responseArray["clientIp"].cpToString() },
+                    { "OrderId", response.orderNumber },
+                    { "Type", "Auth" },
+                    { "Number", request.responseArray["md"].cpToString() },
+                    { "PayerTxnId", request.responseArray["xid"].cpToString() },
+                    { "PayerSecurityLevel", request.responseArray["eci"].cpToString() },
+                    { "PayerAuthenticationCode", request.responseArray["cavv"].cpToString() },
+                };
 
-                    response.statu = SaleResponseStatu.Error;
-                    response.message = errMsg;
+                string xml = param.toXml();
+
+                string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+
+                Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp);
+
+                response.privateResponse.Add("response_2", respDic);
+
+                if (respDic.ContainsKey("Response"))
+                {
+                    if (respDic["Response"].cpToString() == "Error" || respDic["Response"].cpToString() == "Decline" || respDic["Response"].cpToString() == "Declined")
+                    {
+                        response.statu = SaleResponseStatu.Error;
+                        response.message = respDic.ContainsKey("ErrMsg") ? respDic["ErrMsg"].cpToString() : "İşlem sırasında bir hata oluştu.";
+                    }
+                    else if (respDic["Response"].cpToString() == "Approved")
+                    {
+                        response.statu = SaleResponseStatu.Success;
+                        response.message = "İşlem başarıyla tamamlandı";
+                        response.transactionId = respDic.ContainsKey("TransId") ? respDic["TransId"].cpToString() : "";
+                    }
                 }
+            }
+            else
+            {
+                response.statu = SaleResponseStatu.Error;
+                response.message = "3D doğrulaması başarısız.";
             }
 
 
@@ -308,7 +334,7 @@ namespace CP.VPOS.Banks
                 { "okUrl", request.payment3D.returnURL },
                 { "failUrl", request.payment3D.returnURL },
                 { "rnd", Helpers.FoundationHelper.time().ToString()},
-                { "storetype", "3d_pay" },
+                { "storetype", "3d" },
                 { "lang", "tr" },
                 { "currency", ((int)request.saleInfo.currency).ToString() },
                 { "installment", installment },
