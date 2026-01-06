@@ -16,6 +16,8 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v3.1.0
+ - HalkÖde sanal pos entegrasyonu eklendi.
 ### v3.0.0
  - **Önemli güncelleme:** Nestpay altyapısındaki banka poslarında (Alternatif Bank, Anadolu Bank, Halkbankası, ING Bank, İş Bankası, Şekerbank, TEB, Türkiye Finans, Ziraat Bankası) 3D güvenli ödemede `storetype` olarak `3d_pay` den `3d` modeline geçiş yapılmıştır. Bu banka poslarına sahip firmalarda üye işyerinde `storetype` olarak `3d` aktif değil ise `3d` modelinin aktif edilmesi gerekmetedir. Aksi halde 3D ile başarılı ödeme alınamayacaktır.
 ### v2.3.0
@@ -87,6 +89,7 @@ Dotnet CLI
 | ZiraatPay | ✔️ | ✔️ | ✔️ | ✔️ |
 | VakıfPayS | ✔️ | ✔️ | ✔️ | ✔️ |
 | Tami | ✔️ | ✔️ | ✔️ | ✔️ |
+| HalkÖde | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 
@@ -145,6 +148,7 @@ Sanal POS bazlı alan açıklamaları:
 | ZiraatPay | CP.VPOS.Services.BankService.ZiraatPay | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 | VakıfPayS | CP.VPOS.Services.BankService.VakifPayS | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 | Tami | CP.VPOS.Services.BankService.Tami | Üye İşyeri No | Terminal No | `KidValue` + "\|" + `KValue` | Secret Key |
+| HalkÖde | CP.VPOS.Services.BankService.HalkOde | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 
 
 
