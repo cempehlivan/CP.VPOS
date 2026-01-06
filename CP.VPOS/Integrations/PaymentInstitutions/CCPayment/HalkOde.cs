@@ -12,12 +12,12 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 
-namespace CP.VPOS.Banks.QNBpay
+namespace CP.VPOS.Banks.HalkOde
 {
-    internal class QNBpayVirtualPOSService : IVirtualPOSService
+    internal class HalkOdeVirtualPOSService : IVirtualPOSService
     {
-        private readonly string _urlAPITest = "https://test.qnbpay.com.tr/ccpayment";
-        private readonly string _urlAPILive = "https://portal.qnbpay.com.tr/ccpayment";
+        private readonly string _urlAPITest = "https://testapp.halkode.com.tr/ccpayment";
+        private readonly string _urlAPILive = "https://app.halkode.com.tr/ccpayment";
 
         public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
         {
@@ -31,7 +31,7 @@ namespace CP.VPOS.Banks.QNBpay
 
             response.orderNumber = request.orderNumber;
 
-            QNBpayTokenModel _token = null;
+            HalkOdeTokenModel _token = null;
 
             try
             {
@@ -144,7 +144,7 @@ namespace CP.VPOS.Banks.QNBpay
             response.orderNumber = request.orderNumber;
 
 
-            QNBpayTokenModel _token = null;
+            HalkOdeTokenModel _token = null;
 
             try
             {
@@ -277,7 +277,7 @@ namespace CP.VPOS.Banks.QNBpay
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
-            QNBpayTokenModel _token = null;
+            HalkOdeTokenModel _token = null;
 
             try
             {
@@ -334,7 +334,7 @@ namespace CP.VPOS.Banks.QNBpay
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
-            QNBpayTokenModel _token = null;
+            HalkOdeTokenModel _token = null;
 
             try
             {
@@ -393,110 +393,110 @@ namespace CP.VPOS.Banks.QNBpay
             return null;
         }
 
-		public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
-		{
-			AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
+        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        {
+            AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
 
-			QNBpayTokenModel _token = null;
+            HalkOdeTokenModel _token = null;
 
-			try
-			{
-				_token = GetTokenModel(auth);
-			}
-			catch
-			{
-				return response;
-			}
+            try
+            {
+                _token = GetTokenModel(auth);
+            }
+            catch
+            {
+                return response;
+            }
 
-			Dictionary<string, object> req = new Dictionary<string, object> {
-				{"currency_code", (request.currency ?? Currency.TRY).ToString() }
-			};
+            Dictionary<string, object> req = new Dictionary<string, object> {
+                {"currency_code", (request.currency ?? Currency.TRY).ToString() }
+            };
 
 
-			string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/commissions";
+            string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/commissions";
 
-			string responseStr = Request(req, link, _token);
+            string responseStr = Request(req, link, _token);
 
-			try
-			{
-				Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
+            try
+            {
+                Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
-				if (responseDic?.ContainsKey("status_code") == true && responseDic["status_code"].cpToString() == "100")
-				{
-					response.confirm = true;
+                if (responseDic?.ContainsKey("status_code") == true && responseDic["status_code"].cpToString() == "100")
+                {
+                    response.confirm = true;
 
-					if (responseDic?.ContainsKey("data") == true)
-					{
-						Dictionary<string, object> keyValuePairs = JsonConvertHelper.Convert<Dictionary<string, object>>(JsonConvertHelper.Json<object>(responseDic["data"]));
+                    if (responseDic?.ContainsKey("data") == true)
+                    {
+                        Dictionary<string, object> keyValuePairs = JsonConvertHelper.Convert<Dictionary<string, object>>(JsonConvertHelper.Json<object>(responseDic["data"]));
 
-						if (keyValuePairs?.Any() == true)
-						{
-							foreach (var item in keyValuePairs)
-							{
-								int installment_number = item.Key.cpToInt();
+                        if (keyValuePairs?.Any() == true)
+                        {
+                            foreach (var item in keyValuePairs)
+                            {
+                                int installment_number = item.Key.cpToInt();
 
-								List<Dictionary<string, object>> installmentList = JsonConvertHelper.Convert<List<Dictionary<string, object>>>(JsonConvertHelper.Json<object>(item.Value));
+                                List<Dictionary<string, object>> installmentList = JsonConvertHelper.Convert<List<Dictionary<string, object>>>(JsonConvertHelper.Json<object>(item.Value));
 
-								foreach (Dictionary<string, object> installmentModel in installmentList)
-								{
+                                foreach (Dictionary<string, object> installmentModel in installmentList)
+                                {
 
-									if (installmentModel?.ContainsKey("user_commission_percentage") == true && installmentModel["user_commission_percentage"].cpToString() != "x" && installmentModel.ContainsKey("card_program") == true && installmentModel["card_program"].cpToString() != "")
-									{
-										CreditCardProgram creditCardProgram = CreditCardProgram.Unknown;
-										string getpos_card_program = installmentModel["card_program"].cpToString().ToUpper(System.Globalization.CultureInfo.GetCultureInfo("en-US"));
-										float user_commission_percentage = installmentModel["user_commission_percentage"].cpToSingle();
+                                    if (installmentModel?.ContainsKey("user_commission_percentage") == true && installmentModel["user_commission_percentage"].cpToString() != "x" && installmentModel.ContainsKey("card_program") == true && installmentModel["card_program"].cpToString() != "")
+                                    {
+                                        CreditCardProgram creditCardProgram = CreditCardProgram.Unknown;
+                                        string getpos_card_program = installmentModel["card_program"].cpToString().ToUpper(System.Globalization.CultureInfo.GetCultureInfo("en-US"));
+                                        float user_commission_percentage = installmentModel["user_commission_percentage"].cpToSingle();
 
-										switch (getpos_card_program)
-										{
-											case "MAXIMUM": creditCardProgram = CreditCardProgram.Maximum; break;
-											case "BANKKART_COMBO": creditCardProgram = CreditCardProgram.Bankkart; break;
-											case "WORLD": creditCardProgram = CreditCardProgram.World; break;
-											case "PARAF": creditCardProgram = CreditCardProgram.Paraf; break;
-											case "BONUS": creditCardProgram = CreditCardProgram.Bonus; break;
-											case "AXESS": creditCardProgram = CreditCardProgram.Axess; break;
-											case "WINGS": creditCardProgram = CreditCardProgram.Wings; break;
-											case "CARD_FNS": creditCardProgram = CreditCardProgram.CardFinans; break;
-											case "ADVANT": creditCardProgram = CreditCardProgram.Advantage; break;
-											case "MILES&SMILES": creditCardProgram = CreditCardProgram.MilesAndSmiles; break;
+                                        switch (getpos_card_program)
+                                        {
+                                            case "MAXIMUM": creditCardProgram = CreditCardProgram.Maximum; break;
+                                            case "BANKKART_COMBO": creditCardProgram = CreditCardProgram.Bankkart; break;
+                                            case "WORLD": creditCardProgram = CreditCardProgram.World; break;
+                                            case "PARAF": creditCardProgram = CreditCardProgram.Paraf; break;
+                                            case "BONUS": creditCardProgram = CreditCardProgram.Bonus; break;
+                                            case "AXESS": creditCardProgram = CreditCardProgram.Axess; break;
+                                            case "WINGS": creditCardProgram = CreditCardProgram.Wings; break;
+                                            case "CARD_FNS": creditCardProgram = CreditCardProgram.CardFinans; break;
+                                            case "ADVANT": creditCardProgram = CreditCardProgram.Advantage; break;
+                                            case "MILES&SMILES": creditCardProgram = CreditCardProgram.MilesAndSmiles; break;
 
-											default:
-												creditCardProgram = CreditCardProgram.Unknown;
-												break;
-										}
+                                            default:
+                                                creditCardProgram = CreditCardProgram.Unknown;
+                                                break;
+                                        }
 
-										if (creditCardProgram == CreditCardProgram.Unknown)
-											continue;
+                                        if (creditCardProgram == CreditCardProgram.Unknown)
+                                            continue;
 
-										AllInstallment model = new AllInstallment
-										{
-											bankCode = "9990",
-											cardProgram = creditCardProgram,
-											count = installment_number,
-											customerCostCommissionRate = user_commission_percentage
-										};
+                                        AllInstallment model = new AllInstallment
+                                        {
+                                            bankCode = "9979",
+                                            cardProgram = creditCardProgram,
+                                            count = installment_number,
+                                            customerCostCommissionRate = user_commission_percentage
+                                        };
 
-										response.installmentList.Add(model);
-									}
-									else
-										continue;
+                                        response.installmentList.Add(model);
+                                    }
+                                    else
+                                        continue;
 
-								}
-							}
+                                }
+                            }
 
-						}
-					}
-				}
-			}
-			catch { }
+                        }
+                    }
+                }
+            }
+            catch { }
 
-			return response;
-		}
+            return response;
+        }
 
-		public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse();
 
-            QNBpayTokenModel _token = null;
+            HalkOdeTokenModel _token = null;
 
             try
             {
@@ -567,9 +567,9 @@ namespace CP.VPOS.Banks.QNBpay
 
 
 
-        private QNBpayTokenModel GetTokenModel(VirtualPOSAuth auth)
+        private HalkOdeTokenModel GetTokenModel(VirtualPOSAuth auth)
         {
-            QNBpayTokenModel token = null;
+            HalkOdeTokenModel token = null;
 
             Dictionary<string, object> postData = new Dictionary<string, object>
             {
@@ -585,13 +585,13 @@ namespace CP.VPOS.Banks.QNBpay
 
             if (loginDic?.ContainsKey("status_code") == true && loginDic["status_code"].cpToString() == "100" && loginDic?.ContainsKey("data") == true)
             {
-                token = JsonConvertHelper.Convert<QNBpayTokenModel>(JsonConvertHelper.Json(loginDic["data"]));
+                token = JsonConvertHelper.Convert<HalkOdeTokenModel>(JsonConvertHelper.Json(loginDic["data"]));
 
                 if (!string.IsNullOrWhiteSpace(token?.token))
                     return token;
             }
 
-            string errorMsg = "QNBpay token error";
+            string errorMsg = "HalkOde token error";
 
             if (loginDic?.ContainsKey("status_description") == true && loginDic["status_description"].cpToString() != "")
                 errorMsg = errorMsg + " - " + loginDic["status_description"].cpToString();
@@ -599,7 +599,7 @@ namespace CP.VPOS.Banks.QNBpay
             throw new Exception(errorMsg);
         }
 
-        private string Request(Dictionary<string, object> param, string link, QNBpayTokenModel token = null)
+        private string Request(Dictionary<string, object> param, string link, HalkOdeTokenModel token = null)
         {
             string responseString = "";
 
@@ -744,7 +744,7 @@ namespace CP.VPOS.Banks.QNBpay
     }
 
 
-    internal class QNBpayTokenModel
+    internal class HalkOdeTokenModel
     {
         public string token { get; set; }
         public Token_is_3d is_3d { get; set; }
