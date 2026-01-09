@@ -45,6 +45,8 @@ namespace CP.VPOS.Banks
                 orderNumber = request.orderNumber,
             };
 
+            string installment = request.saleInfo.installment > 1 ? request.saleInfo.installment.ToString() : "";
+
             Dictionary<string, object> param = new Dictionary<string, object>()
             {
                 { "Name", auth.merchantUser },
@@ -52,6 +54,7 @@ namespace CP.VPOS.Banks
                 { "ClientId", auth.merchantID },
                 { "Type", "Auth" },
                 { "OrderId", request.orderNumber },
+                { "Taksit", installment },
                 { "Total", request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".") },
                 { "Currency", ((int)request.saleInfo.currency).ToString() },
                 { "Number", request.saleInfo.cardNumber },
@@ -101,6 +104,11 @@ namespace CP.VPOS.Banks
 
             if (request.responseArray.ContainsKey("mdStatus") == true && request.responseArray["mdStatus"].cpToString() == "1")
             {
+                string installment = "";
+
+                if (request.responseArray.ContainsKey("installment"))
+                    installment = request.responseArray["installment"].cpToString();
+
 
                 Dictionary<string, object> param = new Dictionary<string, object>()
                 {
@@ -109,6 +117,7 @@ namespace CP.VPOS.Banks
                     { "ClientId", auth.merchantID },
                     { "IPAddress", request.responseArray["clientIp"].cpToString() },
                     { "OrderId", response.orderNumber },
+                    { "Taksit", installment },
                     { "Type", "Auth" },
                     { "Number", request.responseArray["md"].cpToString() },
                     { "PayerTxnId", request.responseArray["xid"].cpToString() },
