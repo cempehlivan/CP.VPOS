@@ -31,6 +31,7 @@ using CP.VPOS.Banks.ZiraatPay;
 using CP.VPOS.Banks.VakifPayS;
 using CP.VPOS.Banks.Tami;
 using CP.VPOS.Banks.HalkOde;
+using CP.VPOS.Banks.KuveytTurk;
 using System.Collections.Generic;
 
 namespace CP.VPOS.Services
@@ -100,7 +101,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0123", BankName = "HSBC"},
             new Bank{BankCode = "0099", BankName = "ING Bank", BankService = typeof(INGBankVirtualPOSService)},
             new Bank{BankCode = "0064", BankName = "İş Bankası", BankService = typeof(IsBankasiVirtualPOSService)},
-            new Bank{BankCode = "0205", BankName = "Kuveyt Türk"},
+            new Bank{BankCode = "0205", BankName = "Kuveyt Türk", BankService = typeof(KuveytTurkVirtualPOSService)},
             new Bank{BankCode = "0146", BankName = "Odeabank"},
             new Bank{BankCode = "0032", BankName = "Türk Ekonomi Bankası", BankService = typeof(TurkEkonomiBankasiVirtualPOSService)},
             new Bank{BankCode = "0206", BankName = "Türkiye Finans", BankService = typeof(TurkiyeFinansVirtualPOSService)},
