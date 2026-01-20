@@ -27,6 +27,17 @@ namespace CP.VPOS.Helpers
             return text;
         }
 
+        internal static string clearNumber(this string text)
+        {
+            if (!string.IsNullOrEmpty(text))
+            {
+                text = text.Trim();
+                text = Regex.Replace(text, "[^0-9]+", "");
+            }
+
+            return text;
+        }
+
         #region ConvertTo
         /// <summary>
         /// Sayı değeri taşıyan her hangi bir metni sayısal değere çevirir (sql=float).
