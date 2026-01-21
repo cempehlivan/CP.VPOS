@@ -63,6 +63,7 @@ namespace CP.VPOS.Services
         public static readonly string ZiraatBankasi = "0010";
         public static readonly string AktifYatirimBankasi = "0143";
         public static readonly string VakifKatilim = "0210";
+        public static readonly string ZiraatKatilim = "0209";
 
         public static readonly string HalkOde = "9979";
         public static readonly string Tami = "9980";
@@ -113,6 +114,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0010", BankName = "Ziraat Bankası", BankService = typeof(ZiraatBankasiVirtualPOSService)},
             new Bank{BankCode = "0143", BankName = "Aktif Yatırım Bankası"},
             new Bank{BankCode = "0210", BankName = "Vakıf Katılım", BankService = typeof(VakifKatilimVirtualPOSService)},
+            new Bank{BankCode = "0209", BankName = "Ziraat Katılım" },
 
             new Bank{BankCode = "9979", BankName = "HalkÖde", BankService = typeof(HalkOdeVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9980", BankName = "Tami", BankService = typeof(TamiVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
