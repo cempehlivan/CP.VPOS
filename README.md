@@ -16,6 +16,8 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v3.2.0
+ - Kuveyt Türk ile Vakıf Katılım bankaları Non3D ve 3D ödeme sanal pos entegrasyonları eklendi.
 ### v3.1.1
  - Nestpay bankalarındaki v3.0.0 da oluşan taksitli çekim problemi düzeltildi.
 ### v3.1.0
@@ -92,6 +94,8 @@ Dotnet CLI
 | VakıfPayS | ✔️ | ✔️ | ✔️ | ✔️ |
 | Tami | ✔️ | ✔️ | ✔️ | ✔️ |
 | HalkÖde | ✔️ | ✔️ | ✔️ | ✔️ |
+| Kuveyt Türk | ✔️ | ✔️ | ❌ | ❌ |
+| Vakıf Katılım | ✔️ | ✔️ | ❌ | ❌ |
 
 
 
@@ -151,7 +155,8 @@ Sanal POS bazlı alan açıklamaları:
 | VakıfPayS | CP.VPOS.Services.BankService.VakifPayS | Firma Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | |
 | Tami | CP.VPOS.Services.BankService.Tami | Üye İşyeri No | Terminal No | `KidValue` + "\|" + `KValue` | Secret Key |
 | HalkÖde | CP.VPOS.Services.BankService.HalkOde | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
-
+| Kuveyt Türk | CP.VPOS.Services.BankService.KuveytTurk | MerchantId | UserName | Password | CustomerId |
+| Vakıf Katılım | CP.VPOS.Services.BankService.VakifKatilim | MerchantId | UserName | Password | CustomerId |
 
 
 ## 3D'siz Direkt Satış İşlemi
