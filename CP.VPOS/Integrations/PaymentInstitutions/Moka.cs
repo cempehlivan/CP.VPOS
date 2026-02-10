@@ -1,18 +1,15 @@
-﻿using System;
+﻿using CP.VPOS.Enums;
+using CP.VPOS.Helpers;
+using CP.VPOS.Interfaces;
+using CP.VPOS.Models;
+using CP.VPOS.Services;
+using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using CP.VPOS.Enums;
-using CP.VPOS.Helpers;
-using CP.VPOS.Interfaces;
-using CP.VPOS.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace CP.VPOS.Banks.Moka
 {
@@ -400,7 +397,41 @@ namespace CP.VPOS.Banks.Moka
 
         public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
+            // Tami, tüm taksit listesini API üzerinden sağlamamaktadır. Bu nedenle, burada elimizdeki bin listesindeki kart programlarını listeleyip her kart programı için bir kartı tek tek sorguluyoruz.
+            // Destek eklenirse API üzerinden taksit bilgileri de çekilebilir.
+
             AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
+
+            List<CreditCardBinQueryResponse> binList = BinService.GetBinList();
+
+            var bankCreditCardBrandList = binList.Where(s => s.cardType == CreditCardType.Credit && s.cardProgram != CreditCardProgram.Unknown).GroupBy(s => s.cardProgram).Select(s => new { cardProgram = s.Key, binNumber = s.First().binNumber }).ToList();
+
+            foreach (var brand in bankCreditCardBrandList)
+            {
+                var installmentsInfo = BINInstallmentQuery(new BINInstallmentQueryRequest
+                {
+                    BIN = brand.binNumber,
+                    amount = request.amount,
+                    currency = request.currency ?? Currency.TRY,
+                }, auth);
+
+                if (installmentsInfo.confirm && installmentsInfo.installmentList?.Any() == true)
+                {
+                    foreach (var ins in installmentsInfo.installmentList)
+                    {
+                        response.installmentList.Add(new AllInstallment
+                        {
+                            bankCode = "9984",
+                            cardProgram = brand.cardProgram,
+                            count = ins.count,
+                            customerCostCommissionRate = ins.customerCostCommissionRate,
+                        });
+                    }
+                }
+            }
+
+            if (response.installmentList?.Any() == true)
+                response.confirm = true;
 
             return response;
         }
@@ -411,12 +442,19 @@ namespace CP.VPOS.Banks.Moka
 
             for (int i = 2; i <= 12; i++)
             {
-                if (GetIsInstallment(request, auth, i))
+                var installmentModel = GetIsInstallment(request, auth, i);
+
+                float commissionRate = 0;
+
+                if (installmentModel?.ResultCode == "Success" && installmentModel?.Data?.BankCard?.CreditType == "CreditCard" && installmentModel?.Data?.BankCard?.MaxInstallmentNumber >= i)
                 {
+                    if (installmentModel?.Data?.PaymentAmount > request.amount)
+                        commissionRate = (float)Math.Round(((((decimal)100 * installmentModel.Data.PaymentAmount) / request.amount) - (decimal)100).cpToDecimal(), 2);
+
                     response.installmentList.Add(new installment
                     {
                         count = i,
-                        customerCostCommissionRate = 0
+                        customerCostCommissionRate = commissionRate
                     });
                 }
             }
@@ -432,8 +470,10 @@ namespace CP.VPOS.Banks.Moka
             return new AdditionalInstallmentQueryResponse { confirm = false };
         }
 
-        private bool GetIsInstallment(BINInstallmentQueryRequest request, VirtualPOSAuth auth, int installmentCount)
+        private GetIsInstallmentModel GetIsInstallment(BINInstallmentQueryRequest request, VirtualPOSAuth auth, int installmentCount)
         {
+            GetIsInstallmentModel response = null;
+
             request.currency = request.currency ?? Currency.TRY;
 
             string _currency = request.currency == Currency.TRY ? "TL" : request.currency.ToString();
@@ -457,9 +497,7 @@ namespace CP.VPOS.Banks.Moka
                         { "Currency", _currency },
                         { "OrderAmount", request.amount },
                         { "InstallmentNumber", installmentCount },
-                        { "GroupRevenueRate", 0 },
-                        { "GroupRevenueAmount", 0 },
-                        { "IsThreeD", 1 },
+                        { "IsThreeD", true },
                     }
                 }
             };
@@ -468,14 +506,11 @@ namespace CP.VPOS.Banks.Moka
 
             string responseStr = Request(req, link);
 
-            JObject jobj = JObject.Parse(responseStr);
+            if (!string.IsNullOrWhiteSpace(responseStr))
+                response = Newtonsoft.Json.JsonConvert.DeserializeObject<GetIsInstallmentModel>(responseStr);
 
-            string creditType = jobj.SelectToken("$.Data.BankCard.CreditType").cpToString();
 
-            if (creditType == "CreditCard")
-                return true;
-
-            return false;
+            return response;
         }
 
         private string ErrorMessageHandler(string resultCode)
@@ -624,5 +659,24 @@ namespace CP.VPOS.Banks.Moka
         {
             return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
         }
+    }
+
+
+    class GetIsInstallmentModel
+    {
+        public string ResultCode { get; set; }
+        public GetIsInstallmentDataModel Data { get; set; }
+    }
+
+    class GetIsInstallmentDataModel
+    {
+        public decimal PaymentAmount { get; set; }
+        public GetIsInstallmentBankCardModel BankCard { get; set; }
+    }
+
+    class GetIsInstallmentBankCardModel
+    {
+        public int MaxInstallmentNumber { get; set; }
+        public string CreditType { get; set; }
     }
 }
