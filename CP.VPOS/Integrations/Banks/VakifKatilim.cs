@@ -57,6 +57,7 @@ namespace CP.VPOS.Banks.VakifKatilim
                 { "Amount", request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", "") },
                 { "DisplayAmount", request.saleInfo.amount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", "") },
                 { "CurrencyCode", ((int)request.saleInfo.currency).ToString("0000") },
+                { "FECCurrencyCode", ((int)request.saleInfo.currency).ToString("0000") },
                 { "CardNumber", request.saleInfo.cardNumber },
                 { "CardExpireDateYear", request.saleInfo.cardExpiryDateYear.ToString().Substring(2) },
                 { "CardExpireDateMonth", request.saleInfo.cardExpiryDateMonth.ToString("00") },
@@ -140,6 +141,7 @@ namespace CP.VPOS.Banks.VakifKatilim
                 { "CardHolderName", request.saleInfo.cardNameSurname },
                 { "PaymentType", 1 },
                 { "CurrencyCode", ((int)request.saleInfo.currency).ToString("0000") },
+                { "FECCurrencyCode", ((int)request.saleInfo.currency).ToString("0000") },
                 { "TransactionSecurity", 3 }
             };
 
@@ -209,6 +211,7 @@ namespace CP.VPOS.Banks.VakifKatilim
                             { "InstallmentCount", vposMessageDic["InstallmentCount"].cpToString() },
                             { "Amount", vposMessageDic["Amount"].cpToString() },
                             { "CurrencyCode", vposMessageDic["CurrencyCode"].cpToString() },
+                            { "FECCurrencyCode", vposMessageDic["CurrencyCode"].cpToString() },
                             { "MerchantOrderId", response.orderNumber },
                             { "TransactionSecurity", 3 },
                             { "PaymentType", 1 },
