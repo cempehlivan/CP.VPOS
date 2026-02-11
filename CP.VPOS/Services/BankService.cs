@@ -1,4 +1,5 @@
 ﻿using CP.VPOS.Models;
+using System.Collections.Generic;
 using CP.VPOS.Banks.Akbank;
 using CP.VPOS.Banks.AlternatifBank;
 using CP.VPOS.Banks.Anadolubank;
@@ -33,7 +34,7 @@ using CP.VPOS.Banks.Tami;
 using CP.VPOS.Banks.HalkOde;
 using CP.VPOS.Banks.KuveytTurk;
 using CP.VPOS.Banks.VakifKatilim;
-using System.Collections.Generic;
+using CP.VPOS.Banks.PayNKolay;
 
 namespace CP.VPOS.Services
 {
@@ -65,6 +66,7 @@ namespace CP.VPOS.Services
         public static readonly string VakifKatilim = "0210";
         public static readonly string ZiraatKatilim = "0209";
 
+        public static readonly string PayNKolay = "9978";
         public static readonly string HalkOde = "9979";
         public static readonly string Tami = "9980";
         public static readonly string VakifPayS = "9981";
@@ -116,6 +118,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "0210", BankName = "Vakıf Katılım", BankService = typeof(VakifKatilimVirtualPOSService)},
             new Bank{BankCode = "0209", BankName = "Ziraat Katılım" },
 
+            new Bank{BankCode = "9978", BankName = "PayNKolay", BankService = typeof(PayNKolayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9979", BankName = "HalkÖde", BankService = typeof(HalkOdeVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9980", BankName = "Tami", BankService = typeof(TamiVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9981", BankName = "VakıfPayS", BankService = typeof(VakifPaySVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
