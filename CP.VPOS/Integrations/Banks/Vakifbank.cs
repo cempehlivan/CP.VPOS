@@ -266,12 +266,113 @@ namespace CP.VPOS.Banks.Vakifbank
 
         public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
         {
-            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
+
+            Dictionary<string, object> param = new Dictionary<string, object>()
+            {
+                {"MerchantId", auth.merchantID },
+                {"Password", auth.merchantPassword },
+                {"TransactionType", "Cancel" },
+                {"ReferenceTransactionId", request.transactionId },
+                { "ClientIp", request.customerIPAddress },
+            };
+
+            string xml = param.toXml("VposRequest");
+
+            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "VposResponse");
+            response.privateResponse = respDic;
+
+            string amount = respDic?.ContainsKey("CurrencyAmount") == true ? respDic["CurrencyAmount"].cpToString() : "0";
+
+            response.refundAmount = Convert.ToDecimal(amount);
+            response.privateResponse = respDic;
+
+            if (respDic?.ContainsKey("ResultCode") == true)
+            {
+                if (respDic["ResultCode"].cpToString() == "0000")
+                {
+                    response.statu = ResponseStatu.Success;
+                    response.message = "İşlem başarıyla tamamlandı";
+                }
+                else
+                {
+                    string message = respDic.ContainsKey("ResultDetail") ? respDic["ResultDetail"].cpToString() : "";
+
+                    if (string.IsNullOrWhiteSpace(message))
+                        message = getErrorDesc(respDic["ResultDetail"].cpToString());
+
+
+                    if (string.IsNullOrWhiteSpace(message))
+                        message = "İşlem sırasında bilinmeyen bir hata oluştu.";
+
+                    response.statu = ResponseStatu.Error;
+                    response.message = message;
+                }
+            }
+            else
+            {
+                response.statu = ResponseStatu.Error;
+                response.message = "İşlem sırasında bilinmeyen bir hata oluştu.";
+            }
+
+            return response;
+
         }
 
         public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
         {
-            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iade metodu tanımlanmamış!" };
+            RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
+
+            string amount = request.refundAmount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".");
+
+            Dictionary<string, object> param = new Dictionary<string, object>()
+            {
+                {"MerchantId", auth.merchantID },
+                {"Password", auth.merchantPassword },
+                {"TransactionType", "Refund" },
+                {"CurrencyAmount", amount },
+                {"ReferenceTransactionId", request.transactionId },
+                { "ClientIp", request.customerIPAddress },
+            };
+            string xml = param.toXml("VposRequest");
+            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "VposResponse");
+            response.privateResponse = respDic;
+
+            amount = respDic?.ContainsKey("CurrencyAmount") == true ? respDic["CurrencyAmount"].cpToString() : "0";
+            response.refundAmount = Convert.ToDecimal(amount);
+
+            if (respDic?.ContainsKey("ResultCode") == true)
+            {
+                if (respDic["ResultCode"].cpToString() == "0000")
+                {
+                    response.statu = ResponseStatu.Success;
+                    response.message = "İşlem başarıyla tamamlandı";
+                }
+                else
+                {
+                    string message = respDic.ContainsKey("ResultDetail") ? respDic["ResultDetail"].cpToString() : "";
+
+                    if (string.IsNullOrWhiteSpace(message))
+                        message = getErrorDesc(respDic["ResultDetail"].cpToString());
+
+
+                    if (string.IsNullOrWhiteSpace(message))
+                        message = "İşlem sırasında bilinmeyen bir hata oluştu.";
+
+                    response.statu = ResponseStatu.Error;
+                    response.message = message;
+                }
+            }
+            else
+            {
+                response.statu = ResponseStatu.Error;
+                response.message = "İşlem sırasında bilinmeyen bir hata oluştu.";
+            }
+
+            return response;
+
         }
 
         public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
