@@ -16,6 +16,11 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v3.3.0
+ - PayNKolay sanal pos entegrasyonu eklendi.
+ - Moka sanal pos tüm taksit listesi eklendi.
+ - Ziraat bankası test ortamı adresleri güncellendi.
+ - Vakıfbank iptal/iade geliştirmesi eklendi.
 ### v3.2.0
  - Kuveyt Türk ile Vakıf Katılım bankaları Non3D ve 3D ödeme sanal pos entegrasyonları eklendi.
 ### v3.1.1
@@ -74,7 +79,7 @@ Dotnet CLI
 | Şekerbank | ✔️ | ✔️ | ✔️ | ✔️ |
 | Türk Ekonomi Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
 | Türkiye Finans | ✔️ | ✔️ | ✔️ | ✔️ |
-| Vakıfbank | ✔️ | ✔️ | ❌ | ❌ |
+| Vakıfbank | ✔️ | ✔️ | ✔️ | ✔️ |
 | Yapı Kredı Bankası | ✔️ | ✔️ | ❌ | ❌ |
 | Ziraat Bankası | ✔️ | ✔️ | ✔️ | ✔️ |
 | Cardplus | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -96,6 +101,7 @@ Dotnet CLI
 | HalkÖde | ✔️ | ✔️ | ✔️ | ✔️ |
 | Kuveyt Türk | ✔️ | ✔️ | ❌ | ❌ |
 | Vakıf Katılım | ✔️ | ✔️ | ❌ | ❌ |
+| PayNKolay | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 
@@ -157,6 +163,7 @@ Sanal POS bazlı alan açıklamaları:
 | HalkÖde | CP.VPOS.Services.BankService.HalkOde | Üye İşyeri ID | Uygulama Anahtarı | Uygulama Parolası | Üye İşyeri Anahtarı |
 | Kuveyt Türk | CP.VPOS.Services.BankService.KuveytTurk | MerchantId | UserName | Password | CustomerId |
 | Vakıf Katılım | CP.VPOS.Services.BankService.VakifKatilim | MerchantId | UserName | Password | CustomerId |
+| PayNKolay | CP.VPOS.Services.BankService.PayNKolay | sx (Token) | sx list | sx iptal | Merchant Secret Key |
 
 
 ## 3D'siz Direkt Satış İşlemi
