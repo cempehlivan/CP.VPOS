@@ -16,6 +16,7 @@ namespace CP.VPOS.Enums
         ShopAndFly = 9,
         Wings = 10,
         World = 11,
-		Advantage = 12
+		Advantage = 12,
+        SaglamKart = 13
 	}
 }

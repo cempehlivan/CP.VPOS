@@ -88,7 +88,7 @@ namespace CP.VPOS.Banks.PayNKolay
                 if (responseDic["USE_3D"].cpToString() == "true")
                 {
                     response.statu = SaleResponseStatu.RedirectHTML;
-                    response.message = responseDic["BANK_REQUEST_MESSAGE"].cpToString();
+                    response.message = CleanHtml(responseDic["BANK_REQUEST_MESSAGE"].cpToString());
 
                     return response;
                 }
@@ -118,23 +118,54 @@ namespace CP.VPOS.Banks.PayNKolay
 
         public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
         {
-            SaleResponse response = new SaleResponse();
+            SaleResponse response = new SaleResponse { statu = SaleResponseStatu.Error, message = "İşlem sırasında bilinmeyen bir hata oluştu." };
 
-            response.privateResponse = request?.responseArray;
+            response.privateResponse = new Dictionary<string, object>();
+
+            response.privateResponse.Add("response_1", request?.responseArray);
 
             if (request?.responseArray?.ContainsKey("CLIENT_REFERENCE_CODE") == true && request?.responseArray["CLIENT_REFERENCE_CODE"].cpToString() != "")
                 response.orderNumber = request?.responseArray["CLIENT_REFERENCE_CODE"].cpToString();
 
-            if (request?.responseArray?.ContainsKey("RESPONSE_CODE") == true && request?.responseArray["RESPONSE_CODE"].cpToInt() == 2 && request?.responseArray.ContainsKey("AUTH_CODE") == true && request?.responseArray["AUTH_CODE"].cpToString() != "" && request?.responseArray["AUTH_CODE"].cpToString() != "0")
+            if (request?.responseArray?.ContainsKey("RESPONSE_CODE") == true && request?.responseArray["RESPONSE_CODE"].cpToInt() == 2)
             {
-                string transactionId = "";
+                string referenceCode = "";
 
                 if (request?.responseArray.ContainsKey("REFERENCE_CODE") == true)
-                    transactionId = request?.responseArray["REFERENCE_CODE"].cpToString();
+                    referenceCode = request?.responseArray["REFERENCE_CODE"].cpToString();
 
-                response.statu = SaleResponseStatu.Success;
-                response.message = "İşlem başarılı";
-                response.transactionId = transactionId;
+
+                Dictionary<string, string> req = new Dictionary<string, string>
+                {
+                    {"sx", auth.merchantID },
+                    {"referenceCode", referenceCode },
+                };
+
+                string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/Vpos/v1/CompletePayment";
+
+                string responseStr = RequestForm(req, link);
+
+                Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
+
+                response.privateResponse.Add("response_2", responseDic);
+
+
+                if (responseDic?.ContainsKey("RESPONSE_CODE") == true && responseDic["RESPONSE_CODE"].cpToInt() == 2 && responseDic.ContainsKey("AUTH_CODE") == true && responseDic["AUTH_CODE"].cpToString() != "" && responseDic["AUTH_CODE"].cpToString() != "0")
+                {
+                    string transactionId = "";
+
+                    if (responseDic.ContainsKey("REFERENCE_CODE") == true)
+                        transactionId = responseDic["REFERENCE_CODE"].cpToString();
+
+                    response.statu = SaleResponseStatu.Success;
+                    response.message = "İşlem başarılı";
+                    response.transactionId = transactionId;
+                }
+                else if (responseDic?.ContainsKey("RESPONSE_DATA") == true && responseDic["RESPONSE_DATA"].cpToString() != "")
+                {
+                    response.statu = SaleResponseStatu.Error;
+                    response.message = responseDic["RESPONSE_DATA"].cpToString();
+                }
             }
             else if (request?.responseArray?.ContainsKey("RESPONSE_DATA") == true && request?.responseArray["RESPONSE_DATA"].cpToString() != "")
             {
@@ -151,7 +182,7 @@ namespace CP.VPOS.Banks.PayNKolay
 
             Dictionary<string, string> req = new Dictionary<string, string> {
                 {"sx", auth.merchantPassword },
-                {"referenceCode", request.orderNumber },
+                {"referenceCode", request.transactionId },
                 {"type", "cancel" },
                 {"amount", "" },
                 {"trxDate", "" },
@@ -201,7 +232,7 @@ namespace CP.VPOS.Banks.PayNKolay
 
             Dictionary<string, string> req = new Dictionary<string, string> {
                 {"sx", auth.merchantPassword },
-                {"referenceCode", request.orderNumber },
+                {"referenceCode", request.transactionId },
                 {"type", "refund" },
                 {"amount", request.refundAmount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".") },
                 {"trxDate", "" },
@@ -276,20 +307,27 @@ namespace CP.VPOS.Banks.PayNKolay
                         continue;
 
                     CreditCardProgram creditCardProgram = CreditCardProgram.Unknown;
-                    string cardProgram = item.CODE.cpToString().ToUpper(System.Globalization.CultureInfo.GetCultureInfo("en-US"));
 
-                    switch (cardProgram)
+                    switch (item.KEY)
                     {
-                        case "PARAF": creditCardProgram = CreditCardProgram.Paraf; break;
-                        case "AXESS": creditCardProgram = CreditCardProgram.Axess; break;
-                        case "BANKKART": creditCardProgram = CreditCardProgram.Bankkart; break;
-                        case "MAXIMUM": creditCardProgram = CreditCardProgram.Maximum; break;
-                        case "CARDFINANS": creditCardProgram = CreditCardProgram.CardFinans; break;
-                        case "BONUS": creditCardProgram = CreditCardProgram.Bonus; break;
-                        case "WORLD": creditCardProgram = CreditCardProgram.World; break;
-                        case "WINGS": creditCardProgram = CreditCardProgram.Wings; break;
-                        case "ADVANT": creditCardProgram = CreditCardProgram.Advantage; break;
-                        case "MILES&SMILES": creditCardProgram = CreditCardProgram.MilesAndSmiles; break;
+                        case "001": creditCardProgram = CreditCardProgram.Advantage; break;
+                        case "002": creditCardProgram = CreditCardProgram.Axess; break;
+                        case "003": creditCardProgram = CreditCardProgram.Bankkart; break;
+                        case "004": creditCardProgram = CreditCardProgram.Bonus; break;
+                        case "005": creditCardProgram = CreditCardProgram.CardFinans; break;
+                        case "006": creditCardProgram = CreditCardProgram.Maximum; break;
+                        case "007": creditCardProgram = CreditCardProgram.MilesAndSmiles; break;
+                        case "008": creditCardProgram = CreditCardProgram.Paraf; break;
+                        case "009": creditCardProgram = CreditCardProgram.SaglamKart; break;
+                        case "010": creditCardProgram = CreditCardProgram.World; break;
+                        case "011": creditCardProgram = CreditCardProgram.Bank24; break;
+                        case "012": creditCardProgram = CreditCardProgram.Unknown; break; //Param
+                        case "013": creditCardProgram = CreditCardProgram.Unknown; break; //Hasat Kart
+                        case "014": creditCardProgram = CreditCardProgram.Unknown; break; //Üreten Kart
+                        case "015": creditCardProgram = CreditCardProgram.ShopAndFly; break;
+                        case "016": creditCardProgram = CreditCardProgram.Wings; break;
+                        case "017": creditCardProgram = CreditCardProgram.Neo; break;
+                        case "018": creditCardProgram = CreditCardProgram.Unknown; break; //Tosla
 
                         default:
                             creditCardProgram = CreditCardProgram.Unknown;
@@ -442,6 +480,20 @@ namespace CP.VPOS.Banks.PayNKolay
             }
 
             return responseString;
+        }
+
+        string CleanHtml(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            return input
+                .Replace("\\r", "")
+                .Replace("\\n", "")
+                .Replace("\r", "")
+                .Replace("\n", "")
+                .Replace("\\\"", "\"")
+                .Trim();
         }
     }
 
