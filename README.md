@@ -16,6 +16,9 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v3.3.1
+ - Moka sanal pos taksit sorgulama bug fix.
+ - .Net framework 4.0 desteği kaldırıldı. Destek 4.5 ve üzeri olacak şekilde devam edecek.
 ### v3.3.0
  - PayNKolay sanal pos entegrasyonu eklendi.
  - Moka sanal pos tüm taksit listesi eklendi.
