@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build_pack_publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Validate tag matches csproj <Version>
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          CSPROJ="CP.VPOS/CP.VPOS.csproj"
+
+          VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" "$CSPROJ")
+
+          echo "Tag version: $TAG"
+          echo "CSProj Version: $VERSION"
+
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::Tag (v$TAG) does not match csproj <Version> ($VERSION)."
+            exit 1
+          fi
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build (Release)
+        run: dotnet build -c Release --no-restore
+
+      - name: Test (Release)
+        run: dotnet test -c Release --no-build
+
+      - name: Pack (Release)
+        run: dotnet pack CP.VPOS/CP.VPOS.csproj -c Release --no-build -o ./artifacts
+
+      - name: Publish to NuGet.org
+        run: dotnet nuget push "./artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+
+      - name: Create GitHub Release (auto notes) + attach nupkg
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: ./artifacts/*.nupkg
