@@ -440,22 +440,33 @@ namespace CP.VPOS.Banks.Moka
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse { confirm = false, installmentList = new List<installment>() };
 
-            for (int i = 2; i <= 12; i++)
+            var bankCardInformation = GetBankCardInformation(request, auth);
+
+
+            if (bankCardInformation?.Data?.CreditType == "CreditCard")
             {
-                var installmentModel = GetIsInstallment(request, auth, i);
+                int maxInstallmentNumber = bankCardInformation?.Data?.MaxInstallmentNumber ?? 0;
 
-                float commissionRate = 0;
-
-                if (installmentModel?.ResultCode == "Success" && installmentModel?.Data?.BankCard?.CreditType == "CreditCard" && installmentModel?.Data?.BankCard?.MaxInstallmentNumber >= i)
+                if (maxInstallmentNumber >= 2)
                 {
-                    if (installmentModel?.Data?.PaymentAmount > request.amount)
-                        commissionRate = (float)Math.Round(((((decimal)100 * installmentModel.Data.PaymentAmount) / request.amount) - (decimal)100).cpToDecimal(), 2);
-
-                    response.installmentList.Add(new installment
+                    for (int i = 2; i <= maxInstallmentNumber; i++)
                     {
-                        count = i,
-                        customerCostCommissionRate = commissionRate
-                    });
+                        var installmentModel = GetIsInstallment(request, auth, i);
+
+                        float commissionRate = 0;
+
+                        if (installmentModel?.ResultCode == "Success" && installmentModel?.Data?.BankCard?.CreditType == "CreditCard" /*&& installmentModel?.Data?.BankCard?.MaxInstallmentNumber >= i*/)
+                        {
+                            if (installmentModel?.Data?.PaymentAmount > request.amount)
+                                commissionRate = (float)Math.Round(((((decimal)100 * installmentModel.Data.PaymentAmount) / request.amount) - (decimal)100).cpToDecimal(), 2);
+
+                            response.installmentList.Add(new installment
+                            {
+                                count = i,
+                                customerCostCommissionRate = commissionRate
+                            });
+                        }
+                    }
                 }
             }
 
@@ -508,6 +519,45 @@ namespace CP.VPOS.Banks.Moka
 
             if (!string.IsNullOrWhiteSpace(responseStr))
                 response = Newtonsoft.Json.JsonConvert.DeserializeObject<GetIsInstallmentModel>(responseStr);
+
+
+            return response;
+        }
+
+        private GetBankCardInformationModel GetBankCardInformation(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        {
+            GetBankCardInformationModel response = null;
+
+            request.currency = request.currency ?? Currency.TRY;
+
+            string _currency = request.currency == Currency.TRY ? "TL" : request.currency.ToString();
+
+
+            string checkKey = GetCheckKey(auth);
+
+            Dictionary<string, object> req = new Dictionary<string, object>
+            {
+                { "PaymentDealerAuthentication", new Dictionary<string, string>
+                    {
+                        { "DealerCode", auth.merchantID },
+                        { "Username", auth.merchantUser },
+                        { "Password", auth.merchantPassword },
+                        { "CheckKey", checkKey },
+                    }
+                },
+                { "BankCardInformationRequest", new Dictionary<string, object>
+                {
+                        { "BinNumber", request.BIN },
+                }
+                }
+            };
+
+            string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/PaymentDealer/GetBankCardInformation";
+
+            string responseStr = Request(req, link);
+
+            if (!string.IsNullOrWhiteSpace(responseStr))
+                response = Newtonsoft.Json.JsonConvert.DeserializeObject<GetBankCardInformationModel>(responseStr);
 
 
             return response;
@@ -678,5 +728,10 @@ namespace CP.VPOS.Banks.Moka
     {
         public int MaxInstallmentNumber { get; set; }
         public string CreditType { get; set; }
+    }
+
+    class GetBankCardInformationModel
+    {
+        public GetIsInstallmentBankCardModel Data { get; set; }
     }
 }

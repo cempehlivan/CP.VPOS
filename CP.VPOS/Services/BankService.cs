@@ -124,7 +124,7 @@ namespace CP.VPOS.Services
             new Bank{BankCode = "9981", BankName = "VakıfPayS", BankService = typeof(VakifPaySVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9982", BankName = "ZiraatPay", BankService = typeof(ZiraatPayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9983", BankName = "Vepara", BankService = typeof(VeparaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
-            new Bank{BankCode = "9984", BankName = "Moka", BankService = typeof(MokaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
+            new Bank{BankCode = "9984", BankName = "Moka", BankService = typeof(MokaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = false},
             new Bank{BankCode = "9985", BankName = "Ahlpay", BankService = typeof(AhlpayVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9986", BankName = "IQmoney", BankService = typeof(IQmoneyVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
             new Bank{BankCode = "9987", BankName = "Parolapara", BankService = typeof(ParolaparaVirtualPOSService), CollectiveVPOS = true, InstallmentAPI = true, CommissionAutoAdd = true},
