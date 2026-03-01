@@ -103,13 +103,18 @@ namespace CP.VPOS.Models
         public Dictionary<string, object> responseArray { get; set; }
 
         /// <summary>
-        /// Yapı kredi bankası için bu alan zorunludur
+        /// Yapı Kredi Bankası ve Vakıf Katılım Bankası için bu alan zorunludur
         /// </summary>
         public Currency? currency { get; set; }
 
         /// <summary>
-        /// Yapı kredi bankası için bu alan zorunludur
+        /// Yapı Kredi Bankası ve Vakıf Katılım Bankası için bu alan zorunludur
         /// </summary>
         public decimal? amount { get; set; }
+
+        /// <summary>
+        /// Vakıf Katılım Bankası için bu alan zorunludur
+        /// </summary>
+        public sbyte? installment { get; set; }
     }
 }

@@ -184,34 +184,23 @@ namespace CP.VPOS.Banks.VakifKatilim
 
             response.privateResponse.Add("response_1", request.responseArray);
 
-            if (request?.responseArray?.ContainsKey("ResponseMessage") == true)
+            response.orderNumber = (request?.responseArray?.ContainsKey("MerchantOrderId") == true ? request.responseArray["MerchantOrderId"].cpToString() : "");
+
+            if (request?.responseArray?.ContainsKey("ResponseCode") == true && request?.responseArray["ResponseCode"].cpToString() == "00")
             {
-                string authenticationResponse = request.responseArray["ResponseMessage"].cpToString();
+                request.currency = request.currency ?? Currency.TRY;
 
-                if (!string.IsNullOrWhiteSpace(authenticationResponse))
-                {
-                    authenticationResponse = Uri.UnescapeDataString(authenticationResponse);
-
-                    Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(authenticationResponse, "VPosTransactionResponseContract");
-
-                    if (respDic?.ContainsKey("ResponseCode") == true && respDic["ResponseCode"].cpToString() == "00")
-                    {
-                        response.orderNumber = (respDic.ContainsKey("MerchantOrderId") ? respDic["MerchantOrderId"].cpToString() : "");
-
-                        Dictionary<string, object> vposMessageDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(Newtonsoft.Json.JsonConvert.SerializeObject(respDic["VPosMessageContract"]));
-
-
-                        Dictionary<string, object> param = new Dictionary<string, object>()
+                Dictionary<string, object> param = new Dictionary<string, object>()
                         {
                             { "APIVersion", "" },
                             { "MerchantId", auth.merchantID },
                             { "CustomerId", auth.merchantStorekey },
                             { "UserName", auth.merchantUser },
                             { "TransactionType", "Sale" },
-                            { "InstallmentCount", vposMessageDic["InstallmentCount"].cpToString() },
-                            { "Amount", vposMessageDic["Amount"].cpToString() },
-                            { "CurrencyCode", vposMessageDic["CurrencyCode"].cpToString() },
-                            { "FECCurrencyCode", vposMessageDic["CurrencyCode"].cpToString() },
+                            { "InstallmentCount", request?.installment > 1 ? request.installment : 0 },
+                            { "Amount", (request.amount ?? 0).ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", "") },
+                            { "CurrencyCode", ((int)request.currency).ToString("0000") },
+                            { "FECCurrencyCode", ((int)request.currency).ToString("0000") },
                             { "MerchantOrderId", response.orderNumber },
                             { "TransactionSecurity", 3 },
                             { "PaymentType", 1 },
@@ -222,83 +211,81 @@ namespace CP.VPOS.Banks.VakifKatilim
                                     { "VPosAdditionalData", new Dictionary<string, object>()
                                     {
                                         { "Key", "MD" },
-                                        { "Data", respDic["MD"].cpToString() }
+                                        { "Data", request.responseArray["MD"].cpToString() }
                                     }
                                     },
-                                } 
+                                }
                                 },
                             }
                             },
                         };
 
-                        string hashText = SHA1Base64(
-                            param["MerchantId"].ToString() +
-                            param["MerchantOrderId"].ToString() +
-                            param["Amount"].ToString() +
-                            param["UserName"].ToString() +
-                            SHA1Base64(auth.merchantPassword));
+                string hashText = SHA1Base64(
+                    param["MerchantId"].ToString() +
+                    param["MerchantOrderId"].ToString() +
+                    param["Amount"].ToString() +
+                    param["UserName"].ToString() +
+                    SHA1Base64(auth.merchantPassword));
 
-                        param.Add("HashData", hashText);
+                param.Add("HashData", hashText);
 
 
-                        string xml = param.toXml("VPosMessageContract");
+                string xml = param.toXml("VPosMessageContract");
 
-                        string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlTest.ThreeDModelProvisionGateUrl : _urlLive.ThreeDModelProvisionGateUrl));
+                string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlTest.ThreeDModelProvisionGateUrl : _urlLive.ThreeDModelProvisionGateUrl));
 
-                        Dictionary<string, object> provisionresDic = FoundationHelper.XmltoDictionary(resp, "VPosTransactionResponseContract");
+                Dictionary<string, object> provisionresDic = FoundationHelper.XmltoDictionary(resp, "VPosTransactionResponseContract");
 
-                        response.privateResponse.Add("response_2", provisionresDic);
+                response.privateResponse.Add("response_2", provisionresDic);
 
-                        if (provisionresDic?.ContainsKey("ResponseCode") == true && provisionresDic["ResponseCode"].cpToString() == "00")
-                        {
-                            response.statu = SaleResponseStatu.Success;
-                            response.message = "İşlem başarıyla tamamlandı";
-                            response.transactionId = (provisionresDic.ContainsKey("ProvisionNumber") ? provisionresDic["ProvisionNumber"].cpToString() : "") + "|" + (provisionresDic.ContainsKey("OrderId") ? provisionresDic["OrderId"].cpToString() : "");
-                        }
-                        else
-                        {
-                            string message = "";
-
-                            if (provisionresDic.ContainsKey("ResponseMessage") && provisionresDic["ResponseMessage"].cpToString() != "")
-                                message = provisionresDic["ResponseMessage"].cpToString();
-
-                            if (string.IsNullOrWhiteSpace(message))
-                                message = "İşlem sırasında bilinmeyen bir hata oluştu.";
-
-                            response.transactionId = "";
-                            response.statu = SaleResponseStatu.Error;
-                            response.message = message;
-                        }
-                    }
-                    else
-                    {
-                        string message = "";
-
-                        if (respDic.ContainsKey("ResponseMessage") && respDic["ResponseMessage"].cpToString() != "")
-                            message = respDic["ResponseMessage"].cpToString();
-
-                        if (string.IsNullOrWhiteSpace(message))
-                            message = "İşlem sırasında bilinmeyen bir hata oluştu.";
-
-                        response.transactionId = "";
-                        response.statu = SaleResponseStatu.Error;
-                        response.message = message;
-                    }
+                if (provisionresDic?.ContainsKey("ResponseCode") == true && provisionresDic["ResponseCode"].cpToString() == "00")
+                {
+                    response.statu = SaleResponseStatu.Success;
+                    response.message = "İşlem başarıyla tamamlandı";
+                    response.transactionId = (provisionresDic.ContainsKey("ProvisionNumber") ? provisionresDic["ProvisionNumber"].cpToString() : "") + "|" + (provisionresDic.ContainsKey("OrderId") ? provisionresDic["OrderId"].cpToString() : "");
                 }
-            }
+                else
+                {
+                    string message = "";
 
+                    if (provisionresDic.ContainsKey("ResponseMessage") && provisionresDic["ResponseMessage"].cpToString() != "")
+                        message = provisionresDic["ResponseMessage"].cpToString();
+
+                    if (string.IsNullOrWhiteSpace(message))
+                        message = "İşlem sırasında bilinmeyen bir hata oluştu.";
+
+                    response.transactionId = "";
+                    response.statu = SaleResponseStatu.Error;
+                    response.message = message;
+                }
+
+            }
+            else
+            {
+                string message = "";
+
+                if (request?.responseArray?.ContainsKey("ResponseMessage") == true && request.responseArray["ResponseMessage"].cpToString() != "")
+                    message = request.responseArray["ResponseMessage"].cpToString();
+
+                if (string.IsNullOrWhiteSpace(message))
+                    message = "İşlem sırasında bilinmeyen bir hata oluştu.";
+
+                response.transactionId = "";
+                response.statu = SaleResponseStatu.Error;
+                response.message = message;
+            }
 
             return response;
         }
 
         public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
         }
 
         public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
         {
-            throw new NotImplementedException();
+            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka iade iptal metodu tanımlanmamış!" };
         }
 
         public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
