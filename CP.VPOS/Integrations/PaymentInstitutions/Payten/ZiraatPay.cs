@@ -14,10 +14,10 @@ namespace CP.VPOS.Banks.ZiraatPay
 {
     internal class ZiraatPayVirtualPOSService : IVirtualPOSService
     {
-        private readonly string _urlAPITest = "https://entegrasyon.ziraatpay.com.tr/ziraatpay/api/v2";
+        private readonly string _urlAPITest = "https://test.ziraatpay.com.tr/ziraatpay/api/v2";
         private readonly string _urlAPILive = "https://vpos.ziraatpay.com.tr/ziraatpay/api/v2";
 
-        private readonly string _url3Dtest = "https://entegrasyon.ziraatpay.com.tr/ziraatpay/api/v2/post/sale3d/{0}";
+        private readonly string _url3Dtest = "https://test.ziraatpay.com.tr/ziraatpay/api/v2/post/sale3d/{0}";
         private readonly string _url3DLive = "https://vpos.ziraatpay.com.tr/ziraatpay/api/v2/post/sale3d/{0}";
 
         private readonly string _org_id = "6bmm5c3v"; // ZiraatPay için Online Metrix Org ID
