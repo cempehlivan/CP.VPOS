@@ -218,10 +218,10 @@ namespace CP.VPOS
 
             List<CreditCardBinQueryResponse> binList = BinService.GetBinList();
 
-            CreditCardBinQueryResponse _binDetail = binList.FirstOrDefault(s => s.binNumber == request.binNumber.Substring(0, 6));
+            CreditCardBinQueryResponse _binDetail = binList.FirstOrDefault(s => s.binNumber == request.binNumber);
 
             if (_binDetail == null && request.binNumber.Length > 6)
-                _binDetail = binList.FirstOrDefault(s => s.binNumber == request.binNumber);
+                _binDetail = binList.FirstOrDefault(s => s.binNumber == request.binNumber.Substring(0, 6));
 
             CreditCardBinQueryResponse binDetail = null;
 
