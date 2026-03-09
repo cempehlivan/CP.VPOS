@@ -16,6 +16,11 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v3.4.0
+ - Paynet sanal pos entegrasyonu eklendi.
+ - Kart bin listesi güncellendi.
+ - ZiraatPay test ortamı api adresi güncellendi.
+ - Vakıf katılım 3D response bug fix.
 ### v3.3.1
  - Moka sanal pos taksit sorgulama bug fix.
  - .Net framework 4.0 desteği kaldırıldı. Destek 4.5 ve üzeri olacak şekilde devam edecek.
@@ -105,6 +110,7 @@ Dotnet CLI
 | Kuveyt Türk | ✔️ | ✔️ | ❌ | ❌ |
 | Vakıf Katılım | ✔️ | ✔️ | ❌ | ❌ |
 | PayNKolay | ✔️ | ✔️ | ✔️ | ✔️ |
+| Paynet | ✔️ | ✔️ | ✔️ | ✔️ |
 
 
 
@@ -167,6 +173,7 @@ Sanal POS bazlı alan açıklamaları:
 | Kuveyt Türk | CP.VPOS.Services.BankService.KuveytTurk | MerchantId | UserName | Password | CustomerId |
 | Vakıf Katılım | CP.VPOS.Services.BankService.VakifKatilim | MerchantId | UserName | Password | CustomerId |
 | PayNKolay | CP.VPOS.Services.BankService.PayNKolay | sx (Token) | sx list | sx iptal | Merchant Secret Key |
+| Paynet | CP.VPOS.Services.BankService.Paynet | Bayi Kodu | Publishable Key | Secret Key | |
 
 
 ## 3D'siz Direkt Satış İşlemi
