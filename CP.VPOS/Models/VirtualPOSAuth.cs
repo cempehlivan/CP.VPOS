@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CP.VPOS.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace CP.VPOS.Models
 {
@@ -38,5 +39,13 @@ namespace CP.VPOS.Models
         /// Test ortamı ise true gönderilmelidir.
         /// </summary>
         public bool testPlatform { get; set; }
+
+        /// <summary>
+        /// Sadece ortak ödeme kuruluşları üzerinden yapılan taksitli ödeme işlemlerinde,
+        /// oluşan komisyonun müşteri veya satıcıya yansıtılma politikasını belirler.
+        /// Doğrudan banka entegrasyonlarında kullanılmaz.
+        /// Varsayılan değer (Default), geriye dönük uyumluluk için mevcut davranışı korur.
+        /// </summary>
+        public InstallmentCommissionPolicy installmentCommissionPolicy { get; set; } = InstallmentCommissionPolicy.Default;
     }
 }
