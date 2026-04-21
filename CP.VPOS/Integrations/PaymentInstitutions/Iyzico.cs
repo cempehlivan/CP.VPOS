@@ -195,9 +195,15 @@ namespace CP.VPOS.Banks.Iyzico
             response.statu = SaleResponseStatu.Error;
 
             if (request?.responseArray == null)
+            {
+                response.message = "responseArray boş olamaz";
                 return response;
+            }
 
-            response.privateResponse = request.responseArray;
+
+            response.privateResponse = new Dictionary<string, object>();
+
+            response.privateResponse.Add("response_1", request.responseArray);
 
             if (request.responseArray.ContainsKey("conversationId"))
                 response.orderNumber = request.responseArray["conversationId"].cpToString();
@@ -214,6 +220,10 @@ namespace CP.VPOS.Banks.Iyzico
                 paymentRequest.ConversationData = request.responseArray["conversationData"].cpToString();
 
                 ThreedsPayment threedsPayment = ThreedsPayment.Create(paymentRequest, GetOptions(auth));
+
+                Dictionary<string, object> response_2 = JsonConvertHelper.Convert<Dictionary<string, object>>(JsonConvertHelper.Json(threedsPayment));
+
+                response.privateResponse.Add("response_2", response_2);
 
                 if (threedsPayment.Status.ToLower() == "success")
                 {
