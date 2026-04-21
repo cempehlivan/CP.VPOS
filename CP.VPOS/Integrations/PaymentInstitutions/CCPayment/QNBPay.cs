@@ -86,6 +86,9 @@ namespace CP.VPOS.Banks.QNBpay
                 {"hash_key", "" }
             };
 
+            if (request.saleInfo.installment > 1 && auth.installmentCommissionPolicy != InstallmentCommissionPolicy.Default)
+                req.Add("is_comission_from_user", auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer ? "1" : "2");
+
             string hash_key = GenerateHashKey(totalStr, installmentStr, request.saleInfo.currency.ToString(), auth.merchantStorekey, request.orderNumber, auth.merchantPassword);
 
             req["hash_key"] = hash_key;
@@ -204,6 +207,9 @@ namespace CP.VPOS.Banks.QNBpay
                 {"cancel_url", request.payment3D.returnURL },
                 {"return_url", request.payment3D.returnURL },
             };
+
+            if (request.saleInfo.installment > 1 && auth.installmentCommissionPolicy != InstallmentCommissionPolicy.Default)
+                req.Add("is_comission_from_user", auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer ? "1" : "2");
 
             string hash_key = GenerateHashKey(totalStr, installmentStr, request.saleInfo.currency.ToString(), auth.merchantStorekey, request.orderNumber, auth.merchantPassword);
 
@@ -393,106 +399,110 @@ namespace CP.VPOS.Banks.QNBpay
             return null;
         }
 
-		public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
-		{
-			AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
+        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        {
+            AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
 
-			QNBpayTokenModel _token = null;
+            QNBpayTokenModel _token = null;
 
-			try
-			{
-				_token = GetTokenModel(auth);
-			}
-			catch
-			{
-				return response;
-			}
+            try
+            {
+                _token = GetTokenModel(auth);
+            }
+            catch
+            {
+                return response;
+            }
 
-			Dictionary<string, object> req = new Dictionary<string, object> {
-				{"currency_code", (request.currency ?? Currency.TRY).ToString() }
-			};
+            Dictionary<string, object> req = new Dictionary<string, object> {
+                {"currency_code", (request.currency ?? Currency.TRY).ToString() }
+            };
 
 
-			string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/commissions";
+            string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/commissions";
 
-			string responseStr = Request(req, link, _token);
+            string responseStr = Request(req, link, _token);
 
-			try
-			{
-				Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
+            try
+            {
+                Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
-				if (responseDic?.ContainsKey("status_code") == true && responseDic["status_code"].cpToString() == "100")
-				{
-					response.confirm = true;
+                if (responseDic?.ContainsKey("status_code") == true && responseDic["status_code"].cpToString() == "100")
+                {
+                    response.confirm = true;
 
-					if (responseDic?.ContainsKey("data") == true)
-					{
-						Dictionary<string, object> keyValuePairs = JsonConvertHelper.Convert<Dictionary<string, object>>(JsonConvertHelper.Json<object>(responseDic["data"]));
+                    if (responseDic?.ContainsKey("data") == true)
+                    {
+                        Dictionary<string, object> keyValuePairs = JsonConvertHelper.Convert<Dictionary<string, object>>(JsonConvertHelper.Json<object>(responseDic["data"]));
 
-						if (keyValuePairs?.Any() == true)
-						{
-							foreach (var item in keyValuePairs)
-							{
-								int installment_number = item.Key.cpToInt();
+                        if (keyValuePairs?.Any() == true)
+                        {
+                            foreach (var item in keyValuePairs)
+                            {
+                                int installment_number = item.Key.cpToInt();
 
-								List<Dictionary<string, object>> installmentList = JsonConvertHelper.Convert<List<Dictionary<string, object>>>(JsonConvertHelper.Json<object>(item.Value));
+                                List<Dictionary<string, object>> installmentList = JsonConvertHelper.Convert<List<Dictionary<string, object>>>(JsonConvertHelper.Json<object>(item.Value));
 
-								foreach (Dictionary<string, object> installmentModel in installmentList)
-								{
+                                foreach (Dictionary<string, object> installmentModel in installmentList)
+                                {
 
-									if (installmentModel?.ContainsKey("user_commission_percentage") == true && installmentModel["user_commission_percentage"].cpToString() != "x" && installmentModel.ContainsKey("card_program") == true && installmentModel["card_program"].cpToString() != "")
-									{
-										CreditCardProgram creditCardProgram = CreditCardProgram.Unknown;
-										string getpos_card_program = installmentModel["card_program"].cpToString().ToUpper(System.Globalization.CultureInfo.GetCultureInfo("en-US"));
-										float user_commission_percentage = installmentModel["user_commission_percentage"].cpToSingle();
+                                    if (installmentModel?.ContainsKey("user_commission_percentage") == true && installmentModel["user_commission_percentage"].cpToString() != "x" && installmentModel.ContainsKey("card_program") == true && installmentModel["card_program"].cpToString() != "")
+                                    {
+                                        CreditCardProgram creditCardProgram = CreditCardProgram.Unknown;
+                                        string getpos_card_program = installmentModel["card_program"].cpToString().ToUpper(System.Globalization.CultureInfo.GetCultureInfo("en-US"));
+                                        float user_commission_percentage = installmentModel["user_commission_percentage"].cpToSingle();
 
-										switch (getpos_card_program)
-										{
-											case "MAXIMUM": creditCardProgram = CreditCardProgram.Maximum; break;
-											case "BANKKART_COMBO": creditCardProgram = CreditCardProgram.Bankkart; break;
-											case "WORLD": creditCardProgram = CreditCardProgram.World; break;
-											case "PARAF": creditCardProgram = CreditCardProgram.Paraf; break;
-											case "BONUS": creditCardProgram = CreditCardProgram.Bonus; break;
-											case "AXESS": creditCardProgram = CreditCardProgram.Axess; break;
-											case "WINGS": creditCardProgram = CreditCardProgram.Wings; break;
-											case "CARD_FNS": creditCardProgram = CreditCardProgram.CardFinans; break;
-											case "ADVANT": creditCardProgram = CreditCardProgram.Advantage; break;
-											case "MILES&SMILES": creditCardProgram = CreditCardProgram.MilesAndSmiles; break;
+                                        if (auth.installmentCommissionPolicy == InstallmentCommissionPolicy.AbsorbByMerchant)
+                                            user_commission_percentage = 0;
 
-											default:
-												creditCardProgram = CreditCardProgram.Unknown;
-												break;
-										}
 
-										if (creditCardProgram == CreditCardProgram.Unknown)
-											continue;
+                                        switch (getpos_card_program)
+                                        {
+                                            case "MAXIMUM": creditCardProgram = CreditCardProgram.Maximum; break;
+                                            case "BANKKART_COMBO": creditCardProgram = CreditCardProgram.Bankkart; break;
+                                            case "WORLD": creditCardProgram = CreditCardProgram.World; break;
+                                            case "PARAF": creditCardProgram = CreditCardProgram.Paraf; break;
+                                            case "BONUS": creditCardProgram = CreditCardProgram.Bonus; break;
+                                            case "AXESS": creditCardProgram = CreditCardProgram.Axess; break;
+                                            case "WINGS": creditCardProgram = CreditCardProgram.Wings; break;
+                                            case "CARD_FNS": creditCardProgram = CreditCardProgram.CardFinans; break;
+                                            case "ADVANT": creditCardProgram = CreditCardProgram.Advantage; break;
+                                            case "MILES&SMILES": creditCardProgram = CreditCardProgram.MilesAndSmiles; break;
 
-										AllInstallment model = new AllInstallment
-										{
-											bankCode = "9990",
-											cardProgram = creditCardProgram,
-											count = installment_number,
-											customerCostCommissionRate = user_commission_percentage
-										};
+                                            default:
+                                                creditCardProgram = CreditCardProgram.Unknown;
+                                                break;
+                                        }
 
-										response.installmentList.Add(model);
-									}
-									else
-										continue;
+                                        if (creditCardProgram == CreditCardProgram.Unknown)
+                                            continue;
 
-								}
-							}
+                                        AllInstallment model = new AllInstallment
+                                        {
+                                            bankCode = "9990",
+                                            cardProgram = creditCardProgram,
+                                            count = installment_number,
+                                            customerCostCommissionRate = user_commission_percentage
+                                        };
 
-						}
-					}
-				}
-			}
-			catch { }
+                                        response.installmentList.Add(model);
+                                    }
+                                    else
+                                        continue;
 
-			return response;
-		}
+                                }
+                            }
 
-		public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return response;
+        }
+
+        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse();
 
@@ -514,6 +524,9 @@ namespace CP.VPOS.Banks.QNBpay
                 {"currency_code", (request.currency ?? Currency.TRY).ToString() },
                 {"merchant_key", auth.merchantStorekey },
             };
+
+            if (auth.installmentCommissionPolicy != InstallmentCommissionPolicy.Default)
+                req.Add("is_comission_from_user", auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer ? "1" : "2");
 
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/getpos";

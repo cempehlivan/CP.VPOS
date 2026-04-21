@@ -86,6 +86,9 @@ namespace CP.VPOS.Banks.Parolapara
                 {"hash_key", "" }
             };
 
+            if (request.saleInfo.installment > 1 && auth.installmentCommissionPolicy != InstallmentCommissionPolicy.Default)
+                req.Add("is_comission_from_user", auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer ? "1" : "2");
+
             string hash_key = GenerateHashKey(totalStr, installmentStr, request.saleInfo.currency.ToString(), auth.merchantStorekey, request.orderNumber, auth.merchantPassword);
 
             req["hash_key"] = hash_key;
@@ -204,6 +207,9 @@ namespace CP.VPOS.Banks.Parolapara
                 {"cancel_url", request.payment3D.returnURL },
                 {"return_url", request.payment3D.returnURL },
             };
+
+            if (request.saleInfo.installment > 1 && auth.installmentCommissionPolicy != InstallmentCommissionPolicy.Default)
+                req.Add("is_comission_from_user", auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer ? "1" : "2");
 
             string hash_key = GenerateHashKey(totalStr, installmentStr, request.saleInfo.currency.ToString(), auth.merchantStorekey, request.orderNumber, auth.merchantPassword);
 
@@ -446,7 +452,10 @@ namespace CP.VPOS.Banks.Parolapara
 										string getpos_card_program = installmentModel["card_program"].cpToString();
 										float user_commission_percentage = installmentModel["user_commission_percentage"].cpToSingle();
 
-										switch (getpos_card_program)
+                                        if (auth.installmentCommissionPolicy == InstallmentCommissionPolicy.AbsorbByMerchant)
+                                            user_commission_percentage = 0;
+
+                                        switch (getpos_card_program)
 										{
 											case "MAXIMUM": creditCardProgram = CreditCardProgram.Maximum; break;
 											case "BANKKART_COMBO": creditCardProgram = CreditCardProgram.Bankkart; break;
@@ -515,6 +524,8 @@ namespace CP.VPOS.Banks.Parolapara
                 {"merchant_key", auth.merchantStorekey },
             };
 
+            if (auth.installmentCommissionPolicy != InstallmentCommissionPolicy.Default)
+                req.Add("is_comission_from_user", auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer ? "1" : "2");
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/getpos";
 
