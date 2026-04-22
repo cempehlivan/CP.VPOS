@@ -16,6 +16,10 @@ CP.VPOS, Türkiye'deki birçok bankanın sanal pos entegrasyonlarını tek bir k
 + **.NET Uyumluluğu:** Kütüphane, .NET Framework, .NET Core ve .NET MAUI da dahil olmak üzere tüm .NET sürümleriyle tam uyumludur. Bu sayede farklı projelerde kolayca entegre edilerek kullanılabilir.
 
 ## Sürüm Notları
+### v3.5.0
+ - Iyzico sanal posunda 3d private response detayı eklendi.
+ - HalkOde, IQmoney, Parolapara, PayBull, QNBPay, Sipay, Vepara poslarında taksit komisyon politikası ayarı eklendi. `VirtualPOSAuth` class'ında `installmentCommissionPolicy` ayarı ile komisyonu müşteri öder/satıcı öder ayarını yönetebilirsiniz.
+ - HalkOde, IQmoney, Parolapara, PayBull, QNBPay, Sipay, Vepara poslarında 3dpay modelinden 3d modeline geçildi.
 ### v3.4.0
  - Paynet sanal pos entegrasyonu eklendi.
  - Kart bin listesi güncellendi.
