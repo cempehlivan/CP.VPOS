@@ -145,7 +145,7 @@ Sanal POS bazlı alan açıklamaları:
 | Alternatif Bank | CP.VPOS.Services.BankService.AlternatifBank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Anadolubank | CP.VPOS.Services.BankService.Anadolubank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Denizbank | CP.VPOS.Services.BankService.Denizbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
-| QNB Finansbank | CP.VPOS.Services.BankService.QNBFinansbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
+| QNB Finansbank | CP.VPOS.Services.BankService.QNBFinansbank | Üye İşyeri Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | Üye İşyeri Şifre |
 | Finansbank Nestpay | CP.VPOS.Services.BankService.FinansbankNestpay | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
 | Garanti BBVA | CP.VPOS.Services.BankService.GarantiBBVA | Firma Kodu | Terminal No | `PROVAUT` kullanıcısı şifresi | 3D secure anahtarı |
 | Halkbank | CP.VPOS.Services.BankService.Halkbank | Mağaza Kodu | Api Kullanıcısı Adı | Api Kullanıcısı Şifre | 3D Storekey (Üye İş Yeri Anahtarı) |
