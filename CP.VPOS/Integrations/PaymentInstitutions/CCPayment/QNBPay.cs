@@ -511,7 +511,16 @@ namespace CP.VPOS.Banks.QNBpay
 
                                         if (auth.installmentCommissionPolicy == InstallmentCommissionPolicy.AbsorbByMerchant)
                                             user_commission_percentage = 0;
-
+                                        else if (auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer)
+                                        {
+                                            if (installmentModel?.ContainsKey("merchant_commission_percentage") == true && installmentModel["merchant_commission_percentage"].cpToString() != "x")
+                                            {
+                                                float merchant_commission_percentage = installmentModel["merchant_commission_percentage"].cpToSingle();
+                                                user_commission_percentage = FoundationHelper.CalculateCustomerCommissionRate(merchant_commission_percentage);
+                                            }
+                                            else
+                                                continue;
+                                        }
 
                                         switch (getpos_card_program)
                                         {

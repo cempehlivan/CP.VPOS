@@ -160,5 +160,17 @@ namespace CP.VPOS.Helpers
 
             return ((checkSum % 10) == 0);
         }
+
+        internal static float CalculateCustomerCommissionRate(float sellerCommissionRate)
+        {
+            if (sellerCommissionRate <= 0)
+                return 0;
+
+            float commission = sellerCommissionRate / 100f;
+
+            float customerRate = ((1f / (1f - commission)) - 1f) * 100f;
+
+            return customerRate;
+        }
     }
 }
