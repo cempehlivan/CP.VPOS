@@ -89,7 +89,7 @@ namespace CP.VPOS.Banks.Sipay
             if (request.saleInfo.installment > 1 && auth.installmentCommissionPolicy != InstallmentCommissionPolicy.Default)
                 req.Add("is_comission_from_user", auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer ? "1" : "2");
 
-            string hash_key = GenerateHashKey(totalStr, installmentStr, request.saleInfo.currency.ToString(), auth.merchantStorekey, request.orderNumber, auth.merchantPassword);
+            string hash_key = GenerateHashKeySale(totalStr, installmentStr, request.saleInfo.currency.ToString(), auth.merchantStorekey, request.orderNumber, auth.merchantPassword);
 
             req["hash_key"] = hash_key;
 
@@ -208,7 +208,7 @@ namespace CP.VPOS.Banks.Sipay
             if (request.saleInfo.installment > 1 && auth.installmentCommissionPolicy != InstallmentCommissionPolicy.Default)
                 req.Add("is_comission_from_user", auth.installmentCommissionPolicy == InstallmentCommissionPolicy.ChargeToCustomer ? "1" : "2");
 
-            string hash_key = GenerateHashKey(totalStr, installmentStr, request.saleInfo.currency.ToString(), auth.merchantStorekey, request.orderNumber, auth.merchantPassword);
+            string hash_key = GenerateHashKeySale(totalStr, installmentStr, request.saleInfo.currency.ToString(), auth.merchantStorekey, request.orderNumber, auth.merchantPassword);
 
             req["hash_key"] = hash_key;
 
@@ -353,14 +353,20 @@ namespace CP.VPOS.Banks.Sipay
             }
 
 
+            string totalStr = "0";
+
             Dictionary<string, object> req = new Dictionary<string, object> {
                 {"invoice_id", request.orderNumber },
-                {"amount", 0 },
+                {"amount", totalStr },
                 {"app_id", auth.merchantUser },
                 {"app_secret", auth.merchantPassword },
                 {"merchant_key", auth.merchantStorekey },
                 {"hash_key", "" }
             };
+
+            string hash_key = GenerateHashKeyRefund(totalStr, request.orderNumber, auth.merchantStorekey, auth.merchantPassword);
+
+            req["hash_key"] = hash_key;
 
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/refund";
@@ -410,14 +416,20 @@ namespace CP.VPOS.Banks.Sipay
             }
 
 
+            string totalStr = request.refundAmount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".");
+
             Dictionary<string, object> req = new Dictionary<string, object> {
                 {"invoice_id", request.orderNumber },
-                {"amount", request.refundAmount },
+                {"amount", totalStr },
                 {"app_id", auth.merchantUser },
                 {"app_secret", auth.merchantPassword },
                 {"merchant_key", auth.merchantStorekey },
                 {"hash_key", "" }
             };
+
+            string hash_key = GenerateHashKeyRefund(totalStr, request.orderNumber, auth.merchantStorekey, auth.merchantPassword);
+
+            req["hash_key"] = hash_key;
 
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/refund";
@@ -705,10 +717,8 @@ namespace CP.VPOS.Banks.Sipay
             return responseString;
         }
 
-        private string GenerateHashKey(string total, string installment, string currencyCode, string merchantKey, string invoiceId, string appSecret)
+        private string GenerateHashKey(string text, string appSecret)
         {
-            var data = total + "|" + installment + "|" + currencyCode + "|" + merchantKey + "|" + invoiceId;
-
             var mtRand = new Random();
 
             var iv = Sha1Hash(mtRand.Next().ToString()).Substring(0, 16);
@@ -721,7 +731,7 @@ namespace CP.VPOS.Banks.Sipay
                 saltWithPassword = GetHash(sha256Hash, password + salt);
             }
 
-            var encrypted = Encryptor(data, saltWithPassword.Substring(0, 32), iv);
+            var encrypted = Encryptor(text, saltWithPassword.Substring(0, 32), iv);
 
             var msgEncryptedBundle = iv + ":" + salt + ":" + encrypted;
             msgEncryptedBundle = msgEncryptedBundle.Replace("/", "__");
@@ -729,28 +739,25 @@ namespace CP.VPOS.Banks.Sipay
             return msgEncryptedBundle;
         }
 
+        private string GenerateHashKeySale(string total, string installment, string currencyCode, string merchantKey, string invoiceId, string appSecret)
+        {
+            string text = total + "|" + installment + "|" + currencyCode + "|" + merchantKey + "|" + invoiceId;
+
+            return GenerateHashKey(text, appSecret);
+        }
+
         private string GenerateHashKeyCompletePayment(string merchant_key, string invoice_id, string order_id, string complete_status, string appSecret)
         {
-            var data = merchant_key + "|" + invoice_id + "|" + order_id + "|" + complete_status;
+            string text = merchant_key + "|" + invoice_id + "|" + order_id + "|" + complete_status;
 
-            var mtRand = new Random();
+            return GenerateHashKey(text, appSecret);
+        }
 
-            var iv = Sha1Hash(mtRand.Next().ToString()).Substring(0, 16);
-            var password = Sha1Hash(appSecret);
-            var salt = Sha1Hash(mtRand.Next().ToString()).Substring(0, 4);
+        private string GenerateHashKeyRefund(string total, string invoice_id, string merchantKey, string appSecret)
+        {
+            string text = total + "|" + invoice_id + "|" + merchantKey;
 
-            var saltWithPassword = "";
-            using (var sha256Hash = SHA256.Create())
-            {
-                saltWithPassword = GetHash(sha256Hash, password + salt);
-            }
-
-            var encrypted = Encryptor(data, saltWithPassword.Substring(0, 32), iv);
-
-            var msgEncryptedBundle = iv + ":" + salt + ":" + encrypted;
-            msgEncryptedBundle = msgEncryptedBundle.Replace("/", "__");
-
-            return msgEncryptedBundle;
+            return GenerateHashKey(text, appSecret);
         }
 
         private IList<string> ValidateHashKey(string hashKey, string appSecret)
