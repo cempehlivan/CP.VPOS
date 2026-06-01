@@ -9,17 +9,18 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Xml;
 
 namespace CP.VPOS.Banks.Vakifbank
 {
     internal class VakifbankVirtualPOSService : IVirtualPOSService
     {
-        private readonly string _urlAPITest = "https://onlineodemetest.vakifbank.com.tr:4443/VposService/v3/Vposreq.aspx";
-        private readonly string _urlAPILive = "https://onlineodeme.vakifbank.com.tr:4443/VposService/v3/Vposreq.aspx";
+        private readonly string _urlAPITest = "https://apiportalprep.vakifbank.com.tr:8443/virtualPos/Vposreq";
+        private readonly string _urlAPILive = "https://apigw.vakifbank.com.tr:8443/virtualPos/Vposreq";
 
-        private readonly string _url3Dtest = "https://3dsecuretest.vakifbank.com.tr:4443/MPIAPI/MPI_Enrollment.aspx";
-        private readonly string _url3DLive = "https://3dsecure.vakifbank.com.tr:4443/MPIAPI/MPI_Enrollment.aspx";
+        private readonly string _url3Dtest = "https://inbound.apigatewaytest.vakifbank.com.tr:8443/threeDGateway/ProcessEnrollment";
+        private readonly string _url3DLive = "https://inbound.apigateway.vakifbank.com.tr:8443/threeDGateway/ProcessEnrollment";
 
 
         public virtual SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
@@ -57,7 +58,7 @@ namespace CP.VPOS.Banks.Vakifbank
 
             string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
 
-            Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "VposResponse");
+            Dictionary<string, object> respDic = JsonSerializer.Deserialize<Dictionary<string, object>>(resp);//FoundationHelper.XmltoDictionary(resp, "VposResponse");
 
             response.privateResponse = respDic;
 
