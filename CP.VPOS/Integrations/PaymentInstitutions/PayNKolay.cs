@@ -346,13 +346,8 @@ namespace CP.VPOS.Banks.PayNKolay
 
                         float commissionRate = 0;
 
-                        if (installment.MERCHANT_COMMISSION > 0)
-                        {
-                            decimal cost = installment.MERCHANT_COMMISSION / 100m;
-                            decimal extraRate = cost / (1 - cost);
-
-                            commissionRate = Math.Round(extraRate * 100m, 2).cpToSingle();
-                        }
+                        if (installment.MERCHANT_COMMISSION_RATE > 0)
+                            commissionRate = Math.Round(installment.MERCHANT_COMMISSION_RATE, 2).cpToSingle();
 
                         AllInstallment model = new AllInstallment
                         {
@@ -397,13 +392,8 @@ namespace CP.VPOS.Banks.PayNKolay
                     {
                         float commissionRate = 0;
 
-                        if (installment.COMMISION > 0)
-                        {
-                            decimal cost = installment.COMMISION / 100m;
-                            decimal extraRate = cost / (1 - cost);
-
-                            commissionRate = Math.Round(extraRate * 100m, 2).cpToSingle();
-                        }
+                        if (installment.MERCHANT_COMMISSION_RATE > 0)
+                            commissionRate = Math.Round(installment.MERCHANT_COMMISSION_RATE, 2).cpToSingle();
 
                         response.installmentList.Add(new installment
                         {
@@ -507,9 +497,8 @@ namespace CP.VPOS.Banks.PayNKolay
     class PayNKolayBinModelResponse
     {
         public int INSTALLMENT { get; set; }
-        public decimal COMMISION { get; set; }
+        public decimal MERCHANT_COMMISSION_RATE { get; set; }
     }
-
 
     class PayNKolayMerchantInformationResponse
     {
@@ -528,6 +517,6 @@ namespace CP.VPOS.Banks.PayNKolay
     class PayNKolayMerchantInformationCommissionDataModel
     {
         public int INSTALLMENT { get; set; }
-        public decimal MERCHANT_COMMISSION { get; set; }
+        public decimal MERCHANT_COMMISSION_RATE { get; set; }
     }
 }
