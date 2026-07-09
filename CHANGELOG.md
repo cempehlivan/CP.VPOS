@@ -1,4 +1,6 @@
 ## Sürüm Notları
+### v3.5.3
+ - PayNKolay sanal pos taksit apisinde yapılan değişiklikler uygulandı.
 ### v3.5.2
  - HalkOde, IQmoney, Parolapara, PayBull, QNBPay, Sipay, Vepara poslarında cancel, refund bug fix.
 ### v3.5.1
