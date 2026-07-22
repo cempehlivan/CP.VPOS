@@ -15,14 +15,14 @@ namespace CP.VPOS.Banks.Vakifbank
 {
     internal class VakifbankVirtualPOSService : IVirtualPOSService
     {
-        private readonly string _urlAPITest = "https://onlineodemetest.vakifbank.com.tr:4443/VposService/v3/Vposreq.aspx";
-        private readonly string _urlAPILive = "https://onlineodeme.vakifbank.com.tr:4443/VposService/v3/Vposreq.aspx";
+        private readonly string _urlAPITest = "https://apiportalprep.vakifbank.com.tr:8443/virtualPos/Vposreq";
+        private readonly string _urlAPILive = "https://apigw.vakifbank.com.tr:8443/virtualPos/Vposreq";
 
-        private readonly string _url3Dtest = "https://3dsecuretest.vakifbank.com.tr:4443/MPIAPI/MPI_Enrollment.aspx";
-        private readonly string _url3DLive = "https://3dsecure.vakifbank.com.tr:4443/MPIAPI/MPI_Enrollment.aspx";
+        private readonly string _url3Dtest = "https://inbound.apigatewaytest.vakifbank.com.tr:8443/threeDGateway/Enrollment";
+        private readonly string _url3DLive = "https://inbound.apigateway.vakifbank.com.tr:8443/threeDGateway/Enrollment";
 
 
-        public virtual SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
         {
             if (request?.payment3D?.confirm == true)
                 return Sale3D(request, auth);
@@ -114,7 +114,9 @@ namespace CP.VPOS.Banks.Vakifbank
                 { "Currency", ((int)request.saleInfo.currency).ToString() },
                 { "SuccessUrl", request.payment3D.returnURL },
                 { "FailureUrl", request.payment3D.returnURL },
-                { "SessionInfo", request.orderNumber }
+                { "SessionInfo", request.orderNumber },
+                { "Language", "tr-TR" },
+                { "BrowserIpAddress", request.customerIPAddress },
             };
 
             if (request.saleInfo.installment > 1)
@@ -163,7 +165,7 @@ namespace CP.VPOS.Banks.Vakifbank
             {
                 string message = errorMessage;
 
-                if (string.IsNullOrWhiteSpace(message))
+                if (string.IsNullOrWhiteSpace(message) || message == "Default")
                     message = getErrorDesc(messageErrorCode.cpToString());
 
 
@@ -191,20 +193,12 @@ namespace CP.VPOS.Banks.Vakifbank
 
             if (request?.responseArray?.ContainsKey("Status") == true && request.responseArray["Status"].cpToString() == "Y")
             {
-                string amount = (request.responseArray["PurchAmount"].cpToString().Replace(".", "").Replace(",", "").cpToDecimal() / (decimal)100.00).ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".");
-
                 Dictionary<string, object> param = new Dictionary<string, object>()
                 {
                     { "TransactionType", "Sale" },
                     { "MerchantId", auth.merchantID },
                     { "Password", auth.merchantPassword },
                     { "TerminalNo", auth.merchantUser },
-                    { "Pan", request.responseArray["Pan"].cpToString() },
-                    { "Expiry", $"20{request.responseArray["Expiry"].cpToString()}" },
-                    { "CurrencyAmount", amount },
-                    { "CurrencyCode", request.responseArray["PurchCurrency"].cpToString() },
-                    //{ "CardHoldersName", "cem test" },
-                    //{ "Cvv", "715" },
                     { "ECI", request.responseArray["Eci"].cpToString() },
                     { "CAVV", request.responseArray["Cavv"].cpToString() },
                     { "MpiTransactionId", request.responseArray["VerifyEnrollmentRequestId"].cpToString() },
@@ -220,7 +214,20 @@ namespace CP.VPOS.Banks.Vakifbank
 
                 string xml = param.toXml("VposRequest");
 
-                string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+                Dictionary<string, string> dicReq = new Dictionary<string, string>() { { "prmstr", xml } };
+                string resp = this.Request(dicReq, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+
+                if(!string.IsNullOrWhiteSpace(resp) && JsonConvertHelper.ValidateJSON(resp))
+                {
+                    Dictionary<string, object> jsonRespDic = JsonConvertHelper.Convert<Dictionary<string, object>>(resp);
+                    
+                    response.privateResponse = jsonRespDic;
+
+                    response.statu = SaleResponseStatu.Error;
+                    response.message = "Sistemsel bir hata olustu";
+                   
+                    return response;
+                }
 
                 Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "VposResponse");
 
