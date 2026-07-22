@@ -1,4 +1,6 @@
 ## Sürüm Notları
+### v3.6.0
+ - Vakıfbank sanal pos erişim adresleri güncellendi. 3D ödeme alma yöntemi güncellendi.
 ### v3.5.3
  - PayNKolay sanal pos taksit apisinde yapılan değişiklikler uygulandı.
 ### v3.5.2
