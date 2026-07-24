@@ -1,17 +1,13 @@
-﻿using CP.VPOS.Enums;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+using CP.VPOS.Enums;
 using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
-using System.Xml;
-
 
 namespace CP.VPOS.Banks.KuveytTurk
 {
@@ -128,6 +124,7 @@ namespace CP.VPOS.Banks.KuveytTurk
                 { "APIVersion", "TDV2.0.0" },
                 { "OkUrl", request.payment3D.returnURL },
                 { "FailUrl", request.payment3D.returnURL },
+                { "HashData", "" },
                 { "MerchantId", auth.merchantID },
                 { "CustomerId", auth.merchantStorekey },
                 { "UserName", auth.merchantUser },
@@ -168,6 +165,8 @@ namespace CP.VPOS.Banks.KuveytTurk
 
             };
 
+            string hashedPassword = SHA1Base64(auth.merchantPassword);
+
             string hashText = SHA1Base64(
                 param["MerchantId"].ToString() +
                 param["MerchantOrderId"].ToString() +
@@ -175,9 +174,9 @@ namespace CP.VPOS.Banks.KuveytTurk
                 param["OkUrl"].ToString() +
                 param["FailUrl"].ToString() +
                 param["UserName"].ToString() +
-                SHA1Base64(auth.merchantPassword));
+                hashedPassword);
 
-            param.Add("HashData", hashText);
+            param["HashData"] = hashText;
 
 
             string xml = param.toXml("KuveytTurkVPosMessage");
@@ -208,7 +207,7 @@ namespace CP.VPOS.Banks.KuveytTurk
 
                 if (!string.IsNullOrWhiteSpace(authenticationResponse))
                 {
-                    authenticationResponse = Uri.UnescapeDataString(authenticationResponse);
+                    authenticationResponse = System.Net.WebUtility.UrlDecode(authenticationResponse);
 
                     Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(authenticationResponse, "VPosTransactionResponseContract");
 
