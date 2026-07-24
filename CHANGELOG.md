@@ -1,4 +1,6 @@
 ## Sürüm Notları
+### v3.6.1
+ - Kuveyt Türk sanal pos 3d response bug fix
 ### v3.6.0
  - Vakıfbank sanal pos erişim adresleri güncellendi. 3D ödeme alma yöntemi güncellendi.
 ### v3.5.3
