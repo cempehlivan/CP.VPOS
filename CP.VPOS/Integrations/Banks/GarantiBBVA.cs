@@ -31,7 +31,6 @@ namespace CP.VPOS.Banks.GarantiBBVA
             Şifre  		: 123456WqE
          */
 
-
         public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
         {
             if (request.payment3D?.confirm == true)
@@ -470,14 +469,188 @@ namespace CP.VPOS.Banks.GarantiBBVA
             return null;
         }
 
+        /// <summary>
+        /// Garanti BBVA için iptal işlemini gerçekleştirir.
+        /// </summary>
         public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
         {
-            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            CancelResponse response = new CancelResponse
+            {
+                statu = ResponseStatu.Error,
+                message = "İşlem sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+            };
+
+            Dictionary<string, object> param = new Dictionary<string, object>
+            {
+                {
+                    "Mode", auth.testPlatform ? "TEST" : "PROD"
+                },
+                {
+                    "Version", "v0.00"
+                },
+                {
+                    "Terminal", new Dictionary<string, object>()
+                    {
+                        { "ProvUserID", "PROVRFN" },
+                        { "HashData", "" },
+                        { "MerchantID", auth.merchantID },
+                        { "UserID", "PROVAUT" },
+                        { "ID", auth.merchantUser },
+                    }
+                },
+                {
+                    "Customer", new Dictionary<string, object>()
+                    {
+                        { "IPAddress", request.customerIPAddress },
+                        { "EmailAddress", "test@test.com" },
+                    }
+                },
+                {
+                    "Order", new Dictionary<string, object>()
+                    {
+                        { "OrderID", request.orderNumber },
+                        { "GroupID", "" },
+                    }
+                },
+                {
+                    "Transaction", new Dictionary<string, object>()
+                    {
+                        { "Type", "void" },
+                        { "Amount", "" },
+                        { "CurrencyCode", request.currency.HasValue ? ((int)request.currency.Value).ToString() : ((int)Currency.TRY).ToString() },
+                        { "OriginalRetrefNum", request.transactionId },
+                        { "CardholderPresentCode", 0 },
+                        { "MotoInd", "N" },
+                    }
+                }
+            };
+
+            string hashedPassword = GetSHA1(auth.merchantPassword + auth.merchantUser.cpToLong().ToString("000000000")).ToUpper();
+            string hash = GetSHA1(request.orderNumber +
+                                  auth.merchantUser +
+                                  request.transactionId +
+                                  hashedPassword).ToUpper();
+
+            ((Dictionary<string, object>)param["Terminal"])["HashData"] = hash;
+
+            string xml = param.toXml("GVPSRequest", "utf-8");
+            string resp = SendHttpRequest(auth.testPlatform ? _urlAPITest : _urlAPILive, "POST", xml);
+            var dic = FoundationHelper.XmltoDictionary(resp, "GVPSResponse") ?? new Dictionary<string, object>();
+
+            response.privateResponse = dic;
+
+            if (dic.ContainsKey("Transaction") && ((Dictionary<string, object>)dic["Transaction"]).ContainsKey("Response") && ((Dictionary<string, object>)((Dictionary<string, object>)dic["Transaction"])["Response"]).ContainsKey("Code"))
+            {
+                Dictionary<string, object> dicResponse = ((Dictionary<string, object>)((Dictionary<string, object>)dic["Transaction"])["Response"]);
+
+                if (dicResponse["Code"].ToString() == "00")
+                {
+                    response.statu = ResponseStatu.Success;
+                    response.message = "İşlem başarılı";
+                }
+                else
+                {
+                    response.statu = ResponseStatu.Error;
+                    response.message = dicResponse.ContainsKey("ErrorMsg") && dicResponse["ErrorMsg"] != null && dicResponse["ErrorMsg"].ToString() != ""
+                        ? dicResponse["ErrorMsg"].ToString()
+                        : "İşlem iptal edilemedi";
+                }
+            }
+
+            return response;
         }
 
+        /// <summary>
+        /// Garanti BBVA için iade işlemini gerçekleştirir.
+        /// </summary>
         public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
         {
-            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            RefundResponse response = new RefundResponse
+            {
+                statu = ResponseStatu.Error,
+                message = "İşlem sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+            };
+
+            Dictionary<string, object> param = new Dictionary<string, object>
+            {
+                {
+                    "Mode", auth.testPlatform ? "TEST" : "PROD"
+                },
+                {
+                    "Version", "v0.00"
+                },
+                {
+                    "Terminal", new Dictionary<string, object>()
+                    {
+                        { "ProvUserID", "PROVRFN" },
+                        { "HashData", "" },
+                        { "MerchantID", auth.merchantID },
+                        { "UserID", "PROVAUT" },
+                        { "ID", auth.merchantUser },
+                    }
+                },
+                {
+                    "Customer", new Dictionary<string, object>()
+                    {
+                        { "IPAddress", request.customerIPAddress },
+                        { "EmailAddress", "test@test.com" },
+                    }
+                },
+                {
+                    "Order", new Dictionary<string, object>()
+                    {
+                        { "OrderID", request.orderNumber },
+                        { "GroupID", "" },
+                    }
+                },
+                {
+                    "Transaction", new Dictionary<string, object>()
+                    {
+                        { "Type", "refund" },
+                        { "Amount", request.refundAmount.To2Digit() },
+                        { "CurrencyCode", request.currency.HasValue ? ((int)request.currency.Value).ToString() : ((int)Currency.TRY).ToString() },
+                        { "OriginalRetrefNum", request.transactionId },
+                        { "CardholderPresentCode", 0 },
+                        { "MotoInd", "N" },
+                    }
+                }
+            };
+
+            string hashedPassword = GetSHA1(auth.merchantPassword + auth.merchantUser.cpToLong().ToString("000000000")).ToUpper();
+            string hash = GetSHA1(request.orderNumber +
+                                  auth.merchantUser +
+                                  request.transactionId +
+                                  request.refundAmount.To2Digit() +
+                                  hashedPassword).ToUpper();
+
+            ((Dictionary<string, object>)param["Terminal"])["HashData"] = hash;
+
+            string xml = param.toXml("GVPSRequest", "utf-8");
+            string resp = SendHttpRequest(auth.testPlatform ? _urlAPITest : _urlAPILive, "POST", xml);
+            var dic = FoundationHelper.XmltoDictionary(resp, "GVPSResponse") ?? new Dictionary<string, object>();
+
+            response.privateResponse = dic;
+
+            if (dic.ContainsKey("Transaction") && ((Dictionary<string, object>)dic["Transaction"]).ContainsKey("Response") && ((Dictionary<string, object>)((Dictionary<string, object>)dic["Transaction"])["Response"]).ContainsKey("Code"))
+            {
+                Dictionary<string, object> dicResponse = ((Dictionary<string, object>)((Dictionary<string, object>)dic["Transaction"])["Response"]);
+
+                if (dicResponse["Code"].ToString() == "00")
+                {
+                    response.statu = ResponseStatu.Success;
+                    response.message = "İşlem başarılı";
+                    response.refundAmount = request.refundAmount;
+                }
+                else
+                {
+                    response.statu = ResponseStatu.Error;
+                    response.message = dicResponse.ContainsKey("ErrorMsg") && dicResponse["ErrorMsg"] != null && dicResponse["ErrorMsg"].ToString() != ""
+                        ? dicResponse["ErrorMsg"].ToString()
+                        : "İade işlemi gerçekleştirilemedi";
+                }
+            }
+
+            return response;
         }
 
         private string GetSHA1(string SHA1Data)
