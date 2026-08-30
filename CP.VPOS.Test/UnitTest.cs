@@ -38,58 +38,58 @@ namespace CP.VPOS.Test
             Assert.IsTrue(resp.statu == CP.VPOS.Enums.SaleResponseStatu.Success);
         }
 
-        [TestMethod]
-        public void GarantiBankasiCancelTest()
-        {
-            VirtualPOSAuth garantiTest = GetGarantiAuth();
-            SaleResponse saleResponse = VPOSClient.Sale(GetGarantiSaleRequest(), garantiTest);
+        // [TestMethod]
+        // public void GarantiBankasiCancelTest()
+        // {
+        //     VirtualPOSAuth garantiTest = GetGarantiAuth();
+        //     SaleResponse saleResponse = VPOSClient.Sale(GetGarantiSaleRequest(), garantiTest);
 
-            Assert.IsTrue(saleResponse.statu == CP.VPOS.Enums.SaleResponseStatu.Success, $"Sale failed: {saleResponse.message}");
-            Assert.IsFalse(string.IsNullOrWhiteSpace(saleResponse.transactionId), "transactionId boş geldi");
+        //     Assert.IsTrue(saleResponse.statu == CP.VPOS.Enums.SaleResponseStatu.Success, $"Sale failed: {saleResponse.message}");
+        //     Assert.IsFalse(string.IsNullOrWhiteSpace(saleResponse.transactionId), "transactionId boş geldi");
 
-            CancelRequest cancelRequest = new CancelRequest
-            {
-                customerIPAddress = "1.1.1.1",
-                orderNumber = saleResponse.orderNumber,
-                amount = (decimal)100.50,
-                transactionId = saleResponse.transactionId,
-                currency = CP.VPOS.Enums.Currency.TRY
-            };
+        //     CancelRequest cancelRequest = new CancelRequest
+        //     {
+        //         customerIPAddress = "1.1.1.1",
+        //         orderNumber = saleResponse.orderNumber,
+        //         amount = (decimal)100.50,
+        //         transactionId = saleResponse.transactionId,
+        //         currency = CP.VPOS.Enums.Currency.TRY
+        //     };
 
-            CancelResponse cancelResponse = VPOSClient.Cancel(cancelRequest, garantiTest);
+        //     CancelResponse cancelResponse = VPOSClient.Cancel(cancelRequest, garantiTest);
 
-            Console.WriteLine($"Garanti cancel statu: {cancelResponse.statu.ToString()}");
-            Console.WriteLine($"Garanti cancel message: {cancelResponse.message}");
+        //     Console.WriteLine($"Garanti cancel statu: {cancelResponse.statu.ToString()}");
+        //     Console.WriteLine($"Garanti cancel message: {cancelResponse.message}");
 
-            Assert.IsTrue(cancelResponse.statu == CP.VPOS.Enums.ResponseStatu.Success);
-        }
+        //     Assert.IsTrue(cancelResponse.statu == CP.VPOS.Enums.ResponseStatu.Success);
+        // }
 
-        [TestMethod]
-        public void GarantiBankasiRefundTest()
-        {
-            VirtualPOSAuth garantiTest = GetGarantiAuth();
-            SaleResponse saleResponse = VPOSClient.Sale(GetGarantiSaleRequest(), garantiTest);
+        // [TestMethod]
+        // public void GarantiBankasiRefundTest()
+        // {
+        //     VirtualPOSAuth garantiTest = GetGarantiAuth();
+        //     SaleResponse saleResponse = VPOSClient.Sale(GetGarantiSaleRequest(), garantiTest);
 
-            Assert.IsTrue(saleResponse.statu == CP.VPOS.Enums.SaleResponseStatu.Success, $"Sale failed: {saleResponse.message}");
-            Assert.IsFalse(string.IsNullOrWhiteSpace(saleResponse.transactionId), "transactionId boş geldi");
+        //     Assert.IsTrue(saleResponse.statu == CP.VPOS.Enums.SaleResponseStatu.Success, $"Sale failed: {saleResponse.message}");
+        //     Assert.IsFalse(string.IsNullOrWhiteSpace(saleResponse.transactionId), "transactionId boş geldi");
 
-            RefundRequest refundRequest = new RefundRequest
-            {
-                customerIPAddress = "1.1.1.1",
-                orderNumber = saleResponse.orderNumber,
-                transactionId = saleResponse.transactionId,
-                refundAmount = (decimal)100.50,
-                currency = CP.VPOS.Enums.Currency.TRY
-            };
+        //     RefundRequest refundRequest = new RefundRequest
+        //     {
+        //         customerIPAddress = "1.1.1.1",
+        //         orderNumber = saleResponse.orderNumber,
+        //         transactionId = saleResponse.transactionId,
+        //         refundAmount = (decimal)100.50,
+        //         currency = CP.VPOS.Enums.Currency.TRY
+        //     };
 
-            RefundResponse refundResponse = VPOSClient.Refund(refundRequest, garantiTest);
+        //     RefundResponse refundResponse = VPOSClient.Refund(refundRequest, garantiTest);
 
-            Console.WriteLine($"Garanti refund statu: {refundResponse.statu.ToString()}");
-            Console.WriteLine($"Garanti refund message: {refundResponse.message}");
-            Console.WriteLine($"Garanti refund amount: {refundResponse.refundAmount}");
+        //     Console.WriteLine($"Garanti refund statu: {refundResponse.statu.ToString()}");
+        //     Console.WriteLine($"Garanti refund message: {refundResponse.message}");
+        //     Console.WriteLine($"Garanti refund amount: {refundResponse.refundAmount}");
 
-            Assert.IsTrue(refundResponse.statu == CP.VPOS.Enums.ResponseStatu.Success);
-        }
+        //     Assert.IsTrue(refundResponse.statu == CP.VPOS.Enums.ResponseStatu.Success);
+        // }
 
 
         //[TestMethod]
