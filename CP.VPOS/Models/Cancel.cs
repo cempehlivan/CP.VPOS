@@ -19,6 +19,12 @@ namespace CP.VPOS.Models
         public string orderNumber { get; set; }
 
         /// <summary>
+        /// İptal edilecek tutar
+        /// </summary>
+        [Range(minimum: 0.0001, maximum: 10000000.00, ErrorMessage = "amount alanı sıfırdan büyük olmalıdır")]
+        public decimal? amount { get; set; }
+
+        /// <summary>
         /// Banka tarafındaki işlem numarası
         /// </summary>
         [Required(ErrorMessage = "transactionId alanı zorunludur")]

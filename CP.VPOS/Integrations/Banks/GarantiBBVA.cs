@@ -31,6 +31,14 @@ namespace CP.VPOS.Banks.GarantiBBVA
             Şifre  		: 123456WqE
          */
 
+
+#if !NET45
+        static GarantiBBVAVirtualPOSService()
+        {
+            Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        }
+
+#endif
         public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
         {
             if (request.payment3D?.confirm == true)
@@ -516,20 +524,22 @@ namespace CP.VPOS.Banks.GarantiBBVA
                     "Transaction", new Dictionary<string, object>()
                     {
                         { "Type", "void" },
-                        { "Amount", "" },
+                        { "Amount", request.amount.HasValue ? request.amount.Value.To2Digit() : "0" },
                         { "CurrencyCode", request.currency.HasValue ? ((int)request.currency.Value).ToString() : ((int)Currency.TRY).ToString() },
                         { "OriginalRetrefNum", request.transactionId },
                         { "CardholderPresentCode", 0 },
-                        { "MotoInd", "N" },
+                        { "MotoInd", "H" },
                     }
                 }
             };
 
-            string hashedPassword = GetSHA1(auth.merchantPassword + auth.merchantUser.cpToLong().ToString("000000000")).ToUpper();
-            string hash = GetSHA1(request.orderNumber +
-                                  auth.merchantUser +
-                                  request.transactionId +
-                                  hashedPassword).ToUpper();
+            string terminalId = auth.merchantUser.cpToLong().ToString("000000000");
+            string hashedPassword = GetSHA1(auth.merchantPassword + terminalId).ToUpper();
+            string hash = GetSHA512(request.orderNumber +
+                                    terminalId +
+                                    (request.amount ?? 0).To2Digit() +
+                                    ((int)(request.currency ?? Currency.TRY)).ToString() +
+                                    hashedPassword).ToUpper();
 
             ((Dictionary<string, object>)param["Terminal"])["HashData"] = hash;
 
@@ -577,7 +587,7 @@ namespace CP.VPOS.Banks.GarantiBBVA
                     "Mode", auth.testPlatform ? "TEST" : "PROD"
                 },
                 {
-                    "Version", "v0.00"
+                    "Version", "512"
                 },
                 {
                     "Terminal", new Dictionary<string, object>()
@@ -611,17 +621,18 @@ namespace CP.VPOS.Banks.GarantiBBVA
                         { "CurrencyCode", request.currency.HasValue ? ((int)request.currency.Value).ToString() : ((int)Currency.TRY).ToString() },
                         { "OriginalRetrefNum", request.transactionId },
                         { "CardholderPresentCode", 0 },
-                        { "MotoInd", "N" },
+                        { "MotoInd", "H" },
                     }
                 }
             };
 
-            string hashedPassword = GetSHA1(auth.merchantPassword + auth.merchantUser.cpToLong().ToString("000000000")).ToUpper();
-            string hash = GetSHA1(request.orderNumber +
-                                  auth.merchantUser +
-                                  request.transactionId +
-                                  request.refundAmount.To2Digit() +
-                                  hashedPassword).ToUpper();
+            string terminalId = auth.merchantUser.cpToLong().ToString("000000000");
+            string hashedPassword = GetSHA1(auth.merchantPassword + terminalId).ToUpper();
+            string hash = GetSHA512(request.orderNumber +
+                                    terminalId +
+                                    request.refundAmount.To2Digit() +
+                                    ((int)(request.currency ?? Currency.TRY)).ToString() +
+                                    hashedPassword).ToUpper();
 
             ((Dictionary<string, object>)param["Terminal"])["HashData"] = hash;
 
@@ -660,9 +671,22 @@ namespace CP.VPOS.Banks.GarantiBBVA
             {
                 string HashedPassword = SHA1Data;
 
-                byte[] hashbytes = Encoding.UTF8.GetBytes(HashedPassword);
+                byte[] hashbytes = GetGarantiEncoding().GetBytes(HashedPassword);
                 byte[] inputbytes = sha.ComputeHash(hashbytes);
 
+
+                return GetHexaDecimal(inputbytes);
+            }
+#pragma warning restore SYSLIB0021
+        }
+
+        private string GetSHA512(string SHA512Data)
+        {
+#pragma warning disable SYSLIB0021
+            using (SHA512CryptoServiceProvider sha = new SHA512CryptoServiceProvider())
+            {
+                byte[] hashbytes = GetGarantiEncoding().GetBytes(SHA512Data);
+                byte[] inputbytes = sha.ComputeHash(hashbytes);
 
                 return GetHexaDecimal(inputbytes);
             }
@@ -678,6 +702,15 @@ namespace CP.VPOS.Banks.GarantiBBVA
                 s.Append(String.Format("{0,2:x}", bytes[n]).Replace(" ", "0"));
 
             return s.ToString();
+        }
+
+        private Encoding GetGarantiEncoding()
+        {
+#if NET45
+            return Encoding.GetEncoding(1254);
+#else
+            return Encoding.GetEncoding("ISO-8859-9");
+#endif
         }
 
         private string Request(Dictionary<string, string> param, string link)
