@@ -51,6 +51,7 @@ namespace CP.VPOS.Test
             {
                 customerIPAddress = "1.1.1.1",
                 orderNumber = saleResponse.orderNumber,
+                amount = (decimal)100.50,
                 transactionId = saleResponse.transactionId,
                 currency = CP.VPOS.Enums.Currency.TRY
             };
@@ -216,7 +217,7 @@ namespace CP.VPOS.Test
                     confirm = false
                 },
                 customerIPAddress = "1.1.1.1",
-                orderNumber = Convert.ToInt32((DateTime.Now - new DateTime(1970, 1, 1)).TotalSeconds).ToString("X")
+                orderNumber = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper()
             };
         }
     }
