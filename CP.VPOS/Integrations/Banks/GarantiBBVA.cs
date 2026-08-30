@@ -32,6 +32,13 @@ namespace CP.VPOS.Banks.GarantiBBVA
          */
 
 
+#if !NET45
+        static GarantiBBVAVirtualPOSService()
+        {
+            Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        }
+
+#endif
         public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
         {
             if (request.payment3D?.confirm == true)
@@ -470,14 +477,191 @@ namespace CP.VPOS.Banks.GarantiBBVA
             return null;
         }
 
+        /// <summary>
+        /// Garanti BBVA için iptal işlemini gerçekleştirir.
+        /// </summary>
         public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
         {
-            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            CancelResponse response = new CancelResponse
+            {
+                statu = ResponseStatu.Error,
+                message = "İşlem sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+            };
+
+            Dictionary<string, object> param = new Dictionary<string, object>
+            {
+                {
+                    "Mode", auth.testPlatform ? "TEST" : "PROD"
+                },
+                {
+                    "Version", "v0.00"
+                },
+                {
+                    "Terminal", new Dictionary<string, object>()
+                    {
+                        { "ProvUserID", "PROVRFN" },
+                        { "HashData", "" },
+                        { "MerchantID", auth.merchantID },
+                        { "UserID", "PROVAUT" },
+                        { "ID", auth.merchantUser },
+                    }
+                },
+                {
+                    "Customer", new Dictionary<string, object>()
+                    {
+                        { "IPAddress", request.customerIPAddress },
+                        { "EmailAddress", "test@test.com" },
+                    }
+                },
+                {
+                    "Order", new Dictionary<string, object>()
+                    {
+                        { "OrderID", request.orderNumber },
+                        { "GroupID", "" },
+                    }
+                },
+                {
+                    "Transaction", new Dictionary<string, object>()
+                    {
+                        { "Type", "void" },
+                        { "Amount", request.amount.HasValue ? request.amount.Value.To2Digit() : "0" },
+                        { "CurrencyCode", request.currency.HasValue ? ((int)request.currency.Value).ToString() : ((int)Currency.TRY).ToString() },
+                        { "OriginalRetrefNum", request.transactionId },
+                        { "CardholderPresentCode", 0 },
+                        { "MotoInd", "H" },
+                    }
+                }
+            };
+
+            string terminalId = auth.merchantUser.cpToLong().ToString("000000000");
+            string hashedPassword = GetSHA1(auth.merchantPassword + terminalId).ToUpper();
+            string hash = GetSHA512(request.orderNumber +
+                                    terminalId +
+                                    (request.amount ?? 0).To2Digit() +
+                                    ((int)(request.currency ?? Currency.TRY)).ToString() +
+                                    hashedPassword).ToUpper();
+
+            ((Dictionary<string, object>)param["Terminal"])["HashData"] = hash;
+
+            string xml = param.toXml("GVPSRequest", "utf-8");
+            string resp = SendHttpRequest(auth.testPlatform ? _urlAPITest : _urlAPILive, "POST", xml);
+            var dic = FoundationHelper.XmltoDictionary(resp, "GVPSResponse") ?? new Dictionary<string, object>();
+
+            response.privateResponse = dic;
+
+            if (dic.ContainsKey("Transaction") && ((Dictionary<string, object>)dic["Transaction"]).ContainsKey("Response") && ((Dictionary<string, object>)((Dictionary<string, object>)dic["Transaction"])["Response"]).ContainsKey("Code"))
+            {
+                Dictionary<string, object> dicResponse = ((Dictionary<string, object>)((Dictionary<string, object>)dic["Transaction"])["Response"]);
+
+                if (dicResponse["Code"].ToString() == "00")
+                {
+                    response.statu = ResponseStatu.Success;
+                    response.message = "İşlem başarılı";
+                }
+                else
+                {
+                    response.statu = ResponseStatu.Error;
+                    response.message = dicResponse.ContainsKey("ErrorMsg") && dicResponse["ErrorMsg"] != null && dicResponse["ErrorMsg"].ToString() != ""
+                        ? dicResponse["ErrorMsg"].ToString()
+                        : "İşlem iptal edilemedi";
+                }
+            }
+
+            return response;
         }
 
+        /// <summary>
+        /// Garanti BBVA için iade işlemini gerçekleştirir.
+        /// </summary>
         public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
         {
-            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            RefundResponse response = new RefundResponse
+            {
+                statu = ResponseStatu.Error,
+                message = "İşlem sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+            };
+
+            Dictionary<string, object> param = new Dictionary<string, object>
+            {
+                {
+                    "Mode", auth.testPlatform ? "TEST" : "PROD"
+                },
+                {
+                    "Version", "512"
+                },
+                {
+                    "Terminal", new Dictionary<string, object>()
+                    {
+                        { "ProvUserID", "PROVRFN" },
+                        { "HashData", "" },
+                        { "MerchantID", auth.merchantID },
+                        { "UserID", "PROVAUT" },
+                        { "ID", auth.merchantUser },
+                    }
+                },
+                {
+                    "Customer", new Dictionary<string, object>()
+                    {
+                        { "IPAddress", request.customerIPAddress },
+                        { "EmailAddress", "test@test.com" },
+                    }
+                },
+                {
+                    "Order", new Dictionary<string, object>()
+                    {
+                        { "OrderID", request.orderNumber },
+                        { "GroupID", "" },
+                    }
+                },
+                {
+                    "Transaction", new Dictionary<string, object>()
+                    {
+                        { "Type", "refund" },
+                        { "Amount", request.refundAmount.To2Digit() },
+                        { "CurrencyCode", request.currency.HasValue ? ((int)request.currency.Value).ToString() : ((int)Currency.TRY).ToString() },
+                        { "OriginalRetrefNum", request.transactionId },
+                        { "CardholderPresentCode", 0 },
+                        { "MotoInd", "H" },
+                    }
+                }
+            };
+
+            string terminalId = auth.merchantUser.cpToLong().ToString("000000000");
+            string hashedPassword = GetSHA1(auth.merchantPassword + terminalId).ToUpper();
+            string hash = GetSHA512(request.orderNumber +
+                                    terminalId +
+                                    request.refundAmount.To2Digit() +
+                                    ((int)(request.currency ?? Currency.TRY)).ToString() +
+                                    hashedPassword).ToUpper();
+
+            ((Dictionary<string, object>)param["Terminal"])["HashData"] = hash;
+
+            string xml = param.toXml("GVPSRequest", "utf-8");
+            string resp = SendHttpRequest(auth.testPlatform ? _urlAPITest : _urlAPILive, "POST", xml);
+            var dic = FoundationHelper.XmltoDictionary(resp, "GVPSResponse") ?? new Dictionary<string, object>();
+
+            response.privateResponse = dic;
+
+            if (dic.ContainsKey("Transaction") && ((Dictionary<string, object>)dic["Transaction"]).ContainsKey("Response") && ((Dictionary<string, object>)((Dictionary<string, object>)dic["Transaction"])["Response"]).ContainsKey("Code"))
+            {
+                Dictionary<string, object> dicResponse = ((Dictionary<string, object>)((Dictionary<string, object>)dic["Transaction"])["Response"]);
+
+                if (dicResponse["Code"].ToString() == "00")
+                {
+                    response.statu = ResponseStatu.Success;
+                    response.message = "İşlem başarılı";
+                    response.refundAmount = request.refundAmount;
+                }
+                else
+                {
+                    response.statu = ResponseStatu.Error;
+                    response.message = dicResponse.ContainsKey("ErrorMsg") && dicResponse["ErrorMsg"] != null && dicResponse["ErrorMsg"].ToString() != ""
+                        ? dicResponse["ErrorMsg"].ToString()
+                        : "İade işlemi gerçekleştirilemedi";
+                }
+            }
+
+            return response;
         }
 
         private string GetSHA1(string SHA1Data)
@@ -487,9 +671,22 @@ namespace CP.VPOS.Banks.GarantiBBVA
             {
                 string HashedPassword = SHA1Data;
 
-                byte[] hashbytes = Encoding.UTF8.GetBytes(HashedPassword);
+                byte[] hashbytes = GetGarantiEncoding().GetBytes(HashedPassword);
                 byte[] inputbytes = sha.ComputeHash(hashbytes);
 
+
+                return GetHexaDecimal(inputbytes);
+            }
+#pragma warning restore SYSLIB0021
+        }
+
+        private string GetSHA512(string SHA512Data)
+        {
+#pragma warning disable SYSLIB0021
+            using (SHA512CryptoServiceProvider sha = new SHA512CryptoServiceProvider())
+            {
+                byte[] hashbytes = GetGarantiEncoding().GetBytes(SHA512Data);
+                byte[] inputbytes = sha.ComputeHash(hashbytes);
 
                 return GetHexaDecimal(inputbytes);
             }
@@ -505,6 +702,15 @@ namespace CP.VPOS.Banks.GarantiBBVA
                 s.Append(String.Format("{0,2:x}", bytes[n]).Replace(" ", "0"));
 
             return s.ToString();
+        }
+
+        private Encoding GetGarantiEncoding()
+        {
+#if NET45
+            return Encoding.GetEncoding(1254);
+#else
+            return Encoding.GetEncoding("ISO-8859-9");
+#endif
         }
 
         private string Request(Dictionary<string, string> param, string link)
