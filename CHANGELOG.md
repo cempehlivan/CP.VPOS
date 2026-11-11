@@ -1,4 +1,12 @@
 ## Sürüm Notları
+### v3.7.0
+ - **Önemli güncelleme:** Tüm banka ve ödeme kuruluşu entegrasyonlarında sertifika doğrulamasını kapatan `ServicePointManager.ServerCertificateValidationCallback` ataması kaldırıldı. Bu ayar statik olduğu için kütüphaneyi kullanan uygulamanın tamamındaki HTTPS trafiğinde sertifika doğrulamasını devre dışı bırakıyordu. Sertifikası geçersiz bir banka ucu ile çalışıyorsanız istekler artık hata verecektir.
+ - Alternatif Bank sanal pos erişim adresi, sunucu sertifikasıyla uyumlu olan `sanalpos.alternatifbank.com.tr` adresine güncellendi. Eski `sanalpos.abank.com.tr` adresi aynı sunucuya işaret etmesine rağmen sertifika bu adı kapsamıyordu.
+ - Asenkron API eklendi: `SaleAsync`, `Sale3DResponseAsync`, `BINInstallmentQueryAsync`, `AllInstallmentQueryAsync`, `AdditionalInstallmentQueryAsync`, `CancelAsync` ve `RefundAsync` metotları `CancellationToken` desteğiyle kullanılabilir. Mevcut senkron metotların imzaları değişmedi, eski kodda değişiklik yapılması gerekmez.
+ - Senkron metotlardaki `.Result` kullanımları kaldırıldı; klasik ASP.NET ve WPF gibi ortamlarda oluşabilen deadlock riski giderildi, yoğun trafikte thread tüketimi azaltıldı.
+ - 3D yönlendirme formundaki alanlar HTML encode ediliyor; içinde çift tırnak veya `<` geçen değerler artık formu bozmuyor.
+ - Kart numarası doğrulaması sıkılaştırıldı: boş değer artık geçerli sayılmıyor, rakam dışı karakter ve hatalı uzunluk reddediliyor. Satış isteğinde kart numarasındaki boşluk ve tireler otomatik temizlendiği için `4242 4242 4242 4242` biçimindeki numaralar da kabul ediliyor.
+ - NuGet paketine XML dokümantasyonu eklendi; metot açıklamaları artık IntelliSense'te görünüyor. Ayrıca `snupkg` sembol paketi ve SourceLink desteği ile kütüphane içinde hata ayıklama yapılabiliyor.
 ### v3.6.1
  - Kuveyt Türk sanal pos 3d response bug fix
 ### v3.6.0
