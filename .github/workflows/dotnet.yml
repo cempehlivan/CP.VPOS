@@ -5,6 +5,12 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      run_integration_tests:
+        description: "Canlı banka test ortamlarına istek atan entegrasyon testlerini de çalıştır"
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -12,14 +18,17 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Test (birim)
+      run: dotnet test --no-build --verbosity normal --filter "TestCategory!=Integration"
+    - name: Test (entegrasyon)
+      if: github.event_name == 'workflow_dispatch' && inputs.run_integration_tests
+      run: dotnet test --no-build --verbosity normal --filter "TestCategory=Integration"

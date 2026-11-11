@@ -24,6 +24,7 @@ namespace CP.VPOS.Test
 
 
         [TestMethod]
+        [TestCategory("Integration")]
         public void GarantiBankasiSaleTest()
         {
             VirtualPOSAuth _garantiTest = new VirtualPOSAuth
@@ -115,6 +116,7 @@ namespace CP.VPOS.Test
         }
 
         [TestMethod]
+        [TestCategory("Integration")]
         public void QNBPaySaleTest()
         {
             VirtualPOSAuth _qnbPayTest = new VirtualPOSAuth

@@ -36,13 +36,15 @@ namespace CP.VPOS
         public static async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
         {
             request.Validate();
+
+            // Kart numarası içindeki boşluk ve tireler temizlenir ("4242 4242 4242 4242" -> "4242424242424242").
+            // saleInfo.cardNumber alanı yalnızca rakam kabul ettiği için bu temizlik doğrulamadan önce yapılır.
+            request.saleInfo.cardNumber = request.saleInfo.cardNumber?.Replace(" ", "").Replace("-", "");
+
             request.saleInfo.Validate();
             request.invoiceInfo.Validate();
             request.shippingInfo.Validate();
             auth.Validate();
-
-            // Kart numarası içindeki boşluk ve tireler temizlenir ("4242 4242 4242 4242" -> "4242424242424242")
-            request.saleInfo.cardNumber = request.saleInfo.cardNumber?.Replace(" ", "").Replace("-", "");
 
             if (!FoundationHelper.IsCardNumberValid(request.saleInfo.cardNumber))
                 throw new ValidationException("Geçersiz kart numarası. Lütfen kart numaranızı kontrol ediniz.");
@@ -84,6 +86,7 @@ namespace CP.VPOS
         /// 3D yapılan çekim işlemi sonucunu döner
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="auth">Banka API bilgileri</param>
         public static SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
         {
             return AsyncHelper.RunSync(() => Sale3DResponseAsync(request, auth));

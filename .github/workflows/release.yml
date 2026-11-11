@@ -44,7 +44,7 @@ jobs:
         run: dotnet build -c Release --no-restore
 
       - name: Test (Release)
-        run: dotnet test -c Release --no-build
+        run: dotnet test -c Release --no-build --filter "TestCategory!=Integration"
 
       - name: Pack (Release)
         run: dotnet pack CP.VPOS/CP.VPOS.csproj -c Release --no-build -o ./artifacts

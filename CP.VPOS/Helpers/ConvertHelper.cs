@@ -279,6 +279,7 @@ namespace CP.VPOS.Helpers
         /// Gelen tarih bilgisini crystal report için metin ifadeye dönüştürür (başına ve sonuna çift tırnak ekler).
         /// </summary>
         /// <param name="pText"></param>
+        /// <param name="pWithTime">Saat bilgisi içersin mi?</param>
         /// <param name="pWithSecond">Saniye bilgisi içersin mi?</param>
         /// <returns></returns>
         internal static string cpToCryDateTime(this DateTime pText, bool pWithTime = false, bool pWithSecond = false)
