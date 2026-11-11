@@ -1,4 +1,6 @@
-﻿using CP.VPOS.Models;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using CP.VPOS.Models;
 
 namespace CP.VPOS.Interfaces
 {
@@ -9,63 +11,71 @@ namespace CP.VPOS.Interfaces
         /// </summary>
         /// <param name="request"></param>
         /// <param name="auth"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth);
+        Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken);
 
         /// <summary>
         ///  3D Çekimlerin sonuçları için kullanılır
         /// </summary>
         /// <param name="request"></param>
         /// <param name="auth"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth);
+        Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken);
 
         /// <summary>
         /// BIN ile Taksit listesi
         /// </summary>
         /// <param name="request"></param>
         /// <param name="auth"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth);
+        Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken);
 
         /// <summary>
         /// Tutar ile Taksit listesi
         /// </summary>
         /// <param name="request"></param>
         /// <param name="auth"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth);
+        Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken);
 
         /// <summary>
         /// Ek taksit kampanyası sorgulama
         /// </summary>
         /// <param name="request"></param>
         /// <param name="auth"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth);
+        Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken);
 
         /// <summary>
         /// Ödeme iptal etme
         /// </summary>
         /// <param name="request"></param>
         /// <param name="auth"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth);
+        Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken);
 
         /// <summary>
         /// Ödeme iade etme
         /// </summary>
         /// <param name="request"></param>
         /// <param name="auth"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth);
+        Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken);
 
         /// <summary>
         /// İşlem sorgulama
         /// </summary>
         /// <param name="request"></param>
         /// <param name="auth"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth);
+        Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken);
     }
 }

@@ -4,6 +4,8 @@ using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -33,10 +35,10 @@ namespace CP.VPOS.Banks
                 _url3Dtest = url3DTest;
         }
 
-        public virtual SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public virtual async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             SaleResponse response = new SaleResponse
             {
@@ -64,7 +66,7 @@ namespace CP.VPOS.Banks
 
             string xml = param.toXml();
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp);
 
@@ -89,7 +91,7 @@ namespace CP.VPOS.Banks
             return response;
         }
 
-        public virtual SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public virtual async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -127,7 +129,7 @@ namespace CP.VPOS.Banks
 
                 string xml = param.toXml();
 
-                string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+                string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp);
 
@@ -158,22 +160,22 @@ namespace CP.VPOS.Banks
             return response;
         }
 
-        public virtual BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public virtual Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new BINInstallmentQueryResponse { confirm = false };
+            return Task.FromResult<BINInstallmentQueryResponse>(new BINInstallmentQueryResponse { confirm = false });
         }
 
-        public virtual AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public virtual Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new AllInstallmentQueryResponse { confirm = false };
+            return Task.FromResult<AllInstallmentQueryResponse>(new AllInstallmentQueryResponse { confirm = false });
         }
 
-        public virtual AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public virtual Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new AdditionalInstallmentQueryResponse { confirm = false };
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(new AdditionalInstallmentQueryResponse { confirm = false });
         }
 
-        public virtual SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public virtual async Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleQueryResponse response = new SaleQueryResponse
             {
@@ -193,7 +195,7 @@ namespace CP.VPOS.Banks
 
             string xml = param.toXml(rootTag: "CC5Request");
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "CC5Response");
 
@@ -248,7 +250,7 @@ namespace CP.VPOS.Banks
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -263,7 +265,7 @@ namespace CP.VPOS.Banks
 
             string xml = param.toXml();
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp);
 
@@ -286,7 +288,7 @@ namespace CP.VPOS.Banks
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -302,7 +304,7 @@ namespace CP.VPOS.Banks
 
             string xml = param.toXml();
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp);
 
@@ -325,7 +327,7 @@ namespace CP.VPOS.Banks
             return response;
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -358,7 +360,7 @@ namespace CP.VPOS.Banks
 
             param.Add("hash", hash);
 
-            string resp = this.Request(param, (auth.testPlatform ? _url3Dtest : _url3DLive));
+            string resp = await this.RequestAsync(param, (auth.testPlatform ? _url3Dtest : _url3DLive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> form = FoundationHelper.getFormParams(resp);
 
@@ -389,7 +391,7 @@ namespace CP.VPOS.Banks
             }
         }
 
-        private string Request(Dictionary<string, string> param, string link)
+        private async Task<string> RequestAsync(Dictionary<string, string> param, string link, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -401,34 +403,18 @@ namespace CP.VPOS.Banks
                 var request = new FormUrlEncodedContent(param);
                 request.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
                 request.Headers.ContentType.CharSet = "utf-8";
-                var response = client.PostAsync(link, request).Result;
-                responseString = response.Content.ReadAsStringAsync().Result;
+                var response = await client.PostAsync(link, request, cancellationToken).ConfigureAwait(false);
+                responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
             return responseString;
         }
 
-        private string xmlRequest(string xml, string link)
+        private Task<string> xmlRequestAsync(string xml, string link, CancellationToken cancellationToken)
         {
-            ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            System.Net.ServicePointManager.Expect100Continue = false;
-#pragma warning disable SYSLIB0014
-            System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(link);
-#pragma warning restore SYSLIB0014
-            string postdata = "DATA=" + xml.ToString();
-            byte[] postdatabytes = System.Text.Encoding.UTF8.GetBytes(postdata);
-            request.Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = postdatabytes.Length;
-            System.IO.Stream requeststream = request.GetRequestStream();
-            requeststream.Write(postdatabytes, 0, postdatabytes.Length);
-            requeststream.Close();
+            byte[] postdatabytes = System.Text.Encoding.UTF8.GetBytes("DATA=" + xml.ToString());
 
-            System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)request.GetResponse();
-            System.IO.StreamReader responsereader = new System.IO.StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8);
-            string gelenXml = responsereader.ReadToEnd();
-
-            return gelenXml;
+            return WebRequestHelper.PostAsync(link, postdatabytes, "application/x-www-form-urlencoded", System.Text.Encoding.UTF8, 100000, cancellationToken);
         }
     }
 }

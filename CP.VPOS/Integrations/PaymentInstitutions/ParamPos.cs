@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -19,7 +21,7 @@ namespace CP.VPOS.Banks.ParamPos
         private readonly string _urlAPILive = "https://posws.param.com.tr/turkpos.ws/service_turkpos_prod.asmx";
 
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -30,7 +32,7 @@ namespace CP.VPOS.Banks.ParamPos
 
             int _installment = request.saleInfo.installment > 1 ? request.saleInfo.installment : 1;
 
-            var installmentList = BINInstallmentQuery(new BINInstallmentQueryRequest { BIN = request.saleInfo.cardNumber.Substring(0,8) }, auth);
+            var installmentList = await BINInstallmentQueryAsync(new BINInstallmentQueryRequest { BIN = request.saleInfo.cardNumber.Substring(0,8) }, auth, cancellationToken).ConfigureAwait(false);
 
             decimal _decAmountTotal = request.saleInfo.amount;
 
@@ -48,7 +50,7 @@ namespace CP.VPOS.Banks.ParamPos
 
             string hashParam = auth.merchantID + auth.merchantStorekey + _installment.ToString() + _amount + _amountTotal + request.orderNumber;
 
-            string _hash = GetHashPrivate(hashParam); //GetHash(hashParam, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string _hash = GetHashPrivate(hashParam); //await GetHashAsync(hashParam, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             string xml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"">
@@ -78,7 +80,7 @@ namespace CP.VPOS.Banks.ParamPos
     </soap:Body>
 </soap:Envelope>";
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='TP_WMD_UCDResponse']/*[local-name()='TP_WMD_UCDResult']");
 
@@ -110,7 +112,7 @@ namespace CP.VPOS.Banks.ParamPos
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -147,7 +149,7 @@ namespace CP.VPOS.Banks.ParamPos
    </soapenv:Body>
 </soapenv:Envelope>";
 
-                string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+                string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='TP_WMD_PayResponse']/*[local-name()='TP_WMD_PayResult']");
 
@@ -174,7 +176,7 @@ namespace CP.VPOS.Banks.ParamPos
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse
             {
@@ -199,7 +201,7 @@ namespace CP.VPOS.Banks.ParamPos
    </soapenv:Body>
 </soapenv:Envelope>";
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='TP_Islem_Iptal_Iade_Kismi2Response']/*[local-name()='TP_Islem_Iptal_Iade_Kismi2Result']");
 
@@ -214,7 +216,7 @@ namespace CP.VPOS.Banks.ParamPos
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse
             {
@@ -241,7 +243,7 @@ namespace CP.VPOS.Banks.ParamPos
    </soapenv:Body>
 </soapenv:Envelope>";
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='TP_Islem_Iptal_Iade_Kismi2Response']/*[local-name()='TP_Islem_Iptal_Iade_Kismi2Result']");
 
@@ -258,15 +260,15 @@ namespace CP.VPOS.Banks.ParamPos
         }
 
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             List<installment> installments = null;
 
             try
             {
-                string sanalpos_ID = GetBINSanalPOS_ID(request.BIN, auth);
+                string sanalpos_ID = await GetBINSanalPOS_IDAsync(request.BIN, auth, cancellationToken).ConfigureAwait(false);
 
-                installments = GetInstallmentTableBySanalPOS_ID(sanalpos_ID, auth);
+                installments = await GetInstallmentTableBySanalPOS_IDAsync(sanalpos_ID, auth, cancellationToken).ConfigureAwait(false);
             }
             catch
             {
@@ -280,18 +282,18 @@ namespace CP.VPOS.Banks.ParamPos
             };
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AllInstallmentQueryResponse>(null);
         }
 
 
-        private string GetBINSanalPOS_ID(string binNumber, VirtualPOSAuth auth)
+        private async Task<string> GetBINSanalPOS_IDAsync(string binNumber, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             string sanalpos_ID = "";
 
@@ -309,7 +311,7 @@ namespace CP.VPOS.Banks.ParamPos
    </soapenv:Body>
 </soapenv:Envelope>";
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='BIN_SanalPosResponse']/*[local-name()='BIN_SanalPosResult']/*[local-name()='DT_Bilgi']/*[local-name()='diffgram']/*[local-name()='NewDataSet']/*[local-name()='Temp']");
 
             if (respDic?.ContainsKey("SanalPOS_ID") == true)
@@ -319,7 +321,7 @@ namespace CP.VPOS.Banks.ParamPos
         }
 
 
-        private List<installment> GetInstallmentTableBySanalPOS_ID(string sanalpos_ID, VirtualPOSAuth auth)
+        private async Task<List<installment>> GetInstallmentTableBySanalPOS_IDAsync(string sanalpos_ID, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             List<installment> installments = new List<installment>();
 
@@ -337,7 +339,7 @@ namespace CP.VPOS.Banks.ParamPos
    </soapenv:Body>
 </soapenv:Envelope>";
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='TP_Ozel_Oran_SK_ListeResponse']/*[local-name()='TP_Ozel_Oran_SK_ListeResult']/*[local-name()='DT_Bilgi']/*[local-name()='diffgram']/*[local-name()='NewDataSet']");
 
@@ -377,7 +379,7 @@ namespace CP.VPOS.Banks.ParamPos
             return installments;
         }
 
-        private string GetHash(string str, string link)
+        private async Task<string> GetHashAsync(string str, string link, CancellationToken cancellationToken)
         {
             string xml = $@"<?xml version=""1.0"" encoding=""utf-8""?> <soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/""> <soap:Body>
 <SHA2B64 xmlns=""https://turkpos.com.tr/"">
@@ -387,7 +389,7 @@ namespace CP.VPOS.Banks.ParamPos
 </soap:Envelope>";
 
 
-            string response = xmlRequest(xml, link);
+            string response = await xmlRequestAsync(xml, link, cancellationToken).ConfigureAwait(false);
 
             var dic = FoundationHelper.XmltoDictionary(response, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='SHA2B64Response']");
 
@@ -403,31 +405,16 @@ namespace CP.VPOS.Banks.ParamPos
             }
         }
 
-        private string xmlRequest(string xml, string link)
+        private Task<string> xmlRequestAsync(string xml, string link, CancellationToken cancellationToken)
         {
-            ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            System.Net.ServicePointManager.Expect100Continue = false;
-#pragma warning disable SYSLIB0014
-            System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(link);
-#pragma warning restore SYSLIB0014
             byte[] postdatabytes = System.Text.Encoding.UTF8.GetBytes(xml);
-            request.Method = "POST";
-            request.ContentType = "text/xml";
-            request.ContentLength = postdatabytes.Length;
-            System.IO.Stream requeststream = request.GetRequestStream();
-            requeststream.Write(postdatabytes, 0, postdatabytes.Length);
-            requeststream.Close();
 
-            System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)request.GetResponse();
-            System.IO.StreamReader responsereader = new System.IO.StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8);
-            string gelenXml = responsereader.ReadToEnd();
-
-            return gelenXml;
+            return WebRequestHelper.PostAsync(link, postdatabytes, "text/xml", System.Text.Encoding.UTF8, 100000, cancellationToken);
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 }

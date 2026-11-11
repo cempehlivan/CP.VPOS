@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -22,10 +24,10 @@ namespace CP.VPOS.Banks.Vakifbank
         private readonly string _url3DLive = "https://inbound.apigateway.vakifbank.com.tr:8443/threeDGateway/Enrollment";
 
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             SaleResponse response = new SaleResponse
             {
@@ -55,7 +57,7 @@ namespace CP.VPOS.Banks.Vakifbank
 
             string xml = param.toXml("VposRequest");
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "VposResponse");
 
@@ -93,7 +95,7 @@ namespace CP.VPOS.Banks.Vakifbank
             return response;
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -123,7 +125,7 @@ namespace CP.VPOS.Banks.Vakifbank
                 param.Add("InstallmentCount", request.saleInfo.installment.ToString());
 
 
-            string resp = this.Request(param, (auth.testPlatform ? _url3Dtest : _url3DLive));
+            string resp = await this.RequestAsync(param, (auth.testPlatform ? _url3Dtest : _url3DLive), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "IPaySecure");
 
@@ -180,7 +182,7 @@ namespace CP.VPOS.Banks.Vakifbank
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -215,7 +217,7 @@ namespace CP.VPOS.Banks.Vakifbank
                 string xml = param.toXml("VposRequest");
 
                 Dictionary<string, string> dicReq = new Dictionary<string, string>() { { "prmstr", xml } };
-                string resp = this.Request(dicReq, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+                string resp = await this.RequestAsync(dicReq, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
 
                 if(!string.IsNullOrWhiteSpace(resp) && JsonConvertHelper.ValidateJSON(resp))
                 {
@@ -271,7 +273,7 @@ namespace CP.VPOS.Banks.Vakifbank
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -286,7 +288,7 @@ namespace CP.VPOS.Banks.Vakifbank
 
             string xml = param.toXml("VposRequest");
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "VposResponse");
             response.privateResponse = respDic;
 
@@ -327,7 +329,7 @@ namespace CP.VPOS.Banks.Vakifbank
 
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -343,7 +345,7 @@ namespace CP.VPOS.Banks.Vakifbank
                 { "ClientIp", request.customerIPAddress },
             };
             string xml = param.toXml("VposRequest");
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlAPITest : _urlAPILive), cancellationToken).ConfigureAwait(false);
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "VposResponse");
             response.privateResponse = respDic;
 
@@ -382,22 +384,22 @@ namespace CP.VPOS.Banks.Vakifbank
 
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AllInstallmentQueryResponse>(null);
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<BINInstallmentQueryResponse>(null);
         }
 
-        private string Request(Dictionary<string, string> param, string link)
+        private async Task<string> RequestAsync(Dictionary<string, string> param, string link, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -409,14 +411,14 @@ namespace CP.VPOS.Banks.Vakifbank
                 var request = new FormUrlEncodedContent(param);
                 request.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
                 request.Headers.ContentType.CharSet = "utf-8";
-                var response = client.PostAsync(link, request).Result;
-                responseString = response.Content.ReadAsStringAsync().Result;
+                var response = await client.PostAsync(link, request, cancellationToken).ConfigureAwait(false);
+                responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
             return responseString;
         }
 
-        private string xmlRequest(string xml, string link)
+        private Task<string> xmlRequestAsync(string xml, string link, CancellationToken cancellationToken)
         {
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
             System.Net.ServicePointManager.Expect100Continue = false;
@@ -436,7 +438,7 @@ namespace CP.VPOS.Banks.Vakifbank
             System.IO.StreamReader responsereader = new System.IO.StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8);
             string gelenXml = responsereader.ReadToEnd();
 
-            return gelenXml;
+            return Task.FromResult<string>(gelenXml);
         }
 
         private string getErrorDesc(string ErrCode)
@@ -852,9 +854,9 @@ namespace CP.VPOS.Banks.Vakifbank
             return errMsg;
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 }

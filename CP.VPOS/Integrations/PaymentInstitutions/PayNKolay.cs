@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace CP.VPOS.Banks.PayNKolay
         private readonly string _urlAPITest = "https://paynkolaytest.nkolayislem.com.tr";
         private readonly string _urlAPILive = "https://paynkolay.nkolayislem.com.tr";
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -76,7 +78,7 @@ namespace CP.VPOS.Banks.PayNKolay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/Vpos/v1/Payment";
 
-            string responseStr = RequestForm(req, link);
+            string responseStr = await RequestFormAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -116,7 +118,7 @@ namespace CP.VPOS.Banks.PayNKolay
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse { statu = SaleResponseStatu.Error, message = "İşlem sırasında bilinmeyen bir hata oluştu." };
 
@@ -143,7 +145,7 @@ namespace CP.VPOS.Banks.PayNKolay
 
                 string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/Vpos/v1/CompletePayment";
 
-                string responseStr = RequestForm(req, link);
+                string responseStr = await RequestFormAsync(req, link, cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -176,7 +178,7 @@ namespace CP.VPOS.Banks.PayNKolay
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -202,7 +204,7 @@ namespace CP.VPOS.Banks.PayNKolay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/Vpos/v1/CancelRefundPayment";
 
-            string responseStr = RequestForm(req, link);
+            string responseStr = await RequestFormAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -226,7 +228,7 @@ namespace CP.VPOS.Banks.PayNKolay
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -253,7 +255,7 @@ namespace CP.VPOS.Banks.PayNKolay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/Vpos/v1/CancelRefundPayment";
 
-            string responseStr = RequestForm(req, link);
+            string responseStr = await RequestFormAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -277,12 +279,12 @@ namespace CP.VPOS.Banks.PayNKolay
             return response;
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
 
@@ -295,7 +297,7 @@ namespace CP.VPOS.Banks.PayNKolay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/Vpos/Payment/GetMerchandInformation";
 
-            string responseStr = RequestForm(req, link);
+            string responseStr = await RequestFormAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             PayNKolayMerchantInformationResponse binResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<PayNKolayMerchantInformationResponse>(responseStr);
 
@@ -365,7 +367,7 @@ namespace CP.VPOS.Banks.PayNKolay
             return response;
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse { confirm = false, installmentList = new List<installment>() };
 
@@ -380,7 +382,7 @@ namespace CP.VPOS.Banks.PayNKolay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/Vpos/Payment/PaymentInstallments";
 
-            string responseStr = RequestForm(req, link);
+            string responseStr = await RequestFormAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             PayNKolayBinResponse binResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<PayNKolayBinResponse>(responseStr);
 
@@ -410,7 +412,7 @@ namespace CP.VPOS.Banks.PayNKolay
             return response;
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -425,7 +427,7 @@ namespace CP.VPOS.Banks.PayNKolay
             }
         }
 
-        private string RequestJson(Dictionary<string, object> param, string link)
+        private async Task<string> RequestJsonAsync(Dictionary<string, object> param, string link, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -441,8 +443,8 @@ namespace CP.VPOS.Banks.PayNKolay
                 {
                     req.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json") { CharSet = Encoding.UTF8.WebName };
 
-                    var response = client.PostAsync(link, req).Result;
-                    byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                    var response = await client.PostAsync(link, req, cancellationToken).ConfigureAwait(false);
+                    byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     responseString = Encoding.UTF8.GetString(responseByte);
                 }
             }
@@ -451,7 +453,7 @@ namespace CP.VPOS.Banks.PayNKolay
             return responseString;
         }
 
-        private string RequestForm(Dictionary<string, string> param, string link)
+        private async Task<string> RequestFormAsync(Dictionary<string, string> param, string link, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -462,8 +464,8 @@ namespace CP.VPOS.Banks.PayNKolay
             using (var req = new FormUrlEncodedContent(param))
             {
                 req.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded") { CharSet = Encoding.UTF8.WebName };
-                var response = client.PostAsync(link, req).Result;
-                byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                var response = await client.PostAsync(link, req, cancellationToken).ConfigureAwait(false);
+                byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                 responseString = Encoding.UTF8.GetString(responseByte);
             }
 

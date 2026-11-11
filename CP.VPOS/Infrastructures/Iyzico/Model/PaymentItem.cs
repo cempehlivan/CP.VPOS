@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using CP.VPOS.Infrastructures.Iyzico.Request;
 
 namespace CP.VPOS.Infrastructures.Iyzico.Model
@@ -25,9 +27,9 @@ namespace CP.VPOS.Infrastructures.Iyzico.Model
         public String MerchantPayoutAmount { get; set; }
         public ConvertedPayout ConvertedPayout { get; set; }
 
-        public static PaymentItem Update(UpdatePaymentItemRequest request, Options options)
+        public static Task<PaymentItem> UpdateAsync(UpdatePaymentItemRequest request, Options options, CancellationToken cancellationToken)
         {
-            return RestHttpClient.Create().Put<PaymentItem>(options.BaseUrl + "/payment/item", GetHttpHeaders(request, options), request);
+            return RestHttpClient.Create().PutAsync<PaymentItem>(options.BaseUrl + "/payment/item", GetHttpHeaders(request, options), request, cancellationToken);
         }
     }
 }

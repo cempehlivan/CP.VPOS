@@ -1,4 +1,6 @@
-﻿using CP.VPOS.Infrastructures.Iyzico.Request;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using CP.VPOS.Infrastructures.Iyzico.Request;
 using System.Collections.Generic;
 
 namespace CP.VPOS.Infrastructures.Iyzico.Model
@@ -7,9 +9,9 @@ namespace CP.VPOS.Infrastructures.Iyzico.Model
     {
         public List<InstallmentDetail> InstallmentDetails { get; set; }
 
-        public static InstallmentInfo Retrieve(RetrieveInstallmentInfoRequest request, Options options)
+        public static Task<InstallmentInfo> RetrieveAsync(RetrieveInstallmentInfoRequest request, Options options, CancellationToken cancellationToken)
         {
-            return RestHttpClient.Create().Post<InstallmentInfo>(options.BaseUrl + "/payment/iyzipos/installment", GetHttpHeaders(request, options), request);
+            return RestHttpClient.Create().PostAsync<InstallmentInfo>(options.BaseUrl + "/payment/iyzipos/installment", GetHttpHeaders(request, options), request, cancellationToken);
         }
     }
 }

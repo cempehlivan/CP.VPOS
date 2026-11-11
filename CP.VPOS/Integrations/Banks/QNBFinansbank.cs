@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -19,12 +21,12 @@ namespace CP.VPOS.Banks.QNBFinansbank
         private readonly string _urlAPITest = "https://vpostest.qnbfinansbank.com/Gateway/Default.aspx";
         private readonly string _urlAPILive = "https://vpos.qnbfinansbank.com/Gateway/Default.aspx";
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             response.orderNumber = request.orderNumber;
 
@@ -46,7 +48,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
             };
 
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> dic = new Dictionary<string, object>();
 
@@ -87,7 +89,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
             return response;
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
             response.orderNumber = request.orderNumber;
@@ -115,7 +117,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
 
             req.Add("Hash", hashText);
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var dic = FoundationHelper.getFormParams(res);
 
@@ -137,7 +139,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -156,7 +158,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
                 {"Lang", "TR"},
             };
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> dic = new Dictionary<string, object>();
 
@@ -192,7 +194,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -209,7 +211,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
                 {"Lang", "TR"},
             };
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> dic = new Dictionary<string, object>();
 
@@ -247,7 +249,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
         }
 
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -297,22 +299,22 @@ namespace CP.VPOS.Banks.QNBFinansbank
             }
 
 
-            return response;
+            return Task.FromResult<SaleResponse>(response);
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AllInstallmentQueryResponse>(null);
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<BINInstallmentQueryResponse>(null);
         }
 
         private string SHA1Base64(string text)
@@ -327,7 +329,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
             }
         }
 
-        private string Request2(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null)
+        private async Task<string> Request2Async(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             string responseString = "";
 
@@ -338,8 +340,8 @@ namespace CP.VPOS.Banks.QNBFinansbank
             using (var req = new FormUrlEncodedContent(param))
             {
                 req.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded") { CharSet = Encoding.UTF8.WebName };
-                var response = client.PostAsync(link ?? (auth.testPlatform ? _urlAPITest : _urlAPILive), req).Result;
-                byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                var response = await client.PostAsync(link ?? (auth.testPlatform ? _urlAPITest : _urlAPILive), req, cancellationToken).ConfigureAwait(false);
+                byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                 responseString = Encoding.UTF8.GetString(responseByte);
             }
 
@@ -347,7 +349,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
         }
 
 
-        private string Request(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null)
+        private Task<string> RequestAsync(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             string requueststring = string.Join("&", param.Select(kvp => $"{kvp.Key}={kvp.Value}"));
 
@@ -372,7 +374,7 @@ namespace CP.VPOS.Banks.QNBFinansbank
             System.IO.StreamReader responsereader = new System.IO.StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8);
             string gelenresp = responsereader.ReadToEnd();
 
-            return gelenresp;
+            return Task.FromResult<string>(gelenresp);
         }
 
         private string getUserMessage(string ErrorCode)
@@ -557,9 +559,9 @@ namespace CP.VPOS.Banks.QNBFinansbank
             return desc;
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 }

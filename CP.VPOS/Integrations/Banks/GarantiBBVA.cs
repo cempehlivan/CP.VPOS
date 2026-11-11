@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -32,10 +34,10 @@ namespace CP.VPOS.Banks.GarantiBBVA
          */
 
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             if (request.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             SaleResponse response = null;
 
@@ -103,7 +105,7 @@ namespace CP.VPOS.Banks.GarantiBBVA
 
             string xml = param.toXml("GVPSRequest", "utf-8");
 
-            string resp = SendHttpRequest(auth.testPlatform ? _urlAPITest : _urlAPILive, "POST", xml);
+            string resp = await SendHttpRequestAsync(auth.testPlatform ? _urlAPITest : _urlAPILive, xml, cancellationToken).ConfigureAwait(false);
 
             var dic = FoundationHelper.XmltoDictionary(resp, "GVPSResponse");
 
@@ -155,7 +157,7 @@ namespace CP.VPOS.Banks.GarantiBBVA
             return response;
         }
 
-        public SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = null;
 
@@ -207,7 +209,7 @@ namespace CP.VPOS.Banks.GarantiBBVA
             param["secure3dhash"] = hash;
 
 
-            string resp = this.Request(param, auth.testPlatform ? _url3Dtest : _url3DLive);
+            string resp = await this.RequestAsync(param, auth.testPlatform ? _url3Dtest : _url3DLive, cancellationToken).ConfigureAwait(false);
 
             string _orginalResp = resp;
 
@@ -249,11 +251,11 @@ namespace CP.VPOS.Banks.GarantiBBVA
             }
             else if (resp.Contains($"action=\"{request.payment3D.returnURL}\""))
             {
-                return Sale3DResponse(new Sale3DResponseRequest
+                return await Sale3DResponseAsync(new Sale3DResponseRequest
                 {
                     currency = request.saleInfo.currency,
                     responseArray = respdic
-                }, auth);
+                }, auth, cancellationToken).ConfigureAwait(false);
             }
             else if (respdic.ContainsKey("TermUrl") && respdic.ContainsKey("MD") && respdic.ContainsKey("PaReq"))
             {
@@ -289,12 +291,12 @@ namespace CP.VPOS.Banks.GarantiBBVA
             return response;
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<BINInstallmentQueryResponse>(null);
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = null;
 
@@ -411,7 +413,7 @@ namespace CP.VPOS.Banks.GarantiBBVA
 
             string xml = param.toXml("GVPSRequest", "utf-8");
 
-            string resp = SendHttpRequest(auth.testPlatform ? _urlAPITest : _urlAPILive, "POST", xml);
+            string resp = await SendHttpRequestAsync(auth.testPlatform ? _urlAPITest : _urlAPILive, xml, cancellationToken).ConfigureAwait(false);
 
             var dic = FoundationHelper.XmltoDictionary(resp, "GVPSResponse");
 
@@ -460,24 +462,24 @@ namespace CP.VPOS.Banks.GarantiBBVA
         }
 
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AllInstallmentQueryResponse>(null);
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            return Task.FromResult<CancelResponse>(new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" });
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            return Task.FromResult<RefundResponse>(new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" });
         }
 
         private string GetSHA1(string SHA1Data)
@@ -507,7 +509,7 @@ namespace CP.VPOS.Banks.GarantiBBVA
             return s.ToString();
         }
 
-        private string Request(Dictionary<string, string> param, string link)
+        private async Task<string> RequestAsync(Dictionary<string, string> param, string link, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -519,47 +521,23 @@ namespace CP.VPOS.Banks.GarantiBBVA
                 var request = new FormUrlEncodedContent(param);
                 request.Headers.ContentType.MediaType = "application/x-www-form-urlencoded";
                 request.Headers.ContentType.CharSet = "utf-8";
-                var response = client.PostAsync(link, request).Result;
-                responseString = response.Content.ReadAsStringAsync().Result;
+                var response = await client.PostAsync(link, request, cancellationToken).ConfigureAwait(false);
+                responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
             return responseString;
         }
 
-        private string SendHttpRequest(string Host, string Method, string Params)
+        private Task<string> SendHttpRequestAsync(string Host, string Params, CancellationToken cancellationToken)
         {
-            ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            System.Net.ServicePointManager.Expect100Continue = false;
+            byte[] bytes = new ASCIIEncoding().GetBytes(Params);
 
-            var returnSrting = String.Empty;
-
-#pragma warning disable SYSLIB0014
-            var request = (HttpWebRequest)WebRequest.Create(Host);
-#pragma warning restore SYSLIB0014
-            request.Timeout = 30000;
-            request.Method = Method;
-
-            var bytes = new ASCIIEncoding().GetBytes(Params);
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = Params.Length;
-
-            using (var requestStream = request.GetRequestStream())
-            {
-                requestStream.Write(bytes, 0, bytes.Length);
-                requestStream.Close();
-            }
-
-            using (StreamReader sr = new StreamReader(request.GetResponse().GetResponseStream()))
-            {
-                returnSrting = sr.ReadToEnd();
-            }
-
-            return returnSrting;
+            return WebRequestHelper.PostAsync(Host, bytes, "application/x-www-form-urlencoded", System.Text.Encoding.UTF8, 30000, cancellationToken);
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 

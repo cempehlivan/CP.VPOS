@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
@@ -20,6 +22,18 @@ namespace CP.VPOS
         /// <param name="auth">Banka API bilgileri</param>
         /// <returns></returns>
         public static SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        {
+            return AsyncHelper.RunSync(() => SaleAsync(request, auth));
+        }
+
+        /// <summary>
+        /// Karttan çekim yapmak için kullanılır. 3D çekim yapmak için "SaleRequest.payment3D.confirm = true" olarak gönderilmelidir.
+        /// </summary>
+        /// <param name="request">Kart çekim işlemine ait işlem bilgileri</param>
+        /// <param name="auth">Banka API bilgileri</param>
+        /// <param name="cancellationToken">İşlemi iptal etmek için kullanılır</param>
+        /// <returns></returns>
+        public static async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
         {
             request.Validate();
             request.saleInfo.Validate();
@@ -63,7 +77,7 @@ namespace CP.VPOS
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
-            return vPOSService.Sale(request, auth);
+            return await vPOSService.SaleAsync(request, auth, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -71,6 +85,17 @@ namespace CP.VPOS
         /// </summary>
         /// <param name="request"></param>
         public static SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        {
+            return AsyncHelper.RunSync(() => Sale3DResponseAsync(request, auth));
+        }
+
+        /// <summary>
+        /// 3D yapılan çekim işlemi sonucunu döner
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="auth">Banka API bilgileri</param>
+        /// <param name="cancellationToken">İşlemi iptal etmek için kullanılır</param>
+        public static async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
         {
             request.Validate();
             auth.Validate();
@@ -105,7 +130,7 @@ namespace CP.VPOS
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
-            return vPOSService.Sale3DResponse(request, auth);
+            return await vPOSService.Sale3DResponseAsync(request, auth, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -116,12 +141,24 @@ namespace CP.VPOS
         /// <returns></returns>
         public static BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
+            return AsyncHelper.RunSync(() => BINInstallmentQueryAsync(request, auth));
+        }
+
+        /// <summary>
+        /// Karta yapılabilecek taksit sayısını döner
+        /// </summary>
+        /// <param name="request">Kart bilgisi</param>
+        /// <param name="auth">Banka API bilgileri</param>
+        /// <param name="cancellationToken">İşlemi iptal etmek için kullanılır</param>
+        /// <returns></returns>
+        public static async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
+        {
             request.Validate();
             auth.Validate();
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
-            return vPOSService.BINInstallmentQuery(request, auth);
+            return await vPOSService.BINInstallmentQueryAsync(request, auth, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -132,12 +169,24 @@ namespace CP.VPOS
         /// <returns></returns>
         public static AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
+            return AsyncHelper.RunSync(() => AllInstallmentQueryAsync(request, auth));
+        }
+
+        /// <summary>
+        /// Tutar ile taksit sayısını döner
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="auth">Banka API bilgileri</param>
+        /// <param name="cancellationToken">İşlemi iptal etmek için kullanılır</param>
+        /// <returns></returns>
+        public static async Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
+        {
             request.Validate();
             auth.Validate();
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
-            return vPOSService.AllInstallmentQuery(request, auth);
+            return await vPOSService.AllInstallmentQueryAsync(request, auth, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -148,13 +197,25 @@ namespace CP.VPOS
         /// <returns></returns>
         public static AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
         {
+            return AsyncHelper.RunSync(() => AdditionalInstallmentQueryAsync(request, auth));
+        }
+
+        /// <summary>
+        /// Satış yapılabilecek ek taksit kampanyalarını döner
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="auth">Banka API bilgileri</param>
+        /// <param name="cancellationToken">İşlemi iptal etmek için kullanılır</param>
+        /// <returns></returns>
+        public static async Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
+        {
             request.Validate();
             request.saleInfo.Validate();
             auth.Validate();
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
-            return vPOSService.AdditionalInstallmentQuery(request, auth);
+            return await vPOSService.AdditionalInstallmentQueryAsync(request, auth, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -165,12 +226,24 @@ namespace CP.VPOS
         /// <returns></returns>
         public static CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
         {
+            return AsyncHelper.RunSync(() => CancelAsync(request, auth));
+        }
+
+        /// <summary>
+        ///  Ödeme iptal etme. Aynı gün yapılan ödemeler için kullanılabilir. Çekilen tutarın tamamı iptal edilir ve müşteri ekstresine hiçbir işlem yansımaz.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="auth">Banka API bilgileri</param>
+        /// <param name="cancellationToken">İşlemi iptal etmek için kullanılır</param>
+        /// <returns></returns>
+        public static async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
+        {
             request.Validate();
             auth.Validate();
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
-            return vPOSService.Cancel(request, auth);
+            return await vPOSService.CancelAsync(request, auth, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -181,12 +254,24 @@ namespace CP.VPOS
         /// <returns></returns>
         public static RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
         {
+            return AsyncHelper.RunSync(() => RefundAsync(request, auth));
+        }
+
+        /// <summary>
+        /// Ödeme iade etme. Belirtilen tutar kadar kısmi iade işlemi yapılır
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="auth"></param>
+        /// <param name="cancellationToken">İşlemi iptal etmek için kullanılır</param>
+        /// <returns></returns>
+        public static async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
+        {
             request.Validate();
             auth.Validate();
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
-            return vPOSService.Refund(request, auth);
+            return await vPOSService.RefundAsync(request, auth, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -289,12 +374,17 @@ namespace CP.VPOS
         /// <returns></returns>
         public static SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
         {
+            return AsyncHelper.RunSync(() => SaleQueryAsync(request, auth));
+        }
+
+        public static async Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken = default(CancellationToken))
+        {
             request.Validate();
             auth.Validate();
 
             IVirtualPOSService vPOSService = GetVirtualPOSService(auth.bankCode);
 
-            return vPOSService.SaleQuery(request, auth);
+            return await vPOSService.SaleQueryAsync(request, auth, cancellationToken).ConfigureAwait(false);
         }
         */
 

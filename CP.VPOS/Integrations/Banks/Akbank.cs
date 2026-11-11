@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -24,7 +26,7 @@ namespace CP.VPOS.Banks.Akbank
         private readonly string _url3DTest = "https://virtualpospaymentgatewaypre.akbank.com/securepay";
         private readonly string _url3DLive = "https://virtualpospaymentgateway.akbank.com/securepay";
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -32,7 +34,7 @@ namespace CP.VPOS.Banks.Akbank
             request.saleInfo.installment = request.saleInfo.installment > 1 ? request.saleInfo.installment : (sbyte)1;
 
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             response.orderNumber = request.orderNumber;
 
@@ -75,7 +77,7 @@ namespace CP.VPOS.Banks.Akbank
 
             string link = auth.testPlatform ? _urlAPITest : _urlAPILive;
 
-            string responseStr = Request(req, link, auth);
+            string responseStr = await RequestAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -119,7 +121,7 @@ namespace CP.VPOS.Banks.Akbank
             return response;
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
             response.orderNumber = request.orderNumber;
@@ -177,7 +179,7 @@ namespace CP.VPOS.Banks.Akbank
 
             string link = auth.testPlatform ? _url3DTest : _url3DLive;
 
-            string responseStr = RequestForm(req, link);
+            string responseStr = await RequestFormAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             response.privateResponse = new Dictionary<string, object>
             {
@@ -205,7 +207,7 @@ namespace CP.VPOS.Banks.Akbank
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -250,7 +252,7 @@ namespace CP.VPOS.Banks.Akbank
 
                 string link = auth.testPlatform ? _urlAPITest : _urlAPILive;
 
-                string responseStr = Request(req, link, auth);
+                string responseStr = await RequestAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -308,7 +310,7 @@ namespace CP.VPOS.Banks.Akbank
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -335,7 +337,7 @@ namespace CP.VPOS.Banks.Akbank
 
             string link = auth.testPlatform ? _urlAPITest : _urlAPILive;
 
-            string responseStr = Request(req, link, auth);
+            string responseStr = await RequestAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -361,7 +363,7 @@ namespace CP.VPOS.Banks.Akbank
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -394,7 +396,7 @@ namespace CP.VPOS.Banks.Akbank
 
             string link = auth.testPlatform ? _urlAPITest : _urlAPILive;
 
-            string responseStr = Request(req, link, auth);
+            string responseStr = await RequestAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -421,26 +423,26 @@ namespace CP.VPOS.Banks.Akbank
             return response;
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
 
-            return response;
+            return Task.FromResult<AllInstallmentQueryResponse>(response);
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse();
 
-            return response;
+            return Task.FromResult<BINInstallmentQueryResponse>(response);
         }
 
-        private string Request(Dictionary<string, object> param, string link, VirtualPOSAuth auth)
+        private async Task<string> RequestAsync(Dictionary<string, object> param, string link, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -460,8 +462,8 @@ namespace CP.VPOS.Banks.Akbank
 
                     req.Headers.Add("auth-hash", hash);
 
-                    var response = client.PostAsync(link, req).Result;
-                    byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                    var response = await client.PostAsync(link, req, cancellationToken).ConfigureAwait(false);
+                    byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     responseString = Encoding.UTF8.GetString(responseByte);
                 }
             }
@@ -470,7 +472,7 @@ namespace CP.VPOS.Banks.Akbank
             return responseString;
         }
 
-        private string RequestForm(Dictionary<string, string> param, string link)
+        private async Task<string> RequestFormAsync(Dictionary<string, string> param, string link, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -481,8 +483,8 @@ namespace CP.VPOS.Banks.Akbank
             using (var req = new FormUrlEncodedContent(param))
             {
                 req.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded") { CharSet = Encoding.UTF8.WebName };
-                var response = client.PostAsync(link, req).Result;
-                byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                var response = await client.PostAsync(link, req, cancellationToken).ConfigureAwait(false);
+                byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                 responseString = Encoding.UTF8.GetString(responseByte);
             }
 
@@ -511,7 +513,7 @@ namespace CP.VPOS.Banks.Akbank
 
 
             string hash = hashToString(builder.ToString(), Encoding.UTF8.GetBytes(secretKey));
-            Console.WriteLine(hash);
+            
             return requestMap["hash"] == hash;
         }
 
@@ -532,9 +534,9 @@ namespace CP.VPOS.Banks.Akbank
 #pragma warning restore SYSLIB0023
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 }

@@ -1,12 +1,14 @@
-﻿using CP.VPOS.Infrastructures.Iyzico.Request;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using CP.VPOS.Infrastructures.Iyzico.Request;
 
 namespace CP.VPOS.Infrastructures.Iyzico.Model
 {
     internal class Payment : PaymentResource
     {
-        public static Payment Create(CreatePaymentRequest request, Options options)
+        public static Task<Payment> CreateAsync(CreatePaymentRequest request, Options options, CancellationToken cancellationToken)
         {
-            return RestHttpClient.Create().Post<Payment>(options.BaseUrl + "/payment/auth", GetHttpHeaders(request, options), request);
+            return RestHttpClient.Create().PostAsync<Payment>(options.BaseUrl + "/payment/auth", GetHttpHeaders(request, options), request, cancellationToken);
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CP.VPOS.Banks.Paynet
@@ -20,10 +21,10 @@ namespace CP.VPOS.Banks.Paynet
         private readonly string _urlAPITest = "https://pts-api.paynet.com.tr";
         private readonly string _urlAPILive = "https://api.paynet.com.tr";
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             SaleResponse response = new SaleResponse
             {
@@ -70,7 +71,7 @@ namespace CP.VPOS.Banks.Paynet
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/v2/transaction/payment";
 
-            string responseStr = RequestJson(req, link, auth);
+            string responseStr = await RequestJsonAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -93,7 +94,7 @@ namespace CP.VPOS.Banks.Paynet
             return response;
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -141,7 +142,7 @@ namespace CP.VPOS.Banks.Paynet
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/v2/transaction/tds_initial";
 
-            string responseStr = RequestJson(req, link, auth);
+            string responseStr = await RequestJsonAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -161,7 +162,7 @@ namespace CP.VPOS.Banks.Paynet
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse { statu = SaleResponseStatu.Error, message = "İşlem sırasında bilinmeyen bir hata oluştu." };
 
@@ -180,7 +181,7 @@ namespace CP.VPOS.Banks.Paynet
 
                 string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/v2/transaction/tds_charge";
 
-                string responseStr = RequestJson(req, link, auth);
+                string responseStr = await RequestJsonAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -217,7 +218,7 @@ namespace CP.VPOS.Banks.Paynet
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error, message = "İptal işlemi sırasında bir hata oluştu" };
 
@@ -227,7 +228,7 @@ namespace CP.VPOS.Banks.Paynet
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/v1/transaction/reversed_request";
 
-            string responseStr = RequestJson(req, link, auth);
+            string responseStr = await RequestJsonAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -247,7 +248,7 @@ namespace CP.VPOS.Banks.Paynet
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error, message = "İade işlemi sırasında bir hata oluştu" };
 
@@ -261,7 +262,7 @@ namespace CP.VPOS.Banks.Paynet
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/v1/transaction/reversed_request";
 
-            string responseStr = RequestJson(req, link, auth);
+            string responseStr = await RequestJsonAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -282,7 +283,7 @@ namespace CP.VPOS.Banks.Paynet
             return response;
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
 
@@ -292,12 +293,12 @@ namespace CP.VPOS.Banks.Paynet
 
             foreach (var brand in bankCreditCardBrandList)
             {
-                var installmentsInfo = BINInstallmentQuery(new BINInstallmentQueryRequest
+                var installmentsInfo = await BINInstallmentQueryAsync(new BINInstallmentQueryRequest
                 {
                     BIN = brand.binNumber,
                     amount = request.amount,
                     currency = request.currency ?? Currency.TRY,
-                }, auth);
+                }, auth, cancellationToken).ConfigureAwait(false);
 
                 if (installmentsInfo.confirm && installmentsInfo.installmentList?.Any() == true)
                 {
@@ -320,7 +321,7 @@ namespace CP.VPOS.Banks.Paynet
             return response;
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse { confirm = false, installmentList = new List<installment>() };
 
@@ -334,7 +335,7 @@ namespace CP.VPOS.Banks.Paynet
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/v1/ratio/Get";
 
-            string responseStr = RequestJson(req, link, auth);
+            string responseStr = await RequestJsonAsync(req, link, auth, cancellationToken).ConfigureAwait(false);
 
             PaynetBINInstallmentModel binResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<PaynetBINInstallmentModel>(responseStr);
 
@@ -370,17 +371,17 @@ namespace CP.VPOS.Banks.Paynet
             return response;
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<SaleQueryResponse>(null);
         }
 
-        private string RequestJson(Dictionary<string, object> param, string link, VirtualPOSAuth auth)
+        private async Task<string> RequestJsonAsync(Dictionary<string, object> param, string link, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -398,8 +399,8 @@ namespace CP.VPOS.Banks.Paynet
 
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth.merchantPassword);
 
-                    var response = client.PostAsync(link, req).Result;
-                    byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                    var response = await client.PostAsync(link, req, cancellationToken).ConfigureAwait(false);
+                    byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     responseString = Encoding.UTF8.GetString(responseByte);
                 }
             }

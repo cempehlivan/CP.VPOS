@@ -4,6 +4,8 @@ using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using CP.VPOS.Services;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -18,7 +20,7 @@ namespace CP.VPOS.Banks.Moka
         private readonly string _urlAPITest = "https://service.refmoka.com";
         private readonly string _urlAPILive = "https://service.moka.com";
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
             response.statu = SaleResponseStatu.Error;
@@ -76,7 +78,7 @@ namespace CP.VPOS.Banks.Moka
             if (request.payment3D?.confirm == true)
                 link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/PaymentDealer/DoDirectPaymentThreeD";
 
-            string responseStr = Request(req, link);
+            string responseStr = await RequestAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -138,7 +140,7 @@ namespace CP.VPOS.Banks.Moka
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
             response.statu = SaleResponseStatu.Error;
@@ -212,7 +214,7 @@ namespace CP.VPOS.Banks.Moka
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/PaymentDealer/GetDealerPaymentTrxDetailList";
 
-            string responseStr = Request(req, link);
+            string responseStr = await RequestAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -238,7 +240,7 @@ namespace CP.VPOS.Banks.Moka
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -271,7 +273,7 @@ namespace CP.VPOS.Banks.Moka
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/PaymentDealer/DoVoid";
 
-            string responseStr = Request(req, link);
+            string responseStr = await RequestAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -317,7 +319,7 @@ namespace CP.VPOS.Banks.Moka
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse();
 
@@ -349,7 +351,7 @@ namespace CP.VPOS.Banks.Moka
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/PaymentDealer/DoCreateRefundRequest";
 
-            string responseStr = Request(req, link);
+            string responseStr = await RequestAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -395,7 +397,7 @@ namespace CP.VPOS.Banks.Moka
             return response;
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             // Tami, tüm taksit listesini API üzerinden sağlamamaktadır. Bu nedenle, burada elimizdeki bin listesindeki kart programlarını listeleyip her kart programı için bir kartı tek tek sorguluyoruz.
             // Destek eklenirse API üzerinden taksit bilgileri de çekilebilir.
@@ -408,12 +410,12 @@ namespace CP.VPOS.Banks.Moka
 
             foreach (var brand in bankCreditCardBrandList)
             {
-                var installmentsInfo = BINInstallmentQuery(new BINInstallmentQueryRequest
+                var installmentsInfo = await BINInstallmentQueryAsync(new BINInstallmentQueryRequest
                 {
                     BIN = brand.binNumber,
                     amount = request.amount,
                     currency = request.currency ?? Currency.TRY,
-                }, auth);
+                }, auth, cancellationToken).ConfigureAwait(false);
 
                 if (installmentsInfo.confirm && installmentsInfo.installmentList?.Any() == true)
                 {
@@ -436,11 +438,11 @@ namespace CP.VPOS.Banks.Moka
             return response;
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse { confirm = false, installmentList = new List<installment>() };
 
-            var bankCardInformation = GetBankCardInformation(request, auth);
+            var bankCardInformation = await GetBankCardInformationAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
 
             if (bankCardInformation?.Data?.CreditType == "CreditCard")
@@ -451,7 +453,7 @@ namespace CP.VPOS.Banks.Moka
                 {
                     for (int i = 2; i <= maxInstallmentNumber; i++)
                     {
-                        var installmentModel = GetIsInstallment(request, auth, i);
+                        var installmentModel = await GetIsInstallmentAsync(request, auth, i, cancellationToken).ConfigureAwait(false);
 
                         float commissionRate = 0;
 
@@ -476,12 +478,12 @@ namespace CP.VPOS.Banks.Moka
             return response;
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new AdditionalInstallmentQueryResponse { confirm = false };
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(new AdditionalInstallmentQueryResponse { confirm = false });
         }
 
-        private GetIsInstallmentModel GetIsInstallment(BINInstallmentQueryRequest request, VirtualPOSAuth auth, int installmentCount)
+        private async Task<GetIsInstallmentModel> GetIsInstallmentAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, int installmentCount, CancellationToken cancellationToken)
         {
             GetIsInstallmentModel response = null;
 
@@ -515,7 +517,7 @@ namespace CP.VPOS.Banks.Moka
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/PaymentDealer/DoCalcPaymentAmount";
 
-            string responseStr = Request(req, link);
+            string responseStr = await RequestAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             if (!string.IsNullOrWhiteSpace(responseStr))
                 response = Newtonsoft.Json.JsonConvert.DeserializeObject<GetIsInstallmentModel>(responseStr);
@@ -524,7 +526,7 @@ namespace CP.VPOS.Banks.Moka
             return response;
         }
 
-        private GetBankCardInformationModel GetBankCardInformation(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        private async Task<GetBankCardInformationModel> GetBankCardInformationAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             GetBankCardInformationModel response = null;
 
@@ -554,7 +556,7 @@ namespace CP.VPOS.Banks.Moka
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/PaymentDealer/GetBankCardInformation";
 
-            string responseStr = Request(req, link);
+            string responseStr = await RequestAsync(req, link, cancellationToken).ConfigureAwait(false);
 
             if (!string.IsNullOrWhiteSpace(responseStr))
                 response = Newtonsoft.Json.JsonConvert.DeserializeObject<GetBankCardInformationModel>(responseStr);
@@ -652,7 +654,7 @@ namespace CP.VPOS.Banks.Moka
                 return "";
         }
 
-        private string Request(Dictionary<string, object> param, string link)
+        private async Task<string> RequestAsync(Dictionary<string, object> param, string link, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -668,8 +670,8 @@ namespace CP.VPOS.Banks.Moka
                 {
                     req.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json") { CharSet = Encoding.UTF8.WebName };
 
-                    var response = client.PostAsync(link, req).Result;
-                    byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                    var response = await client.PostAsync(link, req, cancellationToken).ConfigureAwait(false);
+                    byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     responseString = Encoding.UTF8.GetString(responseByte);
                 }
             }
@@ -704,9 +706,9 @@ namespace CP.VPOS.Banks.Moka
             return hashedText;
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 

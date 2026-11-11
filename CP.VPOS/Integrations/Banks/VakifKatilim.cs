@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -34,10 +36,10 @@ namespace CP.VPOS.Banks.VakifKatilim
             RefundServiceUrl = "https://boa.vakifkatilim.com.tr/VirtualPOS.Gateway/Home/PartialDrawBack"
         };
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             SaleResponse response = new SaleResponse
             {
@@ -79,7 +81,7 @@ namespace CP.VPOS.Banks.VakifKatilim
 
             string xml = param.toXml("VPosMessageContract");
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlTest.Non3DPayGateUrl : _urlLive.Non3DPayGateUrl));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlTest.Non3DPayGateUrl : _urlLive.Non3DPayGateUrl), cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respDic = FoundationHelper.XmltoDictionary(resp, "VPosTransactionResponseContract");
 
@@ -110,7 +112,7 @@ namespace CP.VPOS.Banks.VakifKatilim
             return response;
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -159,7 +161,7 @@ namespace CP.VPOS.Banks.VakifKatilim
 
             string xml = param.toXml("VPosMessageContract");
 
-            string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlTest.ThreeDModelPayGateUrl : _urlLive.ThreeDModelPayGateUrl));
+            string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlTest.ThreeDModelPayGateUrl : _urlLive.ThreeDModelPayGateUrl), cancellationToken).ConfigureAwait(false);
 
             //if(resp.Contains("action\""+ request.payment3D.returnURL + "\""))
             //{
@@ -172,7 +174,7 @@ namespace CP.VPOS.Banks.VakifKatilim
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse
             {
@@ -232,7 +234,7 @@ namespace CP.VPOS.Banks.VakifKatilim
 
                 string xml = param.toXml("VPosMessageContract");
 
-                string resp = this.xmlRequest(xml, (auth.testPlatform ? _urlTest.ThreeDModelProvisionGateUrl : _urlLive.ThreeDModelProvisionGateUrl));
+                string resp = await this.xmlRequestAsync(xml, (auth.testPlatform ? _urlTest.ThreeDModelProvisionGateUrl : _urlLive.ThreeDModelProvisionGateUrl), cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, object> provisionresDic = FoundationHelper.XmltoDictionary(resp, "VPosTransactionResponseContract");
 
@@ -278,34 +280,34 @@ namespace CP.VPOS.Banks.VakifKatilim
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            return Task.FromResult<CancelResponse>(new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" });
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka iade iptal metodu tanımlanmamış!" };
+            return Task.FromResult<RefundResponse>(new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka iade iptal metodu tanımlanmamış!" });
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AllInstallmentQueryResponse>(null);
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<BINInstallmentQueryResponse>(null);
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<SaleQueryResponse>(null);
         }
 
         private string SHA1Base64(string text)
@@ -320,26 +322,11 @@ namespace CP.VPOS.Banks.VakifKatilim
             }
         }
 
-        private string xmlRequest(string xml, string link)
+        private Task<string> xmlRequestAsync(string xml, string link, CancellationToken cancellationToken)
         {
-            ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            System.Net.ServicePointManager.Expect100Continue = false;
-#pragma warning disable SYSLIB0014
-            System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(link);
-#pragma warning restore SYSLIB0014
             byte[] postdatabytes = System.Text.Encoding.UTF8.GetBytes(xml);
-            request.Method = "POST";
-            request.ContentType = "application/xml";
-            request.ContentLength = postdatabytes.Length;
-            System.IO.Stream requeststream = request.GetRequestStream();
-            requeststream.Write(postdatabytes, 0, postdatabytes.Length);
-            requeststream.Close();
 
-            System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)request.GetResponse();
-            System.IO.StreamReader responsereader = new System.IO.StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8);
-            string gelenXml = responsereader.ReadToEnd();
-
-            return gelenXml;
+            return WebRequestHelper.PostAsync(link, postdatabytes, "application/xml", System.Text.Encoding.UTF8, 100000, cancellationToken);
         }
     }
 

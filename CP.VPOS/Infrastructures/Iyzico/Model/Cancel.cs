@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using CP.VPOS.Infrastructures.Iyzico.Request;
 
 namespace CP.VPOS.Infrastructures.Iyzico.Model
@@ -12,9 +14,9 @@ namespace CP.VPOS.Infrastructures.Iyzico.Model
         public String AuthCode { get; set; }
         public String HostReference { get; set; }
 
-        public static Cancel Create(CreateCancelRequest request, Options options)
+        public static Task<Cancel> CreateAsync(CreateCancelRequest request, Options options, CancellationToken cancellationToken)
         {
-            return RestHttpClient.Create().Post<Cancel>(options.BaseUrl + "/payment/cancel", GetHttpHeaders(request, options), request);
+            return RestHttpClient.Create().PostAsync<Cancel>(options.BaseUrl + "/payment/cancel", GetHttpHeaders(request, options), request, cancellationToken);
         }
     }
 }

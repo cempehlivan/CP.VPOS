@@ -8,6 +8,8 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -24,7 +26,7 @@ namespace CP.VPOS.Banks.Tami
         private readonly string _urlAPITest = "https://sandbox-paymentapi.tami.com.tr";
         private readonly string _urlAPILive = "https://paymentapi.tami.com.tr";
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
             response.statu = SaleResponseStatu.Error;
@@ -103,7 +105,7 @@ namespace CP.VPOS.Banks.Tami
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/payment/auth";
 
-            string responseStr = Request(saleDic, link, auth);
+            string responseStr = await RequestAsync(saleDic, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -162,7 +164,7 @@ namespace CP.VPOS.Banks.Tami
             }
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -186,7 +188,7 @@ namespace CP.VPOS.Banks.Tami
 
                 string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/payment/complete-3ds";
 
-                string responseStr = Request(saleDic, link, auth);
+                string responseStr = await RequestAsync(saleDic, link, auth, cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -233,7 +235,7 @@ namespace CP.VPOS.Banks.Tami
             }
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -248,7 +250,7 @@ namespace CP.VPOS.Banks.Tami
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/payment/reverse";
 
-            string responseStr = Request(saleDic, link, auth);
+            string responseStr = await RequestAsync(saleDic, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -275,7 +277,7 @@ namespace CP.VPOS.Banks.Tami
             }
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -291,7 +293,7 @@ namespace CP.VPOS.Banks.Tami
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/payment/reverse";
 
-            string responseStr = Request(saleDic, link, auth);
+            string responseStr = await RequestAsync(saleDic, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -319,7 +321,7 @@ namespace CP.VPOS.Banks.Tami
             }
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             // Tami, tüm taksit listesini API üzerinden sağlamamaktadır. Bu nedenle, burada elimizdeki bin listesindeki kart programlarını listeleyip her kart programı için bir kartı tek tek sorguluyoruz.
             // Destek eklenirse API üzerinden taksit bilgileri de çekilebilir.
@@ -332,12 +334,12 @@ namespace CP.VPOS.Banks.Tami
 
             foreach (var brand in bankCreditCardBrandList)
             {
-                var installmentsInfo = BINInstallmentQuery(new BINInstallmentQueryRequest
+                var installmentsInfo = await BINInstallmentQueryAsync(new BINInstallmentQueryRequest
                 {
                     BIN = brand.binNumber,
                     amount = request.amount,
                     currency = request.currency ?? Currency.TRY,
-                }, auth);
+                }, auth, cancellationToken).ConfigureAwait(false);
 
                 if (installmentsInfo.confirm && installmentsInfo.installmentList?.Any() == true)
                 {
@@ -360,7 +362,7 @@ namespace CP.VPOS.Banks.Tami
             return response;
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             List<installment> installments = new List<installment>();
 
@@ -376,7 +378,7 @@ namespace CP.VPOS.Banks.Tami
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/installment/installment-info";
 
-            string responseStr = Request(saleDic, link, auth);
+            string responseStr = await RequestAsync(saleDic, link, auth, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -414,18 +416,18 @@ namespace CP.VPOS.Banks.Tami
             };
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
 
-        private string Request(Dictionary<string, object> param, string link, VirtualPOSAuth auth)
+        private async Task<string> RequestAsync(Dictionary<string, object> param, string link, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             string responseString = "";
 
@@ -455,9 +457,9 @@ namespace CP.VPOS.Banks.Tami
                     client.DefaultRequestHeaders.Add("PG-Auth-Token", GetPGAuthToken(auth));
                     client.DefaultRequestHeaders.Add("correlationId", $"Correlation{Guid.NewGuid().ToString("N")}");
 
-                    var response = client.PostAsync(link, req).Result;
+                    var response = await client.PostAsync(link, req, cancellationToken).ConfigureAwait(false);
 
-                    byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                    byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
 
                     responseString = Encoding.UTF8.GetString(responseByte);
                 }

@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -25,13 +27,13 @@ namespace CP.VPOS.Banks.YapiKrediBankasi
         //Panel: https://setmpos.ykb.com/PosnetF1/Login.jsp
 
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             if (request.saleInfo.installment == 1)
                 request.saleInfo.installment = 0;
 
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             SaleResponse response = new SaleResponse();
 
@@ -56,7 +58,7 @@ namespace CP.VPOS.Banks.YapiKrediBankasi
 </posnetRequest> " }
             };
 
-            string resp1 = this.Request(req1, auth.testPlatform ? _urlAPITest : _urlAPILive);
+            string resp1 = await this.RequestAsync(req1, auth.testPlatform ? _urlAPITest : _urlAPILive, cancellationToken).ConfigureAwait(false);
 
 
             Dictionary<string, object> respdic = FoundationHelper.XmltoDictionary(resp1, "posnetResponse");
@@ -99,7 +101,7 @@ namespace CP.VPOS.Banks.YapiKrediBankasi
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -125,7 +127,7 @@ namespace CP.VPOS.Banks.YapiKrediBankasi
 </posnetRequest>" },
             };
 
-            string resp = this.Request(keyValuePairs, auth.testPlatform ? _urlAPITest : _urlAPILive);
+            string resp = await this.RequestAsync(keyValuePairs, auth.testPlatform ? _urlAPITest : _urlAPILive, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> dic = FoundationHelper.XmltoDictionary(resp, "posnetResponse");
 
@@ -191,7 +193,7 @@ namespace CP.VPOS.Banks.YapiKrediBankasi
 
             };
 
-            string resp3 = this.Request(req3, auth.testPlatform ? _urlAPITest : _urlAPILive);
+            string resp3 = await this.RequestAsync(req3, auth.testPlatform ? _urlAPITest : _urlAPILive, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> respdic = FoundationHelper.XmltoDictionary(resp3, "posnetResponse");
 
@@ -221,17 +223,17 @@ namespace CP.VPOS.Banks.YapiKrediBankasi
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            return Task.FromResult<CancelResponse>(new CancelResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" });
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" };
+            return Task.FromResult<RefundResponse>(new RefundResponse { statu = ResponseStatu.Error, message = "Bu banka için iptal metodu tanımlanmamış!" });
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -259,7 +261,7 @@ $@"<?xml version=""1.0"" encoding=""ISO-8859-9""?>
 </posnetRequest>" }
             };
 
-            string resp1 = this.Request(req1, auth.testPlatform ? _urlAPITest : _urlAPILive);
+            string resp1 = await this.RequestAsync(req1, auth.testPlatform ? _urlAPITest : _urlAPILive, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> xml1 = FoundationHelper.XmltoDictionary(resp1, "posnetResponse");
 
@@ -299,7 +301,7 @@ $@"<?xml version=""1.0"" encoding=""ISO-8859-9""?>
             return response;
         }
 
-        private string Request(Dictionary<string, string> param, string link)
+        private async Task<string> RequestAsync(Dictionary<string, string> param, string link, CancellationToken cancellationToken)
         {
             string responseString = "";
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
@@ -308,17 +310,18 @@ $@"<?xml version=""1.0"" encoding=""ISO-8859-9""?>
             using (HttpClient client = new HttpClient())
             using (var ykbRequest = new FormUrlEncodedContent(param))
             {
-                var response = client.PostAsync(link, ykbRequest).Result;
+                var response = await client.PostAsync(link, ykbRequest, cancellationToken).ConfigureAwait(false);
                 
                 try
                 {
-                    responseString = response.Content.ReadAsStringAsync().Result;
+                    responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
                 catch
                 {
-                    using (StreamReader reader = new StreamReader(response.Content.ReadAsStreamAsync().Result, Encoding.UTF8))
+                    using (Stream responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                    using (StreamReader reader = new StreamReader(responseStream, Encoding.UTF8))
                     {
-                        responseString = reader.ReadToEnd();
+                        responseString = await reader.ReadToEndAsync().ConfigureAwait(false);
                     }
                 }
             }
@@ -335,24 +338,24 @@ $@"<?xml version=""1.0"" encoding=""ISO-8859-9""?>
             }
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<BINInstallmentQueryResponse>(null);
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AllInstallmentQueryResponse>(null);
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 

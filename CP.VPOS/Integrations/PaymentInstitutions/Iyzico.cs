@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -20,7 +22,7 @@ namespace CP.VPOS.Banks.Iyzico
         private readonly string _urlAPITest = "https://sandbox-api.iyzipay.com";
         private readonly string _urlAPILive = "https://api.iyzipay.com";
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RetrieveInstallmentInfoRequest requestbin = new RetrieveInstallmentInfoRequest
             {
@@ -31,7 +33,7 @@ namespace CP.VPOS.Banks.Iyzico
             };
 
 
-            InstallmentInfo installmentInfo = InstallmentInfo.Retrieve(requestbin, GetOptions(auth));
+            InstallmentInfo installmentInfo = await InstallmentInfo.RetrieveAsync(requestbin, GetOptions(auth), cancellationToken).ConfigureAwait(false);
 
 
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse
@@ -68,7 +70,7 @@ namespace CP.VPOS.Banks.Iyzico
             return response;
         }
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
             response.orderNumber = request.orderNumber;
@@ -141,7 +143,7 @@ namespace CP.VPOS.Banks.Iyzico
             {
                 req.CallbackUrl = request.payment3D.returnURL;
 
-                ThreedsInitialize payment = ThreedsInitialize.Create(req, GetOptions(auth));
+                ThreedsInitialize payment = await ThreedsInitialize.CreateAsync(req, GetOptions(auth), cancellationToken).ConfigureAwait(false);
 
                 try
                 {
@@ -163,7 +165,7 @@ namespace CP.VPOS.Banks.Iyzico
             }
             else
             {
-                Payment payment = Payment.Create(req, GetOptions(auth));
+                Payment payment = await Payment.CreateAsync(req, GetOptions(auth), cancellationToken).ConfigureAwait(false);
 
                 try
                 {
@@ -188,7 +190,7 @@ namespace CP.VPOS.Banks.Iyzico
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -219,7 +221,7 @@ namespace CP.VPOS.Banks.Iyzico
                 paymentRequest.PaymentId = request.responseArray["paymentId"].cpToString();
                 paymentRequest.ConversationData = request.responseArray["conversationData"].cpToString();
 
-                ThreedsPayment threedsPayment = ThreedsPayment.Create(paymentRequest, GetOptions(auth));
+                ThreedsPayment threedsPayment = await ThreedsPayment.CreateAsync(paymentRequest, GetOptions(auth), cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, object> response_2 = JsonConvertHelper.Convert<Dictionary<string, object>>(JsonConvertHelper.Json(threedsPayment));
 
@@ -277,7 +279,7 @@ namespace CP.VPOS.Banks.Iyzico
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -292,7 +294,7 @@ namespace CP.VPOS.Banks.Iyzico
             req.PaymentId = request.transactionId;
             req.Ip = request.customerIPAddress;
 
-            CP.VPOS.Infrastructures.Iyzico.Model.Cancel _cancelResponse = CP.VPOS.Infrastructures.Iyzico.Model.Cancel.Create(req, GetOptions(auth));
+            CP.VPOS.Infrastructures.Iyzico.Model.Cancel _cancelResponse = await CP.VPOS.Infrastructures.Iyzico.Model.Cancel.CreateAsync(req, GetOptions(auth), cancellationToken).ConfigureAwait(false);
 
             if (_cancelResponse.Status == "success")
             {
@@ -309,7 +311,7 @@ namespace CP.VPOS.Banks.Iyzico
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -326,7 +328,7 @@ namespace CP.VPOS.Banks.Iyzico
             req.Price = request.refundAmount.ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".");
             req.PaymentId = request.transactionId;
 
-            CP.VPOS.Infrastructures.Iyzico.Model.Refund amountBasedRefund = CP.VPOS.Infrastructures.Iyzico.Model.Refund.CreateAmountBasedRefundRequest(req, GetOptions(auth));
+            CP.VPOS.Infrastructures.Iyzico.Model.Refund amountBasedRefund = await CP.VPOS.Infrastructures.Iyzico.Model.Refund.CreateAmountBasedRefundRequestAsync(req, GetOptions(auth), cancellationToken).ConfigureAwait(false);
 
             if (amountBasedRefund.Status == "success")
             {
@@ -343,17 +345,17 @@ namespace CP.VPOS.Banks.Iyzico
             return response;
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             AllInstallmentQueryResponse response = new AllInstallmentQueryResponse();
 
 
-            return response;
+            return Task.FromResult<AllInstallmentQueryResponse>(response);
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
         private Options GetOptions(VirtualPOSAuth auth)
@@ -367,9 +369,9 @@ namespace CP.VPOS.Banks.Iyzico
             return options;
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 }

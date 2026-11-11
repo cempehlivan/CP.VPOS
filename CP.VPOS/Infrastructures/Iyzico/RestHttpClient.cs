@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CP.VPOS.Infrastructures.Iyzico
@@ -23,49 +24,37 @@ namespace CP.VPOS.Infrastructures.Iyzico
             return new RestHttpClient();
         }
 
-        public T Get<T>(String url)
+        public async Task<T> GetAsync<T>(String url, CancellationToken cancellationToken)
         {
-            HttpResponseMessage httpResponseMessage = HttpClient.GetAsync(url).Result; 
-            return JsonConvert.DeserializeObject<T>(httpResponseMessage.Content.ReadAsStringAsync().Result);
-        }
-        
-        public T Get<T>(String url, Dictionary<string,string> headers)
-        {
-            HttpRequestMessage requestMessage = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get, 
-                RequestUri = new Uri(url)
-            };
-            
-            foreach (var header in headers)
-            {
-                requestMessage.Headers.Add(header.Key, header.Value);
-            }
-            
-            HttpResponseMessage httpResponseMessage = HttpClient.SendAsync(requestMessage).Result; 
-            return JsonConvert.DeserializeObject<T>(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<T>(await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
-        public T Post<T>(String url, Dictionary<string,string> headers, BaseRequest request)
-        { 
+        public Task<T> GetAsync<T>(String url, Dictionary<string, string> headers, CancellationToken cancellationToken)
+        {
             HttpRequestMessage requestMessage = new HttpRequestMessage
             {
-                Method = HttpMethod.Post, 
-                RequestUri = new Uri(url), 
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(url)
+            };
+
+            return SendAsync<T>(requestMessage, headers, cancellationToken);
+        }
+
+        public Task<T> PostAsync<T>(String url, Dictionary<string, string> headers, BaseRequest request, CancellationToken cancellationToken)
+        {
+            HttpRequestMessage requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(url),
                 Content = JsonBuilder.ToJsonString(request)
             };
 
-            foreach (var header in headers)
-            {
-                requestMessage.Headers.Add(header.Key, header.Value);
-            }
-
-            HttpResponseMessage httpResponseMessage = HttpClient.SendAsync(requestMessage).Result;
-            return JsonConvert.DeserializeObject<T>(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            return SendAsync<T>(requestMessage, headers, cancellationToken);
         }
 
-        public T Delete<T>(String url, Dictionary<string, string> headers, BaseRequest request)
-        { 
+        public Task<T> DeleteAsync<T>(String url, Dictionary<string, string> headers, BaseRequest request, CancellationToken cancellationToken)
+        {
             HttpRequestMessage requestMessage = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
@@ -73,31 +62,32 @@ namespace CP.VPOS.Infrastructures.Iyzico
                 Content = JsonBuilder.ToJsonString(request)
             };
 
-            foreach (var header in headers)
-            {
-                requestMessage.Headers.Add(header.Key, header.Value);
-            }
-
-            HttpResponseMessage httpResponseMessage = HttpClient.SendAsync(requestMessage).Result; 
-            return JsonConvert.DeserializeObject<T>(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            return SendAsync<T>(requestMessage, headers, cancellationToken);
         }
 
-        public T Put<T>(String url, Dictionary<string, string> headers, BaseRequest request)
+        public Task<T> PutAsync<T>(String url, Dictionary<string, string> headers, BaseRequest request, CancellationToken cancellationToken)
         {
             HttpRequestMessage requestMessage = new HttpRequestMessage
             {
-                Method = HttpMethod.Put, 
-                RequestUri = new Uri(url), 
+                Method = HttpMethod.Put,
+                RequestUri = new Uri(url),
                 Content = JsonBuilder.ToJsonString(request)
             };
 
+            return SendAsync<T>(requestMessage, headers, cancellationToken);
+        }
+
+        private async Task<T> SendAsync<T>(HttpRequestMessage requestMessage, Dictionary<string, string> headers, CancellationToken cancellationToken)
+        {
             foreach (var header in headers)
             {
                 requestMessage.Headers.Add(header.Key, header.Value);
             }
 
-            HttpResponseMessage httpResponseMessage = HttpClient.SendAsync(requestMessage).Result; 
-            return JsonConvert.DeserializeObject<T>(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            using (HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
+            {
+                return JsonConvert.DeserializeObject<T>(await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+            }
         }
     }
 }

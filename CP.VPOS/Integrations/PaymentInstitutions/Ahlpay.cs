@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -20,7 +22,7 @@ namespace CP.VPOS.Banks.Ahlpay
         private readonly string _urlAPILive = "https://ahlsanalpos.ahlpay.com.tr";
 
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -28,7 +30,7 @@ namespace CP.VPOS.Banks.Ahlpay
             request.saleInfo.installment = request.saleInfo.installment > 1 ? request.saleInfo.installment : (sbyte)1;
 
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             response.orderNumber = request.orderNumber;
 
@@ -36,7 +38,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             try
             {
-                _token = GetTokenModel(auth);
+                _token = await GetTokenModelAsync(auth, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -87,7 +89,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/Payment/PaymentNon3D";
 
-            string responseStr = Request(req, link, _token);
+            string responseStr = await RequestAsync(req, link, _token, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -130,7 +132,7 @@ namespace CP.VPOS.Banks.Ahlpay
             }
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
             response.orderNumber = request.orderNumber;
@@ -139,7 +141,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             try
             {
-                _token = GetTokenModel(auth);
+                _token = await GetTokenModelAsync(auth, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -192,7 +194,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/Payment/Payment3DWithEventRedirect";
 
-            string responseStr = Request(req, link, _token);
+            string responseStr = await RequestAsync(req, link, _token, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -219,7 +221,7 @@ namespace CP.VPOS.Banks.Ahlpay
             }
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -243,12 +245,12 @@ namespace CP.VPOS.Banks.Ahlpay
                 return response;
             }
 
-            response = TransactionQuery(orderNumber, auth, rnd);
+            response = await TransactionQueryAsync(orderNumber, auth, rnd, cancellationToken).ConfigureAwait(false);
 
             return response;
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -260,7 +262,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             try
             {
-                _token = GetTokenModel(auth);
+                _token = await GetTokenModelAsync(auth, cancellationToken).ConfigureAwait(false);
             }
             catch
             {
@@ -289,7 +291,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/Payment/Void";
 
-            string responseStr = Request(req, link, _token);
+            string responseStr = await RequestAsync(req, link, _token, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -315,7 +317,7 @@ namespace CP.VPOS.Banks.Ahlpay
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -327,7 +329,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             try
             {
-                _token = GetTokenModel(auth);
+                _token = await GetTokenModelAsync(auth, cancellationToken).ConfigureAwait(false);
             }
             catch
             {
@@ -356,7 +358,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/Payment/Refund";
 
-            string responseStr = Request(req, link, _token);
+            string responseStr = await RequestAsync(req, link, _token, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -382,7 +384,7 @@ namespace CP.VPOS.Banks.Ahlpay
             return response;
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             AllInstallmentQueryResponse response = new AllInstallmentQueryResponse { confirm = false, installmentList = new List<AllInstallment>() };
 
@@ -390,7 +392,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             //try
             //{
-            //    _token = GetTokenModel(auth);
+            //    _token = await GetTokenModelAsync(auth, cancellationToken).ConfigureAwait(false);
             //}
             //catch
             //{
@@ -400,7 +402,7 @@ namespace CP.VPOS.Banks.Ahlpay
             return response;
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse();
 
@@ -408,7 +410,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             try
             {
-                _token = GetTokenModel(auth);
+                _token = await GetTokenModelAsync(auth, cancellationToken).ConfigureAwait(false);
             }
             catch
             {
@@ -427,7 +429,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/Payment/CommissionInquiry";
 
-            string responseStr = Request(req, link, _token);
+            string responseStr = await RequestAsync(req, link, _token, cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -473,12 +475,12 @@ namespace CP.VPOS.Banks.Ahlpay
             return response;
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new AdditionalInstallmentQueryResponse { confirm = false };
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(new AdditionalInstallmentQueryResponse { confirm = false });
         }
 
-        private AhlpayTokenModel GetTokenModel(VirtualPOSAuth auth)
+        private async Task<AhlpayTokenModel> GetTokenModelAsync(VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             AhlpayTokenModel token = null;
 
@@ -490,7 +492,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/Security/AuthenticationMerchant";
 
-            string loginResponse = Request(postData, link);
+            string loginResponse = await RequestAsync(postData, link, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> loginDic = JsonConvertHelper.Convert<Dictionary<string, object>>(loginResponse);
 
@@ -510,7 +512,7 @@ namespace CP.VPOS.Banks.Ahlpay
             throw new Exception(errorMsg);
         }
 
-        private SaleResponse TransactionQuery(string orderNumber, VirtualPOSAuth auth, string rnd = "")
+        private async Task<SaleResponse> TransactionQueryAsync(string orderNumber, VirtualPOSAuth auth, string rnd = "", CancellationToken cancellationToken = default(CancellationToken))
         {
             SaleResponse response = new SaleResponse();
 
@@ -523,7 +525,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             try
             {
-                _token = GetTokenModel(auth);
+                _token = await GetTokenModelAsync(auth, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -544,7 +546,7 @@ namespace CP.VPOS.Banks.Ahlpay
 
             string link = $"{(auth.testPlatform ? _urlAPITest : _urlAPILive)}/api/Payment/PaymentInquiry";
 
-            string responseStr = Request(postData, link, _token);
+            string responseStr = await RequestAsync(postData, link, _token, cancellationToken).ConfigureAwait(false);
 
             Dictionary<string, object> responseDic = JsonConvertHelper.Convert<Dictionary<string, object>>(responseStr);
 
@@ -587,7 +589,7 @@ namespace CP.VPOS.Banks.Ahlpay
             }
         }
 
-        private string Request(Dictionary<string, object> param, string link, AhlpayTokenModel token = null)
+        private async Task<string> RequestAsync(Dictionary<string, object> param, string link, AhlpayTokenModel token = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             string responseString = "";
 
@@ -606,8 +608,8 @@ namespace CP.VPOS.Banks.Ahlpay
                     if (token != null)
                         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(token.tokenType, token.token);
 
-                    var response = client.PostAsync(link, req).Result;
-                    byte[] responseByte = response.Content.ReadAsByteArrayAsync().Result;
+                    var response = await client.PostAsync(link, req, cancellationToken).ConfigureAwait(false);
+                    byte[] responseByte = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     responseString = Encoding.UTF8.GetString(responseByte);
                 }
             }
@@ -630,9 +632,9 @@ namespace CP.VPOS.Banks.Ahlpay
             return hash;
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 

@@ -3,6 +3,8 @@ using CP.VPOS.Helpers;
 using CP.VPOS.Interfaces;
 using CP.VPOS.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -22,10 +24,10 @@ namespace CP.VPOS.Banks.VakifPayS
 
         private readonly string _org_id = "6bmm5c3v"; // VakifPayS için Online Metrix Org ID
 
-        public SaleResponse Sale(SaleRequest request, VirtualPOSAuth auth)
+        public async Task<SaleResponse> SaleAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             if (request?.payment3D?.confirm == true)
-                return Sale3D(request, auth);
+                return await Sale3DAsync(request, auth, cancellationToken).ConfigureAwait(false);
 
             SaleResponse response = new SaleResponse();
 
@@ -63,7 +65,7 @@ namespace CP.VPOS.Banks.VakifPayS
                 {"INSTALLMENTS", request.saleInfo.installment.ToString() }
             };
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var dic = JsonConvertHelper.Convert<Dictionary<string, object>>(res);
 
@@ -87,7 +89,7 @@ namespace CP.VPOS.Banks.VakifPayS
             return response;
         }
 
-        public BINInstallmentQueryResponse BINInstallmentQuery(BINInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<BINInstallmentQueryResponse> BINInstallmentQueryAsync(BINInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             BINInstallmentQueryResponse response = new BINInstallmentQueryResponse();
 
@@ -100,7 +102,7 @@ namespace CP.VPOS.Banks.VakifPayS
                 {"BIN", request.BIN }
             };
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var dic = JsonConvertHelper.Convert<Dictionary<string, object>>(res);
 
@@ -133,7 +135,7 @@ namespace CP.VPOS.Banks.VakifPayS
             return response;
         }
 
-        public AllInstallmentQueryResponse AllInstallmentQuery(AllInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public async Task<AllInstallmentQueryResponse> AllInstallmentQueryAsync(AllInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             AllInstallmentQueryResponse response = new AllInstallmentQueryResponse();
 
@@ -149,7 +151,7 @@ namespace CP.VPOS.Banks.VakifPayS
             if (!auth.merchantStorekey.cpIsNullOrEmpty())
                 req.Add("DEALERTYPENAME", auth.merchantStorekey);
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var dic = JsonConvertHelper.Convert<Dictionary<string, object>>(res);
 
@@ -189,7 +191,7 @@ namespace CP.VPOS.Banks.VakifPayS
             return response;
         }
 
-        public SaleResponse Sale3DResponse(Sale3DResponseRequest request, VirtualPOSAuth auth)
+        public Task<SaleResponse> Sale3DResponseAsync(Sale3DResponseRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             SaleResponse response = new SaleResponse();
 
@@ -224,15 +226,15 @@ namespace CP.VPOS.Banks.VakifPayS
             if (request.responseArray.ContainsKey("pgTranId"))
                 response.transactionId = request.responseArray["pgTranId"].cpToString();
 
-            return response;
+            return Task.FromResult<SaleResponse>(response);
         }
 
-        public AdditionalInstallmentQueryResponse AdditionalInstallmentQuery(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth)
+        public Task<AdditionalInstallmentQueryResponse> AdditionalInstallmentQueryAsync(AdditionalInstallmentQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<AdditionalInstallmentQueryResponse>(null);
         }
 
-        public CancelResponse Cancel(CancelRequest request, VirtualPOSAuth auth)
+        public async Task<CancelResponse> CancelAsync(CancelRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             CancelResponse response = new CancelResponse { statu = ResponseStatu.Error };
 
@@ -245,7 +247,7 @@ namespace CP.VPOS.Banks.VakifPayS
                 {"REFLECTCOMMISSION", "No" },
             };
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var dic = JsonConvertHelper.Convert<Dictionary<string, object>>(res);
 
@@ -266,7 +268,7 @@ namespace CP.VPOS.Banks.VakifPayS
             return response;
         }
 
-        public RefundResponse Refund(RefundRequest request, VirtualPOSAuth auth)
+        public async Task<RefundResponse> RefundAsync(RefundRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             RefundResponse response = new RefundResponse { statu = ResponseStatu.Error };
 
@@ -281,7 +283,7 @@ namespace CP.VPOS.Banks.VakifPayS
                 {"REFLECTCOMMISSION", "No" },
             };
 
-            string res = this.Request(req, auth);
+            string res = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var dic = JsonConvertHelper.Convert<Dictionary<string, object>>(res);
 
@@ -301,7 +303,7 @@ namespace CP.VPOS.Banks.VakifPayS
             return response;
         }
 
-        private SaleResponse Sale3D(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<SaleResponse> Sale3DAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             string sessionToken = "";
 
@@ -309,7 +311,7 @@ namespace CP.VPOS.Banks.VakifPayS
 
             try
             {
-                sessionToken = this.getSessionToken(request, auth);
+                sessionToken = await this.getSessionTokenAsync(request, auth, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -334,7 +336,7 @@ namespace CP.VPOS.Banks.VakifPayS
                 {"installmentCount", request.saleInfo.installment.ToString() },
             };
 
-            string res = this.Request(pairs, auth, link);
+            string res = await this.RequestAsync(pairs, auth, link, cancellationToken).ConfigureAwait(false);
 
             Uri uri = new Uri(link);
 
@@ -369,7 +371,7 @@ namespace CP.VPOS.Banks.VakifPayS
             return response;
         }
 
-        private string getSessionToken(SaleRequest request, VirtualPOSAuth auth)
+        private async Task<string> getSessionTokenAsync(SaleRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
             string pItem = "[{\"code\":\"POSCEK\",\"name\":\"Cari Tahsilat\",\"description\":\"CariTahsilat\",\"quantity\":1,\"amount\":" + request.saleInfo.amount.cpToDecimal().ToString("N2", CultureInfo.GetCultureInfo("tr-TR")).Replace(".", "").Replace(",", ".") + "}]";
 
@@ -404,7 +406,7 @@ namespace CP.VPOS.Banks.VakifPayS
                                 {"CURRENCY", request.saleInfo.currency.ToString() },
             };
 
-            string resp = this.Request(req, auth);
+            string resp = await this.RequestAsync(req, auth, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             var dic = JsonConvertHelper.Convert<Dictionary<string, object>>(resp);
 
@@ -424,7 +426,7 @@ namespace CP.VPOS.Banks.VakifPayS
             throw new Exception("VakıfPayS session token oluşturulamadı");
         }
 
-        private string Request(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null)
+        private async Task<string> RequestAsync(Dictionary<string, string> param, VirtualPOSAuth auth, string link = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             string responseString = "";
 
@@ -434,8 +436,8 @@ namespace CP.VPOS.Banks.VakifPayS
             using (HttpClient client = new HttpClient())
             using (var vakifPaySRequest = new FormUrlEncodedContent(param))
             {
-                var response = client.PostAsync(link ?? (auth.testPlatform ? _urlAPITest : _urlAPILive), vakifPaySRequest).Result;
-                responseString = response.Content.ReadAsStringAsync().Result;
+                var response = await client.PostAsync(link ?? (auth.testPlatform ? _urlAPITest : _urlAPILive), vakifPaySRequest, cancellationToken).ConfigureAwait(false);
+                responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
             return responseString;
@@ -679,9 +681,9 @@ namespace CP.VPOS.Banks.VakifPayS
             return desc;
         }
 
-        public SaleQueryResponse SaleQuery(SaleQueryRequest request, VirtualPOSAuth auth)
+        public Task<SaleQueryResponse> SaleQueryAsync(SaleQueryRequest request, VirtualPOSAuth auth, CancellationToken cancellationToken)
         {
-            return new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" };
+            return Task.FromResult<SaleQueryResponse>(new SaleQueryResponse { statu = SaleQueryResponseStatu.Error, message = "Bu sanal pos için satış sorgulama işlemi şuan desteklenmiyor" });
         }
     }
 }
