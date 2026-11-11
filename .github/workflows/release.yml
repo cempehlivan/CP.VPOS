@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   build_pack_publish:
@@ -14,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "10.0.x"
 
@@ -49,12 +50,15 @@ jobs:
       - name: Pack (Release)
         run: dotnet pack CP.VPOS/CP.VPOS.csproj -c Release --no-build -o ./artifacts
 
-      - name: Publish to NuGet.org
-        run: dotnet nuget push "./artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+      - name: NuGet login (OIDC)
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
 
-      # CHANGELOG.md içindeki ilgili sürüm bölümü release açıklaması olarak kullanılır.
-      # GitHub'ın otomatik notu yalnızca merge edilmiş PR'ları listelediği için
-      # doğrudan master'a atılan commitlerde açıklama boş kalıyordu.
+      - name: Publish to NuGet.org
+        run: dotnet nuget push "./artifacts/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+
       - name: Prepare release notes from CHANGELOG
         shell: bash
         run: |
@@ -69,7 +73,7 @@ jobs:
           cat release-notes.md
 
       - name: Create GitHub Release (auto notes) + attach nupkg
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
           body_path: release-notes.md
