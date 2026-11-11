@@ -52,9 +52,26 @@ jobs:
       - name: Publish to NuGet.org
         run: dotnet nuget push "./artifacts/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
 
+      # CHANGELOG.md içindeki ilgili sürüm bölümü release açıklaması olarak kullanılır.
+      # GitHub'ın otomatik notu yalnızca merge edilmiş PR'ları listelediği için
+      # doğrudan master'a atılan commitlerde açıklama boş kalıyordu.
+      - name: Prepare release notes from CHANGELOG
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+
+          awk -v ver="### v$TAG" '$0 == ver {f=1; next} f && /^### v/ {exit} f' CHANGELOG.md > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::warning::CHANGELOG.md içinde '### v$TAG' bölümü bulunamadı, sürüm açıklaması yalnızca otomatik notlardan oluşacak."
+          fi
+
+          cat release-notes.md
+
       - name: Create GitHub Release (auto notes) + attach nupkg
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
+          body_path: release-notes.md
           generate_release_notes: true
           files: ./artifacts/*.nupkg
