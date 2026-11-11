@@ -659,7 +659,6 @@ namespace CP.VPOS.Banks.Moka
             try
             {
                 ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 System.Net.ServicePointManager.Expect100Continue = false;
 
                 string jsonContent = JsonConvertHelper.Json(param);

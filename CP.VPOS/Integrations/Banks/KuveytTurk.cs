@@ -348,7 +348,6 @@ namespace CP.VPOS.Banks.KuveytTurk
         private string xmlRequest(string xml, string link)
         {
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 #pragma warning disable SYSLIB0014
             System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(link);

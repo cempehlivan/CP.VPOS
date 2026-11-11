@@ -432,7 +432,6 @@ namespace CP.VPOS.Banks.Tami
             try
             {
                 ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 System.Net.ServicePointManager.Expect100Continue = false;
 
                 var jsonSerializerSettings = new JsonSerializerSettings()

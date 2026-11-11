@@ -303,7 +303,6 @@ $@"<?xml version=""1.0"" encoding=""ISO-8859-9""?>
         {
             string responseString = "";
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 
             using (HttpClient client = new HttpClient())

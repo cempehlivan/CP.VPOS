@@ -429,7 +429,6 @@ namespace CP.VPOS.Banks.VakifPayS
             string responseString = "";
 
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 
             using (HttpClient client = new HttpClient())

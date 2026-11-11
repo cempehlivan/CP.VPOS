@@ -447,7 +447,6 @@ namespace CP.VPOS.Banks.Akbank
             try
             {
                 ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 System.Net.ServicePointManager.Expect100Continue = false;
 
                 string jsonContent = JsonConvertHelper.Json(param);
@@ -476,7 +475,6 @@ namespace CP.VPOS.Banks.Akbank
             string responseString = "";
 
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 
             using (HttpClient client = new HttpClient())

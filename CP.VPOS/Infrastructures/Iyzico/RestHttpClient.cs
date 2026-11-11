@@ -13,7 +13,6 @@ namespace CP.VPOS.Infrastructures.Iyzico
         static RestHttpClient()
         {
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 
             HttpClient = new HttpClient();

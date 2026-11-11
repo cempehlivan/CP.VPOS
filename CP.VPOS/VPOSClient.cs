@@ -27,6 +27,9 @@ namespace CP.VPOS
             request.shippingInfo.Validate();
             auth.Validate();
 
+            // Kart numarası içindeki boşluk ve tireler temizlenir ("4242 4242 4242 4242" -> "4242424242424242")
+            request.saleInfo.cardNumber = request.saleInfo.cardNumber?.Replace(" ", "").Replace("-", "");
+
             if (!FoundationHelper.IsCardNumberValid(request.saleInfo.cardNumber))
                 throw new ValidationException("Geçersiz kart numarası. Lütfen kart numaranızı kontrol ediniz.");
 

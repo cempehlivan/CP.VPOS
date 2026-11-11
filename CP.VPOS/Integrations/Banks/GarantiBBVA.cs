@@ -512,7 +512,6 @@ namespace CP.VPOS.Banks.GarantiBBVA
             string responseString = "";
 
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 
             using (HttpClient client = new HttpClient())
@@ -530,7 +529,6 @@ namespace CP.VPOS.Banks.GarantiBBVA
         private string SendHttpRequest(string Host, string Method, string Params)
         {
             ServicePointManager.SecurityProtocol = (System.Net.SecurityProtocolType)3072;
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             System.Net.ServicePointManager.Expect100Continue = false;
 
             var returnSrting = String.Empty;

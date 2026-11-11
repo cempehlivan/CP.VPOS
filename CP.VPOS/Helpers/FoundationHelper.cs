@@ -117,18 +117,24 @@ namespace CP.VPOS.Helpers
 
         internal static string ToHtmlForm(this Dictionary<string, string> keyValuePairs, string link)
         {
-            string input = "";
+            System.Text.StringBuilder inputBuilder = new System.Text.StringBuilder();
 
             foreach (var item in keyValuePairs)
             {
-                input += $@"<input type=""hidden"" name=""{item.Key}"" value=""{item.Value}"" />" + Environment.NewLine;
+                string name = System.Net.WebUtility.HtmlEncode(item.Key) ?? "";
+                string value = System.Net.WebUtility.HtmlEncode(item.Value) ?? "";
+
+                inputBuilder.Append($@"<input type=""hidden"" name=""{name}"" value=""{value}"" />").Append(Environment.NewLine);
             }
+
+            string input = inputBuilder.ToString();
+            string action = System.Net.WebUtility.HtmlEncode(link) ?? "";
 
             string htmlForm = $@"<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Transitional//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <head><title>Sanal Pos</title></head>
 <body>
-    <form action=""{link}"" name=""3DFormPost"" id=""3DFormPost"" method=""post"">
+    <form action=""{action}"" name=""3DFormPost"" id=""3DFormPost"" method=""post"">
     {input}
     </form>
     <script type=""text/javascript"">
@@ -141,8 +147,22 @@ namespace CP.VPOS.Helpers
             return htmlForm;
         }
 
+        /// <summary>
+        /// Kart numarasının Luhn algoritmasına göre geçerliliğini kontrol eder.
+        /// Numara boş olmamalı, 12-19 hane uzunluğunda olmalı ve sadece rakam içermelidir.
+        /// </summary>
         internal static bool IsCardNumberValid(string cardNumber)
         {
+            if (cardNumber.cpIsNullOrEmpty())
+                return false;
+
+            if (cardNumber.Length < 12 || cardNumber.Length > 19)
+                return false;
+
+            for (int d = 0; d < cardNumber.Length; d++)
+                if (cardNumber[d] < '0' || cardNumber[d] > '9')
+                    return false;
+
             int i, checkSum = 0;
 
             for (i = cardNumber.Length - 1; i >= 0; i -= 2)
